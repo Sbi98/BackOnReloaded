@@ -37,23 +37,8 @@ class Shared: ObservableObject {
     @Published var commitmentSet: [Int:Commitment] = [:]
     @Published var discoverSet: [Int:Commitment] = [:]
     @Published var needSet: [Int:Commitment] = [:]
-    @Published var helperMode = true
-    @Published var addressText = "Click to insert the address"
-    func textAddress(){
-            CLGeocoder().reverseGeocodeLocation((UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation!, completionHandler: {(placemarks, error) in
-                if let e = error {
-                    print("Reverse geocoder failed with error: " + e.localizedDescription)
-                    return
-                } // place is an instance of CLPlacemark and has the encapsulated address
-                if let place = placemarks {
-                    let pm = place[0]
-                    self.addressText = self.address(pm)
-                } else {
-                    print("Problem with the data received from geocoder")
-                    return
-                }
-            })
-    }
+    @Published var helperMode = false
+
     
     private static var formatter = DateFormatter()
     var dateFormatter: DateFormatter{

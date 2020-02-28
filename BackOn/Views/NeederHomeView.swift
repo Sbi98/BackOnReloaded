@@ -22,14 +22,14 @@ struct NeederHomeView: View {
                     .bold()
                     .fontWeight(.heavy)
                     .padding(20)
-//                Button(action: {
-//                    print("Logout!")
-//                    GIDSignIn.sharedInstance()?.disconnect()
-//                }) {
-//                    Text("Logout")
-//                        .bold()
-//                        .foregroundColor(.black)
-//                }
+                Button(action: {
+                    print("Logout!")
+                    GIDSignIn.sharedInstance()?.disconnect()
+                }) {
+                    Text("Logout")
+                        .bold()
+                        .foregroundColor(.black)
+                }
                 NeedsRow()
                 Spacer()
                 AddNeedButton()

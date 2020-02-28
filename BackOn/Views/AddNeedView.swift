@@ -13,9 +13,12 @@ struct AddNeedView: View {
     @State var toggleVerified = false //CONTIENE INFORMAZIONI
     
     @State var needDescription = "" //CONTIENE INFORMAZIONI
-    @ObservedObject var address = Address() //address.address contiene l'address //CONTIENE INFORMAZIONI
+    @ObservedObject var addressData = AddressData() //address.address contiene l'address //CONTIENE INFORMAZIONI
 
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
+    
+    let formatter = DateFormatter()
+    var dateString: String?
     
     var body: some View {
         
@@ -37,13 +40,14 @@ struct AddNeedView: View {
                     HStack{
                         Text("Title: ")
                             .foregroundColor(Color(.systemBlue))
-                        Text(titlePickerData.titlePickerValue == -1 ? "Click to select your need\t\t\t\t\t\t\t\t\t" : titlePickerData.titles[self.titlePickerData.titlePickerValue])
+                        Text(titlePickerData.titlePickerValue == -1 ? "Click to select your need" : titlePickerData.titles[self.titlePickerData.titlePickerValue])
                             .onTapGesture {
                                 withAnimation {self.titlePickerData.showTitlePicker.toggle()}
                         }
                     }
-                    HStack{Text("Description: ")
-                        .foregroundColor(Color(.systemBlue))
+                    HStack{
+                        Text("Description: ")
+                            .foregroundColor(Color(.systemBlue))
                         TextField("Description", text: self.$needDescription)
                             .padding(7)
                             .frame(minHeight: 30)
@@ -57,7 +61,7 @@ struct AddNeedView: View {
                     HStack{
                         Text("Date: ")
                             .foregroundColor(Color(.systemBlue))
-                        Text("\(datePickerData.selectedDate, formatter: self.shared.dateFormatter)\t\t\t\t\t\t\t")
+                        Text("\(datePickerData.selectedDate, formatter: customDateFormat)")
                             .onTapGesture {
                                 withAnimation {self.datePickerData.showDatePicker.toggle()}
                         }
@@ -66,22 +70,21 @@ struct AddNeedView: View {
                         Text("Repeat each week at the same hour")
                     }
                 }
-                    
                 Section(header: Text("Location")){
-                        HStack{
-                            Text("Place: ")
-                                .foregroundColor(Color(.systemBlue))
-                            
-                            Text(self.address.address).onAppear(perform: {
-                                self.shared.textAddress()
-                            })
-                        }
-                        Toggle(isOn: $address.toggleMyActualLocation) {
-                            Text("Do you want to set the location where you are right now?")
-                        }
-                    
-//                        Manca la selezione del posto fatta bene
+                    HStack{
+                        Text("Place: ")
+                            .foregroundColor(Color(.systemBlue))
+                        TextField("Insert your address", text: self.$addressData.address)
+                            .padding(7)
+                            .frame(minHeight: 30)
+                            .background(Color.primary.colorInvert())
+                            .font(.callout)
+                    }
+                    Toggle(isOn: $addressData.toggleMyActualLocation) {
+                        Text("Do you want to set the location where you are right now?")
+                    }
                 }
+                
                 Section (header: Text("Need informations")){
                     Toggle(isOn: $toggleVerified) {
                         Text("Do you want only verified helpers?")
@@ -92,27 +95,9 @@ struct AddNeedView: View {
             Spacer()
             HStack {
                 Spacer()
-                Button(action: {
-                    print("Add need!")
-                    //                IMPORTANTE SALVA NEED E INVIALO AL SERVER
-                    NeederHomeView.show()
+                ConfirmAddNeedButton(){
                     self.dbController.insertCommit(title: self.titlePickerData.titles[self.titlePickerData.titlePickerValue], description: self.needDescription, date: self.datePickerData.selectedDate, latitude: self.mapController.lastLocation!.coordinate.latitude, longitude: self.mapController.lastLocation!.coordinate.longitude)
                     self.dbController.getCommitByUser()
-                }) {
-                    HStack{
-                        Text("Confirm ")
-                            .fontWeight(.regular)
-                        Image(systemName: "hand.thumbsup")
-                    }
-                    .font(.title)
-                    .padding(20)
-                    .background(Color.blue)
-                    .cornerRadius(40)
-                    .foregroundColor(.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue)
-                    )
                 }
                 Spacer()
             }
@@ -121,7 +106,7 @@ struct AddNeedView: View {
             .frame(width: UIScreen.main.bounds.width, alignment: .leading)
             .background(Color(.systemGray6))
             .overlay(myOverlay(isPresented: self.$titlePickerData.showTitlePicker, toOverlay: AnyView(TitlePicker(pickerElements: self.titlePickerData.titles, selectedValue: self.$titlePickerData.titlePickerValue))))
-            .overlay(myOverlay(isPresented: self.$datePickerData.showDatePicker, toOverlay: AnyView(DataPicker(dataSelezionata: self.$datePickerData.selectedDate))))
+            .overlay(myOverlay(isPresented: self.$datePickerData.showDatePicker, toOverlay: AnyView(DataPicker(selectedDate: self.$datePickerData.selectedDate))))
     }
 }
 
@@ -153,11 +138,11 @@ class DatePickerData: ObservableObject {
 }
 
 struct DataPicker: View {
-    @Binding var dataSelezionata: Date
+    @Binding var selectedDate: Date
     
     var body: some View {
         VStack {
-            DatePicker(selection: self.$dataSelezionata, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
+            DatePicker(selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
                 Text("Select a date")
             }.labelsHidden()
                 .frame(width: UIScreen.main.bounds.width, height: 250)
@@ -167,13 +152,18 @@ struct DataPicker: View {
     }
 }
 
-class Address: ObservableObject {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @Published var address = "Insert your address\t\t\t\t\t\t\t\t\t\t\t"
-    @Published var toggleMyActualLocation = false{
+class AddressData: ObservableObject, CustomStringConvertible {
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
+    public var description: String {
+        return self.address
+    }
+    @Published var address = "Insert your address"
+    @Published var toggleMyActualLocation = false {
         willSet{
-            self.address = newValue ? self.shared.addressText : self.address
-            print(self.address)
+            self.mapController.locationAsAddress() { result in
+                self.address = result
+                print(result)
+            }
         }
     }
 }

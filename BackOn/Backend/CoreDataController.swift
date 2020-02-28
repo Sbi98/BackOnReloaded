@@ -58,7 +58,7 @@ class CoreDataController {
             let array = try self.context.fetch(fetchRequest)
             guard array.count > 0 else {
                 print("User not logged yet")
-                return ("Nil", UserInfo(photo: URL(string: "")!, name: "", surname: "", email: ""))
+                return ("Nil", UserInfo(photo: URL(string: "a")!, name: "", surname: "", email: ""))
             }
             let myUser = UserInfo(photo: array[0].photo!, name: array[0].name!, surname: array[0].surname!, email: array[0].email!)
             return ("OK", myUser)

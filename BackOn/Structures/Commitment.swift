@@ -16,7 +16,6 @@ class Commitment: ObservableObject{
     let descr: String
     let date: Date
     let ID: Int
-    @Published var eta = 0.0
     @Published var etaText = "Calculating..."
     
     var position: CLLocation
@@ -72,64 +71,16 @@ class Commitment: ObservableObject{
         let directions = MKDirections(request: request)
         directions.calculateETA { (res, error) in
             guard error == nil else {print("Error while getting ETA");return}
-            self.eta = res!.expectedTravelTime
-            let hour = self.eta>7200 ? "hrs" : "hr"
-            if self.eta > 3600{
-                self.etaText = "\(Int(self.eta/3600)) \(hour) \(Int((Int(self.eta)%3600)/60)) min from you"
-                        } else{
-                self.etaText = "\(Int(self.eta/60)) min from you"
-                        }
+            let eta = res!.expectedTravelTime
+            let hour = eta>7200 ? "hrs" : "hr"
+            if eta > 3600{
+                self.etaText = "\(Int(eta/3600)) \(hour) \(Int((Int(eta)%3600)/60)) min from you"
+            } else {
+                self.etaText = "\(Int(eta/60)) min from you"
+            }
         }
     }
 }
-
-//class CommitmentSet {
-//    var commitmentSet: [Int: Commitment] = [:]
-//    func populate () {
-//        var id: Int
-//        var commitment: Commitment
-//        for _ in 0...5 {
-//            id = Int()
-//            commitment = Commitment(userInfo: sonoIo, title: "Prova", descr: "Prova", date: Date(), ID: id)
-//            commitmentSet[id] = commitment
-//        }
-//    }
-//    
-//    func getEarliestCommitments (n: Int) -> [Commitment] {
-//        return commitmentData
-//    }
-//}
-
-
-//let me1 = UserInfo(photo: URL(string: "tim")!, name: "Tim", surname: "Cook")
-//let me2 = UserInfo(photo: URL(string: "steve")!, name: "Steve", surname: "Jobs")
-//let me3 = UserInfo(photo: URL(string: "elon")!, name: "Elon", surname: "Musk")
-//let me4 = UserInfo(photo: URL(string: "craig")!, name: "Craig", surname: "Cookss")
-//
-//
-//let uuid1 = 1
-//let uuid2 = 2
-//let uuid3 = 3
-//let uuid4 = 4
-//let uuid5 = 5
-//let uuid6 = 6
-//let uuid7 = 7
-//let uuid8 = 8
-
-
-//let commitmentDict: [Int:Commitment] = [
-//    uuid1: Commitment(userInfo: me1, title: "Spesa1", descr: "Descrizione di spesa1", date: Date().addingTimeInterval(TimeInterval(29*60)), position: CLLocation(latitude: 41.775293, longitude: 14.572105), ID: uuid1),
-//    uuid2: Commitment(userInfo: me2, title: "Pulizie1", descr: "Descrizione di pulizie1", date: Date().addingTimeInterval(TimeInterval(31*60)), position: CLLocation(latitude: 41.275293, longitude: 14.572105), ID: uuid2),
-//    uuid3: Commitment(userInfo: me3, title: "Soldi1", descr: "Descrizione di soldi1", date: Date().addingTimeInterval(TimeInterval(31*60)), position: CLLocation(latitude: 41.275293, longitude: 15.572105), ID: uuid3),
-//    uuid4: Commitment(userInfo: me4, title: "Uscita1", descr: "Descrizione di uscita1", date: Date().addingTimeInterval(TimeInterval(31*60)), position: CLLocation(latitude: 41.075293, longitude: 15.172105), ID: uuid4)
-//]
-
-//let discoverDict: [Int:Commitment] = [
-//    uuid5: Commitment(userInfo: me1, title: "Spesa", descr: "Descrizione di spesa", date: Date(), position: CLLocation(latitude: 40.675293, longitude: 14.772105), ID: uuid5)
-//    uuid6: Commitment(userInfo: me2, title: "Pulizie", descr: "Descrizione di pulizie", date: Date(), position: CLLocation(latitude: 41.675293, longitude: 14.772105), ID: uuid6),
-//    uuid7: Commitment(userInfo: me3, title: "Soldi", descr: "Descrizione di soldi", date: Date(), position: CLLocation(latitude: 41.675293, longitude: 15.772105), ID: uuid7),
-//    uuid8: Commitment(userInfo: me4, title: "Uscita", descr: "Descrizione di uscita", date: Date(), position: CLLocation(latitude: 41.275293, longitude: 15.172105), ID: uuid8)
-//]
 
 //  Questo metodo da un array di commitment restituisce il più imminente assumendo che:
 func getNextCommitment(dataDictionary: [Int:Commitment]) -> Commitment? {

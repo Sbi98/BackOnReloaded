@@ -25,14 +25,14 @@ struct HomeView: View {
                         .padding(.top).frame(width: UIScreen.main.bounds.width, alignment: .leading)
 //                          Bottone per notificare il prossimo commitment
                 
-//                Button(action: {
-//                    print("Logout!")
-//                    GIDSignIn.sharedInstance()?.disconnect()
-//                }) {
-//                    Text("Logout")
-//                        .bold()
-//                        .foregroundColor(.black)
-//                }
+                Button(action: {
+                    print("Logout!")
+                    GIDSignIn.sharedInstance()?.disconnect()
+                }) {
+                    Text("Logout")
+                        .bold()
+                        .foregroundColor(.black)
+                }
                 CommitmentRow().frame(width: UIScreen.main.bounds.width, height: CGFloat(400), alignment: .top)
                 DiscoverRow().frame(width: UIScreen.main.bounds.width, height: CGFloat(200), alignment: .top).padding(80)
 //                NeederButton()

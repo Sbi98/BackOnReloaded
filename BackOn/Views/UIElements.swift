@@ -8,6 +8,13 @@
 
 import SwiftUI
 
+let customDateFormat: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .short
+    return formatter
+}()
+
 var locAlert = Alert(
     title: Text("Location permission denied"),
     message: Text("To let the app work properly, enable location permissions"),
@@ -72,6 +79,31 @@ struct NeederButton: View {
                 Image(systemName: "person")
                     .font(.largeTitle)
                     .foregroundColor(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)))
+        }
+    }
+}
+
+struct ConfirmAddNeedButton: View {
+    var insertFunction: () -> Void
+    var body: some View {
+        Button(action: {
+            NeederHomeView.show()
+            self.insertFunction()
+        }) {
+            HStack{
+                Text("Confirm ")
+                    .fontWeight(.regular)
+                Image(systemName: "hand.thumbsup")
+            }
+            .font(.title)
+            .padding(20)
+            .background(Color.blue)
+            .cornerRadius(40)
+            .foregroundColor(.white)
+            .overlay(
+                RoundedRectangle(cornerRadius: 40)
+                    .stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue)
+            )
         }
     }
 }
