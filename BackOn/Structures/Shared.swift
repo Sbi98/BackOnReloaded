@@ -37,7 +37,7 @@ class Shared: ObservableObject {
     @Published var commitmentSet: [Int:Commitment] = [:]
     @Published var discoverSet: [Int:Commitment] = [:]
     @Published var needSet: [Int:Commitment] = [:]
-    @Published var helperMode = false
+    @Published var helperMode = true
 
     
     private static var formatter = DateFormatter()

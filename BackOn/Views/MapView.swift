@@ -50,7 +50,7 @@ struct MapView: UIViewRepresentable {
         }
         
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            let view: MKAnnotationView
+            let view: MKMarkerAnnotationView
             if !annotation.isKind(of: MKUserLocation.self) {
                 view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
             } else {
@@ -58,9 +58,10 @@ struct MapView: UIViewRepresentable {
             }
             view.canShowCallout = false
             view.displayPriority = .required
-            
-            if parent.shared.viewToShow == "FullDiscoverView"{
-                print("Ci entro")
+            if parent.shared.viewToShow == "HomeView"{
+                view.image = UIImage(named: "Empty")
+                view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
+                view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
             }
             return view
         }
@@ -99,13 +100,16 @@ struct MapView: UIViewRepresentable {
                 mapView.isScrollEnabled = false;
                 mapView.isRotateEnabled = false;
                 mapView.isPitchEnabled = false;
-                mapView.isZoomEnabled = true;
+                mapView.isZoomEnabled = false;
                 mapView.showsUserLocation = false;
+                mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedCommitment!.position.coordinate.latitude + 0.00035, longitude: selectedCommitment!.position.coordinate.longitude) , span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
+                mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: ""))
+            return mapView
         default:
                 addRoute(mapView: mapView)
         }
         mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: title!))
-        mapView.setRegion(MKCoordinateRegion(center: selectedCommitment!.position.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
+        mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
         return mapView
     }
     
@@ -117,37 +121,6 @@ struct MapView: UIViewRepresentable {
         commitmentAnnotation.title = title
         commitmentAnnotation.subtitle = commitment.title
         return commitmentAnnotation
-    }
-    
-    
-    private func address(_ p: CLPlacemark) -> String {
-        var ret = ""
-        if let n = p.name, let t = p.thoroughfare, n.contains(t) {
-            ret = "\(n), "
-        } else {
-            if let n = p.name {
-                ret = "\(n), "
-            }
-            if let t = p.thoroughfare {
-                if let st = p.subThoroughfare {
-                    ret = "\(ret)\(st) "
-                }
-                ret = "\(ret)\(t), "
-            }
-        }
-        if let c = p.country {
-            if let aa = p.administrativeArea {
-                if let l = p.locality {
-                    ret = "\(ret)\(l) "
-                }
-                ret = "\(ret)\(aa), "
-            }
-            ret = "\(ret)\(c)"
-        }
-        if let pc = p.postalCode {
-            ret = "\(ret) - \(pc)"
-        }
-        return ret
     }
     
     func addRoute(mapView: MKMapView){
@@ -167,6 +140,36 @@ struct MapView: UIViewRepresentable {
             mapView.addOverlay(fastestRoute.polyline, level: .aboveRoads)
         }
     }
+    
+    private func address(_ p: CLPlacemark) -> String {
+           var ret = ""
+           if let n = p.name, let t = p.thoroughfare, n.contains(t) {
+               ret = "\(n), "
+           } else {
+               if let n = p.name {
+                   ret = "\(n), "
+               }
+               if let t = p.thoroughfare {
+                   if let st = p.subThoroughfare {
+                       ret = "\(ret)\(st) "
+                   }
+                   ret = "\(ret)\(t), "
+               }
+           }
+           if let c = p.country {
+               if let aa = p.administrativeArea {
+                   if let l = p.locality {
+                       ret = "\(ret)\(l) "
+                   }
+                   ret = "\(ret)\(aa), "
+               }
+               ret = "\(ret)\(c)"
+           }
+           if let pc = p.postalCode {
+               ret = "\(ret) - \(pc)"
+           }
+           return ret
+       }
 }
 
 

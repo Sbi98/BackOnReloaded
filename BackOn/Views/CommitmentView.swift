@@ -15,8 +15,16 @@ struct CommitmentView: View {
     
     var body: some View {
         VStack {
-            MapView(selectedCommitment: commitment)
-                .frame(height: 250)
+            ZStack{
+                MapView(selectedCommitment: commitment).cornerRadius(10)
+                VStack(){
+                    ZStack{
+                        Image("cannotation").foregroundColor(Color(UIColor.systemOrange)).offset(y: -5).scaleEffect(0.97)
+                        Avatar(image: commitment.userInfo.profilePic).offset(y:-9.65)
+                    }.scaleEffect(1.3)
+                Text(commitment.userInfo.name).foregroundColor(Color.white).background(Rectangle().cornerRadius(10).scaleEffect(1.2).foregroundColor(Color(UIColor.systemOrange)))
+                }
+            }.frame(height: 250)
             Button(action: {
                 withAnimation {
                     self.shared.selectedCommitment = self.commitment
@@ -25,7 +33,6 @@ struct CommitmentView: View {
             }) {
                 VStack{
                     Avatar(image: commitment.userInfo.profilePic)
-                    //                    Avatar(image: "\(commitment.userInfo.photo)", size: 60)
                     Spacer()
                     Text(self.commitment.userInfo.identity)
                         .font(.title)
