@@ -11,7 +11,7 @@ import GoogleSignIn
 import CoreLocation
 
 struct HomeView: View {
-    @EnvironmentObject var shared: Shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     @State var isLoading: Bool = true
     

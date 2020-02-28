@@ -17,7 +17,8 @@ extension View {
 }
 
 struct ContentView: View {
-    @EnvironmentObject var shared: Shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     
     var body: some View {
         VStack{
@@ -51,7 +52,7 @@ struct ContentView: View {
                     .foregroundColor(.primary)
             }
         }
-        .alert(isPresented: $shared.locationManager.showAlert){locAlert}
+        .alert(isPresented: $mapController.showLocationAlert){locAlert}
     }
 }
 

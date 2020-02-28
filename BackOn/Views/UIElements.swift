@@ -20,7 +20,7 @@ var locAlert = Alert(
 )
 
 struct CloseButton: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         ZStack{
@@ -61,7 +61,7 @@ struct CloseButton: View {
 }
 
 struct NeederButton: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         Button(action: {
@@ -77,7 +77,7 @@ struct NeederButton: View {
 }
 
 struct DoItButton: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     
     var body: some View {
@@ -113,7 +113,7 @@ struct DoItButton: View {
 }
 
 struct CantDoItButton: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         HStack{
@@ -144,7 +144,7 @@ struct CantDoItButton: View {
 }
 
 struct DontNeedAnymoreButton: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         HStack{
@@ -176,7 +176,7 @@ struct DontNeedAnymoreButton: View {
 
 
 struct AddNeedButton: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         HStack{

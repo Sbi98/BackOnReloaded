@@ -12,7 +12,7 @@ import MapKit
 
 struct NeedView: View {
     @ObservedObject var need: Commitment
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
 
     var body: some View {
         Button(action: {
@@ -43,17 +43,12 @@ struct NeedView: View {
         .background(Color.primary.colorInvert())
         .cornerRadius(10)
         .shadow(radius: 10)
-        .onAppear(perform: {
-            if self.shared.locationManager.lastLocation != nil {
-                self.need.requestETA(source: self.shared.locationManager.lastLocation!)
-            }
-        })
     }
 }
 
 
 struct NeedsRow: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
 
     var body: some View {
         VStack (alignment: .leading) {
@@ -91,7 +86,7 @@ struct NeedsRow: View {
 }
 
 struct NeedsListView: View {
-    @EnvironmentObject var shared: Shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack (alignment: .leading, spacing: 10){

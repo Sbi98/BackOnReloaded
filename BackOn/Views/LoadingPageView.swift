@@ -10,7 +10,7 @@ import SwiftUI
 import GoogleSignIn
 
 struct LoadingPageView: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     
     var body: some View {

@@ -4,10 +4,11 @@ import MapKit
 import SwiftUI
 
 
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    var showAlert = true
+    var showLocationAlert = true
     var lastLocation: CLLocation?
+    @Published var showCallout = false
     
     override init() {
         super.init()
@@ -23,9 +24,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .authorizedAlways, .authorizedWhenInUse, .notDetermined:
-            showAlert = false
+            showLocationAlert = false
         default:
-            showAlert = true
+            showLocationAlert = true
         }
     }
 

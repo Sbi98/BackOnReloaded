@@ -9,6 +9,7 @@
 import Foundation
 import CoreLocation
 import MapKit
+import SwiftUI
 
 class Shared: ObservableObject {
     @Published var loading: Bool = false {
@@ -32,15 +33,14 @@ class Shared: ObservableObject {
     @Published var previousView = "HomeView"
     @Published var authentication = false
     @Published var viewToShow = "HomeView"
-    @Published var locationManager = LocationManager()
     @Published var selectedCommitment = Commitment()
     @Published var commitmentSet: [Int:Commitment] = [:]
     @Published var discoverSet: [Int:Commitment] = [:]
     @Published var needSet: [Int:Commitment] = [:]
-    @Published var helperMode = false
+    @Published var helperMode = true
     @Published var addressText = "Click to insert the address"
     func textAddress(){
-            CLGeocoder().reverseGeocodeLocation(locationManager.lastLocation!, completionHandler: {(placemarks, error) in
+            CLGeocoder().reverseGeocodeLocation((UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation!, completionHandler: {(placemarks, error) in
                 if let e = error {
                     print("Reverse geocoder failed with error: " + e.localizedDescription)
                     return

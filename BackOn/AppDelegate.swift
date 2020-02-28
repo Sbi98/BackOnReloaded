@@ -10,12 +10,15 @@ import UIKit
 import CoreData
 import GoogleSignIn
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     let shared = Shared()
     let dbController: DatabaseController
+    let mapController: MapController
     
     override init() {
+        mapController = MapController()
         dbController = DatabaseController(shared: self.shared)
         super.init()
     }

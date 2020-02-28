@@ -11,7 +11,7 @@ import CoreLocation
 import SwiftUI
 
 class DatabaseController {
-    let serverIPandPort = "95.245.183.186:8180"
+    let serverIPandPort = "82.53.81.116:8180"
     let shared: Shared
 //    let coreDataController = (UIApplication.shared.delegate as! AppDelegate)
     

@@ -10,14 +10,15 @@ import SwiftUI
 import MapKit
 
 struct DiscoverDetailedView: View {
-    @EnvironmentObject var shared: Shared
-    @ObservedObject var selectedCommitment: Commitment
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
+    var selectedCommitment: Commitment
     
     var body: some View {
         VStack {
             VStack {
                 ZStack {
-                    MapViewDiscoverDetailed(key: selectedCommitment.ID)
+                    MapView(selectedCommitment: selectedCommitment)
                         .statusBar(hidden: true)
                         .edgesIgnoringSafeArea(.all)
                         .frame(height: 515)
@@ -28,7 +29,7 @@ struct DiscoverDetailedView: View {
                     Spacer()
                     Button(action: {
                         let request = MKDirections.Request()
-                        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.shared.locationManager.lastLocation!.coordinate))
+                        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapController.lastLocation!.coordinate))
                         let destination = MKMapItem(placemark: MKPlacemark(coordinate: self.selectedCommitment.position.coordinate))
                         destination.name = "\(self.selectedCommitment.userInfo.name)'s request: \(self.selectedCommitment.title)"
                         request.destination = destination
@@ -39,7 +40,7 @@ struct DiscoverDetailedView: View {
             }
             VStack (alignment: .leading, spacing: 10){
                 // UserPreview(user: selectedCommitment.userInfo, description: selectedCommitment.etaText, whiteText: shared.darkMode)
-                UserPreview(user: selectedCommitment.userInfo, description: shared.locationManager.lastLocation != nil ? selectedCommitment.etaText : "Location services disabled", whiteText: shared.darkMode)                          
+                UserPreview(user: selectedCommitment.userInfo, description: mapController.lastLocation != nil ? selectedCommitment.etaText : "Location services disabled", whiteText: shared.darkMode)
                     .offset(x: 0, y: -10)
                 Text(selectedCommitment.title)
                     .font(.headline)
@@ -53,8 +54,8 @@ struct DiscoverDetailedView: View {
                 DoItButton()
             }.padding(.horizontal)
         }.onAppear {
-            if self.shared.locationManager.lastLocation != nil {
-                self.selectedCommitment.requestETA(source: self.shared.locationManager.lastLocation!)
+            if self.mapController.lastLocation != nil {
+                self.selectedCommitment.requestETA(source: self.mapController.lastLocation!)
             }
         }
     }

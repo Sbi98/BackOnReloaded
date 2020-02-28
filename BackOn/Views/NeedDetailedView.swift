@@ -10,14 +10,15 @@ import SwiftUI
 import MapKit
 
 struct NeedDetailedView: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     @ObservedObject var selectedCommitment: Commitment
     
     var body: some View {
         VStack {
             VStack {
                 ZStack {
-                    MapViewCommitmentDetailed(key: selectedCommitment.ID)
+                    MapView(selectedCommitment: selectedCommitment)
                         .statusBar(hidden: true)
                         .edgesIgnoringSafeArea(.all)
                         .frame(height: 515)
@@ -29,7 +30,7 @@ struct NeedDetailedView: View {
                     Spacer()
                     Button(action: {
                         let request = MKDirections.Request()
-                        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.shared.locationManager.lastLocation!.coordinate))
+                        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapController.lastLocation!.coordinate))
                         let destination = MKMapItem(placemark: MKPlacemark(coordinate: self.selectedCommitment.position.coordinate))
                         destination.name = "\(self.selectedCommitment.userInfo.name)'s request: \(self.selectedCommitment.title)"
                         request.destination = destination
@@ -40,7 +41,7 @@ struct NeedDetailedView: View {
             }
             VStack (alignment: .leading, spacing: 10){
 //                UserPreview(user: selectedCommitment.userInfo, description: selectedCommitment.etaText, whiteText: shared.darkMode)
-                UserPreview(user: selectedCommitment.userInfo, description: shared.locationManager.lastLocation != nil ? selectedCommitment.etaText : "Location services disabled" , whiteText: shared.darkMode)
+                UserPreview(user: selectedCommitment.userInfo, whiteText: shared.darkMode)
                     .offset(x: 0, y: -10)
                 Text(selectedCommitment.title)
                     .font(.headline)
@@ -53,10 +54,6 @@ struct NeedDetailedView: View {
                 Spacer()
                 DontNeedAnymoreButton()
             }.padding()
-        }.onAppear {
-            if self.shared.locationManager.lastLocation != nil {
-                self.selectedCommitment.requestETA(source: self.shared.locationManager.lastLocation!)
-            }
         }
     }
 }

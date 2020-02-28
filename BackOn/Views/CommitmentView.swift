@@ -10,13 +10,12 @@ import SwiftUI
 import MapKit
 
 struct CommitmentView: View {
-    @EnvironmentObject var shared: Shared
-    
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var commitment: Commitment
     
     var body: some View {
         VStack {
-            MapViewCommitment(key: commitment.ID)
+            MapView(selectedCommitment: commitment)
                 .frame(height: 250)
             Button(action: {
                 withAnimation {
@@ -46,7 +45,7 @@ struct CommitmentView: View {
 }
 
 struct CommitmentRow: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack (alignment: .leading){
@@ -80,7 +79,7 @@ struct CommitmentRow: View {
 
 
 struct CommitmentsListView: View {
-    @EnvironmentObject var shared: Shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack (alignment: .leading, spacing: 10){

@@ -48,8 +48,5 @@ struct Avatar: View {
             .overlay(Circle().stroke(Color.white, lineWidth: 2))
             .shadow(radius: 7)
         }
-        
-
     }
-    
 }

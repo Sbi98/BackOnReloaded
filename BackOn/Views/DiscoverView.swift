@@ -12,7 +12,8 @@ import MapKit
 
 struct DiscoverView: View {
     @ObservedObject var commitment: Commitment
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     
     var body: some View {
         Button(action: {
@@ -22,7 +23,7 @@ struct DiscoverView: View {
             }
         }) {
             VStack (alignment: .leading, spacing: 5){
-                UserPreview(user: commitment.userInfo, description: shared.locationManager.lastLocation != nil ? commitment.etaText : "Location services disabled", whiteText: shared.darkMode)
+                UserPreview(user: commitment.userInfo, description: mapController.lastLocation != nil ? commitment.etaText : "Location services disabled", whiteText: shared.darkMode)
                 Text(commitment.title)
                     .font(.headline)
                     .fontWeight(.regular)
@@ -44,8 +45,8 @@ struct DiscoverView: View {
         .cornerRadius(10)
         .shadow(radius: 10)
         .onAppear(perform: {
-            if self.shared.locationManager.lastLocation != nil {
-                self.commitment.requestETA(source: self.shared.locationManager.lastLocation!)
+            if self.mapController.lastLocation != nil {
+                self.commitment.requestETA(source: self.mapController.lastLocation!)
             }
         })
     }
@@ -53,7 +54,7 @@ struct DiscoverView: View {
 
 
 struct DiscoverRow: View {
-    @EnvironmentObject var shared: Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -92,8 +93,14 @@ struct DiscoverRow: View {
 
 
 struct FullDiscoverView: View {
-    @EnvironmentObject var shared: Shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     @State private var selectedView = 0
+    var map: MapView
+    init() {
+        map = MapView()
+    }
+     
     var body: some View {
         VStack (alignment: .leading, spacing: 10){
             Button(action: {
@@ -110,7 +117,7 @@ struct FullDiscoverView: View {
                     }.padding([.top,.horizontal])
             }
             
-            Picker(selection: $selectedView, label: Text("What is your favorite color?")) {
+            Picker(selection: $selectedView, label: Text("Select")) {
                 Text("List").tag(0)
                 Text("Map").tag(1)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
@@ -122,7 +129,7 @@ struct FullDiscoverView: View {
                             DiscoverDetailedView.show()
                         }) {
                             HStack {
-                                UserPreview(user: currentDiscover.userInfo, description: "\(currentDiscover.title)\nCasa", whiteText: self.shared.darkMode)
+                                UserPreview(user: currentDiscover.userInfo, description: "\(currentDiscover.title)", whiteText: self.shared.darkMode)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.headline)
@@ -134,12 +141,16 @@ struct FullDiscoverView: View {
                 }
             }
             else{
-                MapViewDiscover().cornerRadius(20)
+                map.cornerRadius(20)
             }
+        }
+        .sheet(isPresented: self.$mapController.showCallout){
+            DiscoverDetailedView(selectedCommitment: self.shared.selectedCommitment)
         }
         .padding(.top, 40)
         .background(Color("background"))
         .edgesIgnoringSafeArea(.all)
+
     }
 }
 

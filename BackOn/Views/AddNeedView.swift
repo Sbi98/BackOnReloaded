@@ -4,7 +4,8 @@ import MapKit
 
 struct AddNeedView: View {
     
-    @EnvironmentObject var shared : Shared
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     @ObservedObject var datePickerData = DatePickerData()
     @ObservedObject var titlePickerData = TitlePickerData()
     
@@ -95,7 +96,7 @@ struct AddNeedView: View {
                     print("Add need!")
                     //                IMPORTANTE SALVA NEED E INVIALO AL SERVER
                     NeederHomeView.show()
-                    self.dbController.insertCommit(title: self.titlePickerData.titles[self.titlePickerData.titlePickerValue], description: self.needDescription, date: self.datePickerData.selectedDate, latitude: self.shared.locationManager.lastLocation!.coordinate.latitude, longitude: self.shared.locationManager.lastLocation!.coordinate.longitude)
+                    self.dbController.insertCommit(title: self.titlePickerData.titles[self.titlePickerData.titlePickerValue], description: self.needDescription, date: self.datePickerData.selectedDate, latitude: self.mapController.lastLocation!.coordinate.latitude, longitude: self.mapController.lastLocation!.coordinate.longitude)
                     self.dbController.getCommitByUser()
                 }) {
                     HStack{

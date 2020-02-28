@@ -11,7 +11,7 @@ import GoogleSignIn
 import AuthenticationServices
 
 struct LoginPageView: View {
-    @EnvironmentObject var shared: Shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack {
