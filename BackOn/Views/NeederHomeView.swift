@@ -31,6 +31,7 @@ struct NeederHomeView: View {
                         .foregroundColor(.black)
                 }
                 NeedsRow()
+                searchLocation()
                 Spacer()
                 AddNeedButton()
                 Spacer()

@@ -25,15 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        
-        if let error = error {
-            if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
-                print("The user has not signed in before or they have since signed out.")
-            } else {
-                print("Sign error: \(error.localizedDescription)")
-            }
-            return
-        }
+        guard error != nil else {print("Sign error");return}
         
         // Perform any operations on signed in user here.
         //let userId = user.userID                  // For client-side use only!
@@ -43,15 +35,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         let familyName = user.profile.familyName
         let email = user.profile.email
         let image = user.profile.imageURL(withDimension: 100)
-        
         let myUser: UserInfo = UserInfo(photo: image!, name: givenName!, surname: familyName!, email: email!)
         
-//        shared.image = image!
-        
-//        LO AGGIUNGO ANCHE A CORE DATA PER DELLE RICHIESTE SENZA INTERNET
+//        LO AGGIUNGO A CORE DATA
         CoreDataController.shared.addUser(user: myUser)
-        
-//        FUNZIONE CHE REGISTRA L'UTENTE NEL DATABASE LOCALE (IMPORTANTE AGGIORNARE L'INDIRIZZO IP)
+//        REGISTRA L'UTENTE NEL DATABASE LOCALE
         dbController.registerUser(user: myUser)
         
         LoadingPageView.show()
@@ -61,13 +49,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!,
               withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
-        // ...
-        
         print("*** User disconnected ***\n")
         let coreDatacontroller = CoreDataController()
         coreDatacontroller.deleteUser(user: coreDatacontroller.getLoggedUser().1)
         LoginPageView.show()
-        shared.authentication = false
     }
     
     

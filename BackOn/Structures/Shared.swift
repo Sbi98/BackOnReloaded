@@ -21,9 +21,8 @@ class Shared: ObservableObject {
                     commitmentSet = [:]
                     (UIApplication.shared.delegate as! AppDelegate).dbController.loadCommitByOther()
                     (UIApplication.shared.delegate as! AppDelegate).dbController.loadMyCommitments()
-                }
-                else{
-                    needSet.removeAll(keepingCapacity: false)
+                } else {
+                    needSet = [:]
                     (UIApplication.shared.delegate as! AppDelegate).dbController.getCommitByUser()
                 }
                 self.loading = false
@@ -31,13 +30,12 @@ class Shared: ObservableObject {
         }
     }
     @Published var previousView = "HomeView"
-    @Published var authentication = false
     @Published var viewToShow = "HomeView"
     @Published var selectedCommitment = Commitment()
     @Published var commitmentSet: [Int:Commitment] = [:]
     @Published var discoverSet: [Int:Commitment] = [:]
     @Published var needSet: [Int:Commitment] = [:]
-    @Published var helperMode = true
+    @Published var helperMode = false
 
     
     private static var formatter = DateFormatter()
@@ -48,7 +46,6 @@ class Shared: ObservableObject {
         }
     }
     @Published var neederInfo: UserInfo?
-//    @Published var image: URL? = URL(string: "")
     
     var darkMode: Bool{
         get{
@@ -66,35 +63,5 @@ class Shared: ObservableObject {
     
     func discoverArray() -> [Commitment] {
         return Array(discoverSet.values)
-    }
-    
-    private func address(_ p: CLPlacemark) -> String {
-        var ret = ""
-        if let n = p.name, let t = p.thoroughfare, n.contains(t) {
-            ret = "\(n), "
-        } else {
-            if let n = p.name {
-                ret = "\(n), "
-            }
-            if let t = p.thoroughfare {
-                if let st = p.subThoroughfare {
-                    ret = "\(ret)\(st) "
-                }
-                ret = "\(ret)\(t), "
-            }
-        }
-        if let c = p.country {
-            if let aa = p.administrativeArea {
-                if let l = p.locality {
-                    ret = "\(ret)\(l) "
-                }
-                ret = "\(ret)\(aa), "
-            }
-            ret = "\(ret)\(c)"
-        }
-        if let pc = p.postalCode {
-            ret = "\(ret) - \(pc)"
-        }
-        return ret
     }
 }

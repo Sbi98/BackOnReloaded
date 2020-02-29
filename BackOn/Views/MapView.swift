@@ -69,7 +69,6 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard parent.shared.viewToShow == "FullDiscoverView" else {return}
             let commitmentAnnotation = view.annotation! as! CommitmentAnnotation
-            parent.selectedCommitment = commitmentAnnotation.commitment
             view.isSelected = false
             parent.shared.selectedCommitment = commitmentAnnotation.commitment
             parent.mapController.showCallout = true
@@ -84,6 +83,10 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = context.coordinator
         mapView.showsCompass = false
         mapView.showsUserLocation = true;
+        //let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(addAnnotationOnLongPress(gesture:)))
+        //longPressGesture.minimumPressDuration = 1.0
+        //mapView.addGestureRecognizer(...) quello che serve per riconoscere una gesture
+        // vedi https://stackoverflow.com/questions/40844336/create-long-press-gesture-recognizer-with-annotation-pin
         
         switch shared.viewToShow {
         case "FullDiscoverView":
@@ -140,36 +143,6 @@ struct MapView: UIViewRepresentable {
             mapView.addOverlay(fastestRoute.polyline, level: .aboveRoads)
         }
     }
-    
-    private func address(_ p: CLPlacemark) -> String {
-           var ret = ""
-           if let n = p.name, let t = p.thoroughfare, n.contains(t) {
-               ret = "\(n), "
-           } else {
-               if let n = p.name {
-                   ret = "\(n), "
-               }
-               if let t = p.thoroughfare {
-                   if let st = p.subThoroughfare {
-                       ret = "\(ret)\(st) "
-                   }
-                   ret = "\(ret)\(t), "
-               }
-           }
-           if let c = p.country {
-               if let aa = p.administrativeArea {
-                   if let l = p.locality {
-                       ret = "\(ret)\(l) "
-                   }
-                   ret = "\(ret)\(aa), "
-               }
-               ret = "\(ret)\(c)"
-           }
-           if let pc = p.postalCode {
-               ret = "\(ret) - \(pc)"
-           }
-           return ret
-       }
 }
 
 

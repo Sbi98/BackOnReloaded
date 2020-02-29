@@ -7,6 +7,7 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     var showLocationAlert = true
     var lastLocation: CLLocation?
+    var matchingItems: [MKMapItem] = []
     @Published var showCallout = false
     
     override init() {
@@ -33,6 +34,7 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         self.lastLocation = location
     }
+    
     
     func locationAsAddress(location: CLLocation = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation!, completion: @escaping (String)-> Void) {
         CLGeocoder().reverseGeocodeLocation(location) {(placemarks, error) in
