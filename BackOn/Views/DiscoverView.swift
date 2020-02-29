@@ -144,9 +144,9 @@ struct FullDiscoverView: View {
                 map.cornerRadius(20)
             }
         }
-        .sheet(isPresented: self.$mapController.showCallout){
-            DiscoverDetailedView(selectedCommitment: self.shared.selectedCommitment)
-        }
+//        .sheet(isPresented: self.$mapController.showCallout){
+//            DiscoverDetailedView(selectedCommitment: self.shared.selectedCommitment)
+//        }
         .padding(.top, 40)
         .background(Color("background"))
         .edgesIgnoringSafeArea(.all)

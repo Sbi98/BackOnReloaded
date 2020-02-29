@@ -51,11 +51,10 @@ struct MapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             let view: MKMarkerAnnotationView
-            if !annotation.isKind(of: MKUserLocation.self) {
-                view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
-            } else {
-                return nil
-            }
+            guard !annotation.isKind(of: MKUserLocation.self) else {return nil}
+
+            
+            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
             view.canShowCallout = false
             view.displayPriority = .required
             if parent.shared.viewToShow == "HomeView"{
@@ -68,11 +67,14 @@ struct MapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard parent.shared.viewToShow == "FullDiscoverView" else {return}
+            guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
             let commitmentAnnotation = view.annotation! as! CommitmentAnnotation
             parent.selectedCommitment = commitmentAnnotation.commitment
             view.isSelected = false
             parent.shared.selectedCommitment = commitmentAnnotation.commitment
             parent.mapController.showCallout = true
+            parent.shared.showDetailed = true
+            print(parent.shared.viewToShow)
         }
         
     }
@@ -105,8 +107,11 @@ struct MapView: UIViewRepresentable {
                 mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedCommitment!.position.coordinate.latitude + 0.00035, longitude: selectedCommitment!.position.coordinate.longitude) , span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
                 mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: ""))
             return mapView
+        case "CommitmentDetailedView", "DiscoverDetailedView":
+            addRoute(mapView: mapView)
         default:
-                addRoute(mapView: mapView)
+            print("Ciao")
+            //Ho aggiunto questo perché crashava prima
         }
         mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: title!))
         mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)

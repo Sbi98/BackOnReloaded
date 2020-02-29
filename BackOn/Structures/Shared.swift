@@ -38,6 +38,7 @@ class Shared: ObservableObject {
     @Published var discoverSet: [Int:Commitment] = [:]
     @Published var needSet: [Int:Commitment] = [:]
     @Published var helperMode = true
+    @Published var showDetailed = false
 
     
     private static var formatter = DateFormatter()

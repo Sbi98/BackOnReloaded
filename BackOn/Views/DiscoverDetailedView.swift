@@ -17,6 +17,7 @@ struct DiscoverDetailedView: View {
     var body: some View {
         VStack {
             VStack {
+                if shared.viewToShow != "FullDiscoverView"{
                 ZStack {
                     MapView(selectedCommitment: selectedCommitment)
                         .statusBar(hidden: true)
@@ -24,6 +25,7 @@ struct DiscoverDetailedView: View {
                         .frame(height: 515)
                     CloseButton()
                         .offset(x:173, y:-265)
+                    }
                 }
                 HStack {
                     Spacer()
