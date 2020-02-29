@@ -238,3 +238,36 @@ struct AddNeedButton: View {
         }
     }
 }
+
+
+struct ElementPickerGUI: View {
+    var pickerElements: [String]
+    @Binding var selectedValue: Int
+    
+    var body: some View {
+        Picker("Select your need", selection: self.$selectedValue) {
+            ForEach(0 ..< self.pickerElements.count) {
+                Text(self.pickerElements[$0])
+                    .font(.headline)
+                    .fontWeight(.medium)
+            }
+        }.labelsHidden()
+            .frame(width: UIScreen.main.bounds.width, height: 250)
+            .background(Color.primary.colorInvert())
+    }
+}
+
+struct DatePickerGUI: View {
+    @Binding var selectedDate: Date
+    
+    var body: some View {
+        VStack {
+            DatePicker(selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
+                Text("Select a date")
+            }.labelsHidden()
+                .frame(width: UIScreen.main.bounds.width, height: 250)
+                .background(Color.primary.colorInvert())
+        }.frame(width: UIScreen.main.bounds.width, height: 250)
+            .background(Color.primary.colorInvert())
+    }
+}

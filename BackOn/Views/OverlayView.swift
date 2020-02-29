@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUI
+import MapKit
 
 struct myOverlay: View {
     @Binding var isPresented: Bool
@@ -34,6 +35,42 @@ struct myOverlay: View {
             } else {
                 EmptyView()
                     .animation(.easeInOut)
+            }
+        }
+    }
+}
+
+struct searchLocation: View {
+    @State var toSearch: String = ""
+    @State var matchingItems: [MKLocalSearchCompletion] = []
+    
+    class LocationController: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
+        @Published var searchResults = [MKLocalSearchCompletion]()
+        func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+            searchResults = completer.results
+            print(completer.results, "\n--------------------------\n")
+        }
+    }
+    @ObservedObject var locationController = LocationController()
+    var completer = MKLocalSearchCompleter()
+    
+    init() {
+        completer.delegate = locationController
+        completer.queryFragment = toSearch
+        completer.resultTypes = .address
+    }
+    
+    func onEditingChanged(textChanged: Bool) {
+        completer.queryFragment = toSearch
+    }
+    
+    var body: some View {
+        VStack {
+            TextField("Write your location", text: $toSearch, onEditingChanged: onEditingChanged(textChanged:), onCommit: {})
+            VStack {
+                ForEach(locationController.searchResults, id: \.title) { currentItem in
+                    Text("\(currentItem.title) (\(currentItem.subtitle))")
+                }
             }
         }
     }
