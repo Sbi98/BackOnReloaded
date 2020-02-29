@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        guard error != nil else {print("Sign error");return}
+        guard error == nil else {print("Sign error");return}
         
         // Perform any operations on signed in user here.
         //let userId = user.userID                  // For client-side use only!
