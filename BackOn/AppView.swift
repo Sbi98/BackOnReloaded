@@ -22,9 +22,11 @@ struct AppView: View {
             else{
                 ContentView()
                 }
-        }.overlay(DiscoverSheetView(isOpen: $shared.showDetailed, maxHeight: CGFloat(UIScreen.main.bounds.height - 10), content: {
-            DiscoverDetailedView(selectedCommitment: shared.selectedCommitment)
-        }).edgesIgnoringSafeArea(.bottom))
+        }.overlay( myOverlay(isPresented: .constant(shared.viewToShow == "FullDiscoverView"), toOverlay: AnyView(DiscoverSheetView(isOpen: $shared.showDetailed, content: {
+        DiscoverDetailedView(selectedCommitment: shared.selectedCommitment)}
+        ))).edgesIgnoringSafeArea(.bottom)
+            
+        )
     }
 }
 

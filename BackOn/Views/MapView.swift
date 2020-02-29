@@ -11,7 +11,7 @@ import SwiftUI
 import MapKit
 
 struct MapView: UIViewRepresentable {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     var selectedCommitment: Commitment?
     
@@ -71,7 +71,8 @@ struct MapView: UIViewRepresentable {
             let commitmentAnnotation = view.annotation! as! CommitmentAnnotation
             view.isSelected = false
             parent.shared.selectedCommitment = commitmentAnnotation.commitment
-            parent.mapController.showCallout = true
+//            parent.mapController.showCallout = true
+//            parent.shared.showOverlay = true
             parent.shared.showDetailed = true
             print(parent.shared.viewToShow)
         }

@@ -46,9 +46,9 @@ struct DiscoverSheetView<Content: View>: View {
         }
     }
     
-    init(isOpen: Binding<Bool>, maxHeight: CGFloat, @ViewBuilder content: () -> Content) {
-        self.minHeight = -40
-        self.maxHeight = UIScreen.main.bounds.height - 300
+    init(isOpen: Binding<Bool>, @ViewBuilder content: () -> Content) {
+        self.minHeight = -40 //invece di mostrarla chiusa, la spinge fuori dallo schermo
+        self.maxHeight = UIScreen.main.bounds.height - 300 //valore da cambiare
         self.content = content()
         self._isOpen = isOpen
     }
@@ -82,9 +82,10 @@ struct DiscoverSheetView<Content: View>: View {
     }
 }
 
+
 struct DiscoverSheetView_Previews: PreviewProvider {
     static var previews: some View {
-        DiscoverSheetView(isOpen: .constant(false), maxHeight: 600) {
+        DiscoverSheetView(isOpen: .constant(false)) {
             Rectangle().fill(Color.red)
         }.edgesIgnoringSafeArea(.all)
     }

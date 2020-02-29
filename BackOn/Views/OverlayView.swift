@@ -12,11 +12,15 @@ import MapKit
 
 struct myOverlay: View {
     @Binding var isPresented: Bool
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let toOverlay: AnyView
- 
+    
     var body: some View {
         VStack {
-            if self.isPresented {
+            if self.isPresented{
+                if shared.viewToShow == "FullDiscoverView"{
+                    toOverlay
+                } else {
                     Color
                         .black
                         .opacity(0.7)
@@ -25,13 +29,14 @@ struct myOverlay: View {
                             withAnimation() {
                                 self.isPresented = false
                             }
-                        }
-                        .overlay(
-                            toOverlay,
-                            alignment: .bottom
-                        )
-                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                .animation(.easeInOut)
+                    }
+                    .overlay(
+                        toOverlay,
+                        alignment: .bottom
+                    )
+                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                        .animation(.easeInOut)
+                }
             } else {
                 EmptyView()
                     .animation(.easeInOut)
