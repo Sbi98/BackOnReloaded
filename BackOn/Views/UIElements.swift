@@ -62,13 +62,13 @@ struct CloseButton: View {
             ZStack{
                 Image(systemName: "circle.fill")
                     .font(.title)
-                    .foregroundColor(Color(internalColor)).scaleEffect(0.8)
+                    .foregroundColor(Color(internalColor)).scaleEffect(1.15)
                 Image(systemName: "xmark.circle.fill")
                     .font(.largeTitle)
                     .foregroundColor(Color(externalColor))
             }
             
-        }
+        }.buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -277,7 +277,7 @@ struct GenericButton: View {
     
     
     var body: some View{
-        Button(action: insertFunction, label:{
+        Button(action: insertFunction){
             VStack{
                 topText.foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 if bottomText != nil{
@@ -289,7 +289,7 @@ struct GenericButton: View {
                    RoundedRectangle(cornerRadius: 10)
                     .stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1)
                 )
-        })
+        }.buttonStyle(PlainButtonStyle())
     }
 }
 
