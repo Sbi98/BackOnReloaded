@@ -108,9 +108,6 @@ struct FullDiscoverView: View {
                     HomeView.show()
                 }}){
                     HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.largeTitle)
-                        
                         Text("Around you")
                             .fontWeight(.bold)
                             .font(.title).foregroundColor(.primary)
@@ -118,10 +115,10 @@ struct FullDiscoverView: View {
             }
             
             Picker(selection: $selectedView, label: Text("Select")) {
-                Text("List").tag(0)
-                Text("Map").tag(1)
+                Text("List").tag(1)
+                Text("Map").tag(0)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
-            if selectedView == 0 {RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
+            if selectedView == 1 {RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
                 VStack (alignment: .center, spacing: 25){
                     ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
                         Button(action: {

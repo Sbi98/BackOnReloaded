@@ -28,15 +28,7 @@ struct CommitmentDetailedView: View {
                 HStack {
                     Text(self.shared.dateFormatter.string(from: self.selectedCommitment.date)).foregroundColor(Color.secondary)
                     Spacer()
-                    Button(action: {
-                        let request = MKDirections.Request()
-                        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.mapController.lastLocation!.coordinate))
-                        let destination = MKMapItem(placemark: MKPlacemark(coordinate: self.selectedCommitment.position.coordinate))
-                        destination.name = "\(self.selectedCommitment.userInfo.name)'s request: \(self.selectedCommitment.title)"
-                        request.destination = destination
-                        request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
-                        }, label: {
-                            Text("Open in Maps").fontWeight(.light)})
+                    OpenInMapsButton(isFilled: true, selectedCommitment: selectedCommitment)
                 }.padding(.horizontal)
             }
             VStack (alignment: .leading, spacing: 10){
@@ -61,4 +53,3 @@ struct CommitmentDetailedView: View {
         }
     }
 }
-
