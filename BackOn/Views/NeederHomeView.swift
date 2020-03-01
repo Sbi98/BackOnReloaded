@@ -12,7 +12,6 @@ import GoogleSignIn
 
 struct NeederHomeView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
 
     var body: some View {
         RefreshableScrollView(height: 100, refreshing: self.$shared.loading){
@@ -31,7 +30,6 @@ struct NeederHomeView: View {
                         .foregroundColor(.black)
                 }
                 NeedsRow()
-                searchLocation()
                 Spacer()
                 AddNeedButton()
                 Spacer()

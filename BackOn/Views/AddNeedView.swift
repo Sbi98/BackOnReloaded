@@ -6,15 +6,30 @@ struct AddNeedView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
-    @ObservedObject var datePickerData = DatePickerData()
-    @ObservedObject var titlePickerData = TitlePickerData()
-    @State var toggleRepeat = false
-    @State var toggleVerified = false
-    @State var needDescription = ""
-    @ObservedObject var addressData = AddressData()
     
-    let formatter = DateFormatter()
-    var dateString: String?
+    var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
+    @State var showTitlePicker = false
+    @State var selectedTitle = "Click to select your need"
+    @State var titlePickerValue = -1 {
+        didSet {
+            selectedTitle = titles[titlePickerValue]
+        }
+    }
+    @State var needDescription = ""
+    @State var showDatePicker = false
+    @State var selectedDate = Date()
+    @State var toggleRepeat = false
+    @State var address = "Click to insert the location"
+    @State var showAddressCompleter = false
+    @State var toggleVerified = false
+    
+//    @State var toggleMyActualLocation = false {
+//        willSet {
+//            self.mapController.locationAsAddress() { result in
+//                self.address = result
+//            }
+//        }
+//    }
     
     var body: some View {
         Form {
@@ -30,10 +45,11 @@ struct AddNeedView: View {
                 HStack {
                     Text("Title: ")
                         .foregroundColor(Color(.systemBlue))
-                    Text(titlePickerData.titlePickerValue == -1 ? "Click to select your need" : titlePickerData.titles[self.titlePickerData.titlePickerValue])
+                    Text(titlePickerValue == -1 ? "Click to select your need" : selectedTitle)
                         .onTapGesture {
-                            withAnimation {self.titlePickerData.showTitlePicker.toggle()}
-                    }
+                            self.titlePickerValue = 0
+                            withAnimation{self.showTitlePicker.toggle()}
+                        }
                 }
                 HStack {
                     Text("Description: ")
@@ -45,10 +61,8 @@ struct AddNeedView: View {
                 HStack{
                     Text("Date: ")
                         .foregroundColor(Color(.systemBlue))
-                    Text("\(datePickerData.selectedDate, formatter: customDateFormat)")
-                        .onTapGesture {
-                            withAnimation {self.datePickerData.showDatePicker.toggle()}
-                    }
+                    Text("\(selectedDate, formatter: customDateFormat)")
+                        .onTapGesture{withAnimation{self.showDatePicker.toggle()}}
                 }
                 Toggle(isOn: $toggleRepeat) {
                     Text("Repeat each week at the same hour")
@@ -56,12 +70,8 @@ struct AddNeedView: View {
             }
             Section(header: Text("Location")) {
                 HStack{
-                    Text("Place: ")
-                        .foregroundColor(Color(.systemBlue))
-                    TextField("Insert your address", text: self.$addressData.address).offset(y: 1)
-                }
-                Toggle(isOn: $addressData.toggleMyActualLocation) {
-                    Text("Do you want to set the location where you are right now?")
+                    Text("Place: ").foregroundColor(Color(.systemBlue))
+                    Text(self.address).onTapGesture{self.showAddressCompleter = true}
                 }
             }
             Section(header: Text("Need informations")) {
@@ -73,8 +83,10 @@ struct AddNeedView: View {
                 HStack {
                     Spacer()
                     ConfirmAddNeedButton(){
-                        self.dbController.insertCommit(title: self.titlePickerData.titles[self.titlePickerData.titlePickerValue], description: self.needDescription, date: self.datePickerData.selectedDate, latitude: self.mapController.lastLocation!.coordinate.latitude, longitude: self.mapController.lastLocation!.coordinate.longitude)
-                        self.dbController.getCommitByUser()
+                        self.mapController.addressToCoordinates(address: self.address) { result in
+                            self.dbController.insertCommit(title: self.selectedTitle, description: self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude)
+                            self.dbController.getCommitByUser()
+                        }
                     }
                     Spacer()
                 }
@@ -82,33 +94,9 @@ struct AddNeedView: View {
         }
         .frame(width: UIScreen.main.bounds.width, alignment: .leading)
         .background(Color(.blue))
-        .overlay(myOverlay(isPresented: self.$titlePickerData.showTitlePicker, toOverlay: AnyView(ElementPickerGUI(pickerElements: self.titlePickerData.titles, selectedValue: self.$titlePickerData.titlePickerValue))))
-        .overlay(myOverlay(isPresented: self.$datePickerData.showDatePicker, toOverlay: AnyView(DatePickerGUI(selectedDate: self.$datePickerData.selectedDate))))
+        .overlay(myOverlay(isPresented: self.$showTitlePicker, toOverlay: AnyView(ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))))
+        .overlay(myOverlay(isPresented: self.$showDatePicker, toOverlay: AnyView(DatePickerGUI(selectedDate: self.$selectedDate))))
+        .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
     }
 }
 
-class TitlePickerData: ObservableObject {
-    var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
-    @Published var showTitlePicker = false
-    @Published var titlePickerValue = -1
-}
-
-class DatePickerData: ObservableObject {
-    @Published var showDatePicker = false
-    @Published var selectedDate = Date()
-}
-
-class AddressData: ObservableObject, CustomStringConvertible {
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
-    public var description: String {
-        return self.address
-    }
-    @Published var address = "Insert your address"
-    @Published var toggleMyActualLocation = false {
-        willSet {
-            self.mapController.locationAsAddress() { result in
-                self.address = result
-            }
-        }
-    }
-}

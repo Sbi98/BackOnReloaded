@@ -45,37 +45,73 @@ struct myOverlay: View {
     }
 }
 
-struct searchLocation: View {
-    @State var toSearch: String = ""
-    @State var matchingItems: [MKLocalSearchCompletion] = []
+struct SearchBar : UIViewRepresentable {
+    @Binding var text : String
     
-    class LocationController: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
-        @Published var searchResults = [MKLocalSearchCompletion]()
-        func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-            searchResults = completer.results
-            print(completer.results, "\n--------------------------\n")
+    class Coordinator : NSObject, UISearchBarDelegate {
+        @Binding var text : String
+        
+        init(_ text : Binding<String>) {
+            _text = text
+        }
+        
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            text = searchText
+        }
+        
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.endEditing(true)
         }
     }
-    @ObservedObject var locationController = LocationController()
-    var completer = MKLocalSearchCompleter()
     
-    init() {
-        completer.delegate = locationController
-        completer.queryFragment = toSearch
-        completer.resultTypes = .address
+    func makeCoordinator() -> Coordinator {
+        return Coordinator($text)
     }
     
-    func onEditingChanged(textChanged: Bool) {
-        completer.queryFragment = toSearch
+    func makeUIView(context: UIViewRepresentableContext<SearchBar>) -> UISearchBar {
+        let searchBar = UISearchBar(frame: .zero)
+        searchBar.delegate = context.coordinator
+        searchBar.searchBarStyle = .minimal
+        return searchBar
     }
+    
+    func updateUIView(_ uiView: UISearchBar, context: UIViewRepresentableContext<SearchBar>) {
+        uiView.text = text
+    }
+}
+
+struct searchLocation: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Binding var selection: String
+    @State var userLocationAddress: String = "Processing your current location..."
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
+    
+    class AddressCompleterHandler: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
+        @Published var completer = MKLocalSearchCompleter()
+        override init() {
+            super.init()
+            completer.delegate = self
+        }
+    }
+    @ObservedObject var addressCompleter = AddressCompleterHandler()
     
     var body: some View {
-        VStack {
-            TextField("Write your location", text: $toSearch, onEditingChanged: onEditingChanged(textChanged:), onCommit: {})
-            VStack {
-                ForEach(locationController.searchResults, id: \.title) { currentItem in
-                    Text("\(currentItem.title) (\(currentItem.subtitle))")
+        Form {
+            Section (header: SearchBar(text: $addressCompleter.completer.queryFragment)) {
+                Text(userLocationAddress).onTapGesture {
+                    self.selection = self.userLocationAddress
+                    self.presentationMode.wrappedValue.dismiss()
                 }
+                ForEach(addressCompleter.completer.results, id: \.hashValue) { currentItem in
+                    Text("\(currentItem.title) (\(currentItem.subtitle))").onTapGesture {
+                        self.selection = "\(currentItem.title) (\(currentItem.subtitle))"
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }.onAppear() {
+            self.mapController.coordinatesToAddress() { result in
+                self.userLocationAddress = result
             }
         }
     }
