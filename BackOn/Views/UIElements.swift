@@ -223,7 +223,6 @@ struct AddNeedButton: View {
                         .font(.title)
                     Image(systemName: "person.2")
                         .font(.title)
-                    
                 }
                 .padding(20)
                 .background(Color.blue)
@@ -251,9 +250,10 @@ struct ElementPickerGUI: View {
                     .font(.headline)
                     .fontWeight(.medium)
             }
-        }.labelsHidden()
-            .frame(width: UIScreen.main.bounds.width, height: 250)
-            .background(Color.primary.colorInvert())
+        }
+        .labelsHidden()
+        .frame(width: UIScreen.main.bounds.width, height: 250)
+        .background(Color.primary.colorInvert())
     }
 }
 

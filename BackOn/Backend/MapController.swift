@@ -3,7 +3,14 @@ import CoreLocation
 import MapKit
 import SwiftUI
 
+extension String {
+    var isBlank: Bool {
+        return allSatisfy({ $0.isWhitespace })
+    }
+}
+
 class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
+
     private let locationManager = CLLocationManager()
     var showLocationAlert = true
     var lastLocation: CLLocation?
@@ -36,39 +43,40 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     
-    func locationAsAddress(location: CLLocation = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation!, completion: @escaping (String)-> Void) {
+    func coordinatesToAddress(location: CLLocation = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation!, completion: @escaping (String)-> Void) {
         CLGeocoder().reverseGeocodeLocation(location) {(placemarks, error) in
-            guard error == nil && placemarks != nil else {print("Reverse geocoder failed"); return}
-            let p = placemarks![0]
-            completion("\(p.thoroughfare!), \(p.locality!), \(p.postalCode!), \(p.country!)")
+            guard error == nil, let p = placemarks?.first else {print("Reverse geocoder failed"); return}
+            completion(self.extractAddress(p))
         }
     }
     
-    private func extractAddress(_ p: CLPlacemark) -> String { //mai usata
-        var ret = ""
-        if let n = p.name, let t = p.thoroughfare, n.contains(t) {
-            ret = "\(n), "
-        } else {
-            if let n = p.name {
-                ret = "\(n), "
-            }
-            if let t = p.thoroughfare {
-                if let st = p.subThoroughfare {
-                    ret = "\(ret)\(st), "
-                }
-                ret = "\(ret)\(t), "
+    func addressToCoordinates(address: String, completion: @escaping (CLLocationCoordinate2D)-> Void) {
+        CLGeocoder().geocodeAddressString(address) {(placemarks, error) in
+            guard error == nil else {return}
+            if let placemark = placemarks?.first {
+                completion(placemark.location!.coordinate)
             }
         }
-        if let c = p.country {
-            if let l = p.locality {
-                ret = "\(ret)\(l), "
-                if let pc = p.postalCode {
-                    ret = "\(ret)\(pc), "
-                }
-            }
-            ret = "\(ret)\(c)"
+    }
+    
+    private func extractAddress(_ p: CLPlacemark) -> String {
+        var address = ""
+        if let streetInfo1 = p.thoroughfare {
+            address = "\(address)\(streetInfo1), "
         }
-        return ret
+        if let streetInfo2 = p.subThoroughfare {
+            address = "\(address)\(streetInfo2), "
+        }
+        if let locality = p.locality {
+            address = "\(address)\(locality), "
+        }
+        if let postalCode = p.postalCode {
+            address = "\(address)\(postalCode), "
+        }
+        if let country = p.country {
+            address = "\(address)\(country)"
+        }
+        return address
     }
     
 }
