@@ -67,7 +67,6 @@ struct CloseButton: View {
                     .font(.largeTitle)
                     .foregroundColor(Color(externalColor))
             }
-            
         }.buttonStyle(PlainButtonStyle())
     }
 }
@@ -105,10 +104,7 @@ struct ConfirmAddNeedButton: View {
             .background(Color.blue)
             .cornerRadius(40)
             .foregroundColor(.white)
-            .overlay(
-                RoundedRectangle(cornerRadius: 40)
-                    .stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue)
-            )
+            .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
         }
     }
 }
@@ -118,12 +114,15 @@ struct DoItButton: View {
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     
     var body: some View {
-            GenericButton(dimensions: defaultDimensions, isFilled: true, color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1), topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 15)), bottomText: nil) {
-                print("I'll do it")
-                    //                print("TEST: \(self.shared.selectedCommitment.userInfo.email!) and \(self.shared.selectedCommitment.ID)")
-                    let coreDataController = CoreDataController()
-                self.dbController.insertCommitment(userEmail: coreDataController.getLoggedUser().1.email!, commitId: self.shared.selectedCommitment.ID)
-                    //self.shared.loading = true
+        GenericButton(
+            isFilled: true,
+            color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
+            topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 15)),
+            bottomText: nil
+        ) {
+            let coreDataController = CoreDataController()
+            self.dbController.insertCommitment(userEmail: coreDataController.getLoggedUser().1.email!, commitId: self.shared.selectedCommitment.ID)
+            //self.shared.loading = true
         }
     }
 }
@@ -149,10 +148,7 @@ struct CantDoItButton: View {
                 .background(Color(.systemRed))
                 .cornerRadius(40)
                 .foregroundColor(.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 40)
-                        .stroke(Color(.systemRed), lineWidth: 0).foregroundColor(Color(.systemRed))
-                )
+                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color(.systemRed), lineWidth: 0).foregroundColor(Color(.systemRed)))
             }.buttonStyle(PlainButtonStyle())
             Spacer()
         }
@@ -180,10 +176,7 @@ struct DontNeedAnymoreButton: View {
                 .background(Color(.systemRed))
                 .cornerRadius(40)
                 .foregroundColor(.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 40)
-                        .stroke(Color(.systemRed), lineWidth: 0).foregroundColor(Color(.systemRed))
-                )
+                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color(.systemRed), lineWidth: 0).foregroundColor(Color(.systemRed)))
             }.buttonStyle(PlainButtonStyle())
             Spacer()
         }
@@ -212,9 +205,7 @@ struct AddNeedButton: View {
                 .background(Color.blue)
                 .cornerRadius(40)
                 .foregroundColor(.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 40)
-                        .stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue)
+                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue)
                 )
             }
             Spacer()
@@ -248,9 +239,10 @@ struct DatePickerGUI: View {
         VStack {
             DatePicker(selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
                 Text("Select a date")
-            }.labelsHidden()
-                .frame(width: UIScreen.main.bounds.width, height: 250)
-                .background(Color.primary.colorInvert())
+            }
+            .labelsHidden()
+            .frame(width: UIScreen.main.bounds.width, height: 250)
+            .background(Color.primary.colorInvert())
         }.frame(width: UIScreen.main.bounds.width, height: 250)
             .background(Color.primary.colorInvert())
     }
@@ -261,34 +253,38 @@ struct OpenInMapsButton: View {
     var isFilled: Bool
     let selectedCommitment: Commitment
     var body: some View {
-        GenericButton(dimensions: defaultDimensions, isFilled: isFilled, color:#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1), topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 15)), bottomText: selectedCommitment.etaText != "Calculating..." ? Text(selectedCommitment.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil) {
+        GenericButton(
+            dimensions: defaultDimensions,
+            isFilled: isFilled,
+            color:#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
+            topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 15)),
+            bottomText: selectedCommitment.etaText != "Calculating..." ? Text(selectedCommitment.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
+        ){
             self.mapController.openInMaps(commitment: self.selectedCommitment)
         }
     }
 }
 
 struct GenericButton: View {
-    var dimensions: (width: CGFloat, height: CGFloat)
+    var dimensions: (width: CGFloat, height: CGFloat) = defaultDimensions
     var isFilled: Bool
     var color: UIColor
     var topText: Text
     var bottomText: Text?
     var insertFunction: () -> Void
     
-    
     var body: some View{
         Button(action: insertFunction){
             VStack{
                 topText.foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
-                if bottomText != nil{
+                if bottomText != nil {
                     bottomText!.foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
-            }.padding().frame(width: dimensions.width, height: dimensions.height)
-                .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
-                .overlay(
-                   RoundedRectangle(cornerRadius: 10)
-                    .stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1)
-                )
+            }
+            .padding()
+            .frame(width: dimensions.width, height: dimensions.height)
+            .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
     }
 }

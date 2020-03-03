@@ -17,9 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     let dbController: DatabaseController
     let mapController: MapController
     
+    
     override init() {
         mapController = MapController()
         dbController = DatabaseController(shared: self.shared)
+        CalendarController.initController()
         super.init()
     }
     

@@ -14,6 +14,7 @@
 		1418E0DA23FEEBE700C2B166 /* UserPreviewNeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1418E0D923FEEBE700C2B166 /* UserPreviewNeeder.swift */; };
 		14457B3A23FEF2F500B617FF /* NeedDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14457B3923FEF2F500B617FF /* NeedDetailedView.swift */; };
 		14817F8723F82BB00051A89A /* NeederHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14817F8523F82BB00051A89A /* NeederHomeView.swift */; };
+		14A77D27240ED37500BCBF80 /* CalendarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A77D26240ED37500BCBF80 /* CalendarController.swift */; };
 		14C2E6BB240BCE6300E78EC4 /* DiscoverSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C2E6BA240BCE6300E78EC4 /* DiscoverSheetView.swift */; };
 		14C2E6BD240BCE7100E78EC4 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C2E6BC240BCE7000E78EC4 /* AppView.swift */; };
 		2F0AA70323FBD53E008DA6E3 /* DatabaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F0AA70223FBD53E008DA6E3 /* DatabaseController.swift */; };
@@ -53,8 +54,9 @@
 		1418E0D923FEEBE700C2B166 /* UserPreviewNeeder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserPreviewNeeder.swift; sourceTree = "<group>"; };
 		14457B3923FEF2F500B617FF /* NeedDetailedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeedDetailedView.swift; sourceTree = "<group>"; };
 		14817F8523F82BB00051A89A /* NeederHomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeederHomeView.swift; sourceTree = "<group>"; };
+		14A77D26240ED37500BCBF80 /* CalendarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarController.swift; sourceTree = "<group>"; };
 		14C2E6BA240BCE6300E78EC4 /* DiscoverSheetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverSheetView.swift; sourceTree = "<group>"; };
-		14C2E6BC240BCE7000E78EC4 /* AppView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppView.swift; path = BackOn/AppView.swift; sourceTree = SOURCE_ROOT; };
+		14C2E6BC240BCE7000E78EC4 /* AppView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppView.swift; path = BackOn/MakeViewsGreatAgain/AppView.swift; sourceTree = SOURCE_ROOT; };
 		2F0AA70223FBD53E008DA6E3 /* DatabaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseController.swift; sourceTree = "<group>"; };
 		2F1075A523FD6DD50076C507 /* OverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 		2F575FF323F686F7001D97F6 /* BackOn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BackOn.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +102,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14A77D25240ED03100BCBF80 /* MakeViewsGreatAgain */ = {
+			isa = PBXGroup;
+			children = (
+				14C2E6BA240BCE6300E78EC4 /* DiscoverSheetView.swift */,
+				14C2E6BC240BCE7000E78EC4 /* AppView.swift */,
+			);
+			path = MakeViewsGreatAgain;
+			sourceTree = "<group>";
+		};
 		2F575FEA23F686F7001D97F6 = {
 			isa = PBXGroup;
 			children = (
@@ -131,6 +142,7 @@
 				2F57600423F686F8001D97F6 /* LaunchScreen.storyboard */,
 				2F575FF823F686F7001D97F6 /* SceneDelegate.swift */,
 				2F57601B23F6B467001D97F6 /* Structures */,
+				14A77D25240ED03100BCBF80 /* MakeViewsGreatAgain */,
 				2F57601F23F6B467001D97F6 /* Views */,
 			);
 			path = BackOn;
@@ -143,6 +155,7 @@
 				2FEAAF1623F820A000225F13 /* CoreDataController.swift */,
 				2F0AA70223FBD53E008DA6E3 /* DatabaseController.swift */,
 				2F57601923F6B42D001D97F6 /* MapController.swift */,
+				14A77D26240ED37500BCBF80 /* CalendarController.swift */,
 			);
 			path = Backend;
 			sourceTree = "<group>";
@@ -163,8 +176,6 @@
 		2F57601F23F6B467001D97F6 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				14C2E6BC240BCE7000E78EC4 /* AppView.swift */,
-				14C2E6BA240BCE6300E78EC4 /* DiscoverSheetView.swift */,
 				2F57603123F6B494001D97F6 /* UIElements.swift */,
 				14016BDB24093C19000611C3 /* MapView.swift */,
 				14457B3923FEF2F500B617FF /* NeedDetailedView.swift */,
@@ -344,6 +355,7 @@
 				2F57602E23F6B467001D97F6 /* HomeView.swift in Sources */,
 				2F57603723F6B4D1001D97F6 /* Commitment.swift in Sources */,
 				2F575FF923F686F7001D97F6 /* SceneDelegate.swift in Sources */,
+				14A77D27240ED37500BCBF80 /* CalendarController.swift in Sources */,
 				2F57601A23F6B42D001D97F6 /* MapController.swift in Sources */,
 				2F1075A623FD6DD50076C507 /* OverlayView.swift in Sources */,
 				2F57602723F6B467001D97F6 /* UserInfo.swift in Sources */,

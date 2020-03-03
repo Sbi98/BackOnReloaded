@@ -22,7 +22,7 @@ fileprivate enum Constants {
     static let minHeightRatio: CGFloat = 0.3
 }
 
-struct DiscoverSheetView<Content: View>: View {
+struct DiscoverDetailedSheet<Content: View>: View {
     @Binding var isOpen: Bool
     
     let maxHeight: CGFloat
@@ -85,7 +85,7 @@ struct DiscoverSheetView<Content: View>: View {
 
 struct DiscoverSheetView_Previews: PreviewProvider {
     static var previews: some View {
-        DiscoverSheetView(isOpen: .constant(false)) {
+        DiscoverDetailedSheet(isOpen: .constant(false)) {
             Rectangle().fill(Color.red)
         }.edgesIgnoringSafeArea(.all)
     }
