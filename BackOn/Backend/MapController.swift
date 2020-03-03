@@ -70,4 +70,14 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
         return address
     }
     
+    func openInMaps(commitment: Commitment){
+        let request = MKDirections.Request()
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.lastLocation!.coordinate))
+        let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
+        destination.name = "\(commitment.userInfo.name)'s request: \(commitment.title)"
+        request.destination = destination
+        request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
+    }
+
 }
+

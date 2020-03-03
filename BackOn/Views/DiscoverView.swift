@@ -95,7 +95,7 @@ struct DiscoverRow: View {
 struct FullDiscoverView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
-    @State private var selectedView = 0
+    
     var map: MapView
     init() {
         map = MapView()
@@ -108,20 +108,17 @@ struct FullDiscoverView: View {
                     HomeView.show()
                 }}){
                     HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.largeTitle)
-                        
                         Text("Around you")
                             .fontWeight(.bold)
                             .font(.title).foregroundColor(.primary)
                     }.padding([.top,.horizontal])
             }
             
-            Picker(selection: $selectedView, label: Text("Select")) {
-                Text("List").tag(0)
-                Text("Map").tag(1)
+            Picker(selection: $shared.fullDiscoverViewMode, label: Text("Select")) {
+                Text("List").tag(1)
+                Text("Map").tag(0)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
-            if selectedView == 0 {RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
+            if shared.fullDiscoverViewMode == 1 {RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
                 VStack (alignment: .center, spacing: 25){
                     ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
                         Button(action: {

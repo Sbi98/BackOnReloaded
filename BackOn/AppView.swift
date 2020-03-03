@@ -22,7 +22,7 @@ struct AppView: View {
             else{
                 ContentView()
                 }
-        }.overlay( myOverlay(isPresented: .constant(shared.viewToShow == "FullDiscoverView"), toOverlay: AnyView(DiscoverSheetView(isOpen: $shared.showDetailed, content: {
+        }.overlay( myOverlay(isPresented: .constant(shared.viewToShow == "FullDiscoverView" && shared.fullDiscoverViewMode == 0), toOverlay: AnyView(DiscoverSheetView(isOpen: $shared.showDetailed, content: {
         DiscoverDetailedView(selectedCommitment: shared.selectedCommitment)}
         ))).edgesIgnoringSafeArea(.bottom)
             

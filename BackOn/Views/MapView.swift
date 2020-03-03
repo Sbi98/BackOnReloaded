@@ -70,11 +70,13 @@ struct MapView: UIViewRepresentable {
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
             let commitmentAnnotation = view.annotation! as! CommitmentAnnotation
             view.isSelected = false
+            ////Fa un brutto bbug grafico. Sarebbe bello che la deselezione avvenisse quando si chiude il popup. Come si potrebbe fare? Thread a parte?
             parent.shared.selectedCommitment = commitmentAnnotation.commitment
 //            parent.mapController.showCallout = true
 //            parent.shared.showOverlay = true
             parent.shared.showDetailed = true
-            print(parent.shared.viewToShow)
+//            print(parent.shared.viewToShow)
+            
         }
         
     }
