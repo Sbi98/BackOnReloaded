@@ -17,7 +17,7 @@ struct DiscoverDetailedView: View {
     var body: some View {
         
         
-                    ////OLD VERSION
+        ////OLD VERSION
         //            VStack {
         //                if shared.viewToShow != "FullDiscoverView"{
         //                ZStack {
@@ -57,45 +57,45 @@ struct DiscoverDetailedView: View {
         //                Spacer()
         //                DoItButton()
         //            }.padding(.horizontal)
-                    
+        
         
         VStack(alignment: .leading) {
             if selectedCommitment != nil{
                 VStack{
-            HStack{
-                Avatar(image: selectedCommitment!.userInfo.profilePic)
-                VStack(alignment: .leading){
-                    Text(selectedCommitment!.userInfo.identity).font(.headline).foregroundColor(.black)
-                    Text(selectedCommitment!.title).font(.body).foregroundColor(.black)
-                }.padding(.horizontal)
-                Spacer()
-                CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
-                }.padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1))).cornerRadius(20, corners: [.topLeft, .topRight])
-            
-            Text(selectedCommitment!.descr).padding(.horizontal, 50)
-            Divider().padding(.horizontal, 25)
-            HStack(){
-                Spacer()
-                OpenInMapsButton(isFilled: false, selectedCommitment: selectedCommitment! ).padding(.horizontal)
-                DoItButton().padding(.horizontal)
-                Spacer()
-            }
-            Divider()
-            Text("Qui ci va l'indirizzo")
-            Divider()
-            Text("Qui ci va la data")
-            Spacer()
+                    HStack{
+                        Avatar(image: selectedCommitment!.userInfo.profilePic)
+                        VStack(alignment: .leading){
+                            Text(selectedCommitment!.userInfo.identity).font(.headline).foregroundColor(.black)
+                            Text(selectedCommitment!.title).font(.body).foregroundColor(.black)
+                        }.padding(.horizontal)
+                        Spacer()
+                        CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
+                    }.padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1))).cornerRadius(20, corners: [.topLeft, .topRight])
+                    
+                    Text(selectedCommitment!.descr).padding(.horizontal, 50)
+                    Divider().padding(.horizontal, 25)
+                    HStack(){
+                        Spacer()
+                        OpenInMapsButton(isFilled: false, selectedCommitment: selectedCommitment! ).padding(.horizontal)
+                        DoItButton().padding(.horizontal)
+                        Spacer()
+                    }
+                    Divider()
+                    Text("Qui ci va l'indirizzo")
+                    Divider()
+                    Text("Qui ci va la data")
+                    Spacer()
                 }.onAppear{
-            if self.mapController.lastLocation != nil {
-                self.selectedCommitment!.requestETA(source: self.mapController.lastLocation!)
+                    if self.mapController.lastLocation != nil {
+                        self.selectedCommitment!.requestETA(source: self.mapController.lastLocation!)
+                    }
+                }
+            } else{
+                EmptyView()
             }
         }
-            } else{
-            EmptyView()
-        }
-    }
-    
-   
+        
+        
     }
     
 }
@@ -108,16 +108,16 @@ struct DiscoverDetailedView_Previews: PreviewProvider {
 }
 
 extension View {
-       func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-           clipShape( RoundedCorner(radius: radius, corners: corners) )
-       }
-   }
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+}
 
 struct RoundedCorner: Shape {
-
+    
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
-
+    
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)

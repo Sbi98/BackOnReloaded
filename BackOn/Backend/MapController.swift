@@ -1,4 +1,5 @@
 import CoreLocation
+import MapKit
 import SwiftUI
 
 class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
