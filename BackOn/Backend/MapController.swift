@@ -1,20 +1,11 @@
-import Foundation
 import CoreLocation
-import MapKit
 import SwiftUI
-
-extension String {
-    var isBlank: Bool {
-        return allSatisfy({ $0.isWhitespace })
-    }
-}
 
 class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     private let locationManager = CLLocationManager()
     var showLocationAlert = true
     var lastLocation: CLLocation?
-    var matchingItems: [MKMapItem] = []
     @Published var showCallout = false
     
     override init() {

@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import MapKit
 
 struct CommitmentView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
@@ -112,7 +111,7 @@ struct CommitmentsListView: View {
                             CommitmentDetailedView.show()
                             }}) {
                                 HStack {
-                                    UserPreview(user: currentCommitment.userInfo, description: currentCommitment.title, whiteText: self.shared.darkMode)
+                                    UserPreview(user: currentCommitment.userInfo, description: currentCommitment.title, whiteText: self.darkMode)
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                         .font(.headline)

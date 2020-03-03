@@ -6,7 +6,6 @@
 //  Copyright © 2020 Vincenzo Riccio. All rights reserved.
 //
 
-import Foundation
 import SwiftUI
 
 class UserInfo {

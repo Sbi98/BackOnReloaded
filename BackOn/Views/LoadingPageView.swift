@@ -15,8 +15,6 @@ struct LoadingPageView: View {
     
     var body: some View {
         VStack {
-            
-           
             HStack() {
                 Spacer()
             }
@@ -33,28 +31,38 @@ struct LoadingPageView: View {
                 .shadow(radius: 10)
             
             Spacer()
-            
             ActivityIndicator(isAnimating: .constant(true), style: .large).padding(50)
-            
             Spacer()
             
-            
-            }
-            .onAppear(perform: {
-                self.shared.loading = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    if self.shared.helperMode {
-                        HomeView.show()
-                    } else {
-                        NeederHomeView.show()
-                    }
+        }
+        .onAppear(perform: {
+            self.shared.loading = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                if self.shared.helperMode {
+                    HomeView.show()
+                } else {
+                    NeederHomeView.show()
                 }
-            })
-            .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom)
-            .edgesIgnoringSafeArea(.all))
+            }
+        })
+        .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom)
+        .edgesIgnoringSafeArea(.all))
     }
 }
 
+struct ActivityIndicator: UIViewRepresentable {
+
+    @Binding var isAnimating: Bool
+    let style: UIActivityIndicatorView.Style
+
+    func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
+        return UIActivityIndicatorView(style: style)
+    }
+
+    func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
+        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
+    }
+}
 
 
 //struct MyAppleIDButton: UIViewRepresentable {
@@ -72,40 +80,4 @@ struct LoadingPageView: View {
 //}
 
 
-struct ActivityIndicator: UIViewRepresentable {
-
-    @Binding var isAnimating: Bool
-    let style: UIActivityIndicatorView.Style
-
-    func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
-        return UIActivityIndicatorView(style: style)
-    }
-
-    func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
-        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
-    }
-}
-
-//struct LoadingView: View {
-//    var body: some View {
-//        GeometryReader { geometry in
-//            ZStack(alignment: .center) {
-//
-//
-//
-//                VStack {
-//                    ActivityIndicator(isAnimating: .constant(true), style: .large)
-//                }
-//                .frame(width: geometry.size.width / 2,
-//                       height: geometry.size.height / 5)
-//                .background(Color.secondary.colorInvert())
-//                .foregroundColor(Color.primary)
-//                .cornerRadius(20)
-//                .opacity(self.isShowing ? 1 : 0)
-//
-//            }
-//        }
-//    }
-//
-//}
 

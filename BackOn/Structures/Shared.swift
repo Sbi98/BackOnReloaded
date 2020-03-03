@@ -6,9 +6,6 @@
 //  Copyright © 2020 Emmanuel Tesauro. All rights reserved.
 //
 
-import Foundation
-import CoreLocation
-import MapKit
 import SwiftUI
 
 class Shared: ObservableObject {
@@ -47,11 +44,7 @@ class Shared: ObservableObject {
     }
     @Published var neederInfo: UserInfo?
     
-    var darkMode: Bool{
-        get{
-            return UIScreen.main.traitCollection.userInterfaceStyle == .dark
-        }
-    }
+
     
     func commitmentArray() -> [Commitment] {
         return Array(commitmentSet.values)

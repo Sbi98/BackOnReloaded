@@ -7,8 +7,6 @@
 //
 
 import SwiftUI
-import CoreLocation
-import MapKit
 
 struct NeedView: View {
     @ObservedObject var need: Commitment
@@ -22,7 +20,7 @@ struct NeedView: View {
             }
         }) {
             VStack (alignment: .leading, spacing: 5){
-                UserPreviewNeeder(user: need.userInfo, whiteText: shared.darkMode)
+                UserPreviewNeeder(user: need.userInfo, whiteText: self.darkMode)
                 Spacer()
                 Text(need.title)
                     .font(.title)
@@ -110,7 +108,7 @@ struct NeedsListView: View {
                             NeedDetailedView.show()
                             }}) {
                                 HStack {
-                                    UserPreview(user: currentCommitment.userInfo, description: currentCommitment.title, whiteText: self.shared.darkMode)
+                                    UserPreview(user: currentCommitment.userInfo, description: currentCommitment.title, whiteText: self.darkMode)
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                         .font(.headline)

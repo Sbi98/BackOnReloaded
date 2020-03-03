@@ -9,12 +9,19 @@
 import SwiftUI
 
 extension View {
+    var darkMode: Bool{
+        get{
+            return UIScreen.main.traitCollection.userInterfaceStyle == .dark
+        }
+    }
+    
     static func show() {
         let shared = (UIApplication.shared.delegate as! AppDelegate).shared
         shared.previousView = shared.viewToShow
         shared.viewToShow = String(describing: self)
     }
 }
+
 
 struct ContentView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared

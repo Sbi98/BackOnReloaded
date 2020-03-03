@@ -40,8 +40,7 @@ struct CommitmentDetailedView: View {
                 }.padding(.horizontal)
             }
             VStack (alignment: .leading, spacing: 10){
-//                UserPreview(user: selectedCommitment.userInfo, description: selectedCommitment.etaText, whiteText: shared.darkMode)
-                UserPreview(user: selectedCommitment.userInfo, description: mapController.lastLocation != nil ? selectedCommitment.etaText : "Location services disabled" , whiteText: shared.darkMode)
+                UserPreview(user: selectedCommitment.userInfo, description: mapController.lastLocation != nil ? selectedCommitment.etaText : "Location services disabled" , whiteText: self.darkMode)
                     .offset(x: 0, y: -10)
                 Text(selectedCommitment.title)
                     .font(.headline)
@@ -50,7 +49,6 @@ struct CommitmentDetailedView: View {
                     .font(.subheadline)
                     .fontWeight(.light)
                     .bold()
-//                    .frame(width: .none, height: 60, alignment: .leading)
                 Spacer()
                 CantDoItButton()
             }.padding()

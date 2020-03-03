@@ -23,7 +23,7 @@ struct DiscoverView: View {
             }
         }) {
             VStack (alignment: .leading, spacing: 5){
-                UserPreview(user: commitment.userInfo, description: mapController.lastLocation != nil ? commitment.etaText : "Location services disabled", whiteText: shared.darkMode)
+                UserPreview(user: commitment.userInfo, description: mapController.lastLocation != nil ? commitment.etaText : "Location services disabled", whiteText: self.darkMode)
                 Text(commitment.title)
                     .font(.headline)
                     .fontWeight(.regular)
@@ -129,7 +129,7 @@ struct FullDiscoverView: View {
                             DiscoverDetailedView.show()
                         }) {
                             HStack {
-                                UserPreview(user: currentDiscover.userInfo, description: "\(currentDiscover.title)", whiteText: self.shared.darkMode)
+                                UserPreview(user: currentDiscover.userInfo, description: "\(currentDiscover.title)", whiteText: self.darkMode)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.headline)

@@ -42,15 +42,6 @@ struct LoginPageView: View {
             Spacer()
             GoogleButton()
                 .frame(width: 200, height: 30, alignment: .center)
-//            Button(action: {
-//                HomeView.show()
-//            }) {
-//                Text("Home")
-//                    .bold()
-//                    .foregroundColor(.black)
-//            }
-//          MyAppleIDButton().frame(width: 200, height: 30, alignment: .center)
-//              .padding(.bottom, 20)
             Spacer()
         }
         .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom)
@@ -72,17 +63,3 @@ struct GoogleButton: UIViewRepresentable {
     func updateUIView(_ uiView: GIDSignInButton, context: UIViewRepresentableContext<GoogleButton>) {
     }
 }
-
-//struct MyAppleIDButton: UIViewRepresentable {
-//
-//    func makeUIView(context: UIViewRepresentableContext<MyAppleIDButton>) -> ASAuthorizationAppleIDButton {
-//        let appleButton = ASAuthorizationAppleIDButton()
-//        appleButton.translatesAutoresizingMaskIntoConstraints = false
-//
-//        return appleButton
-//    }
-//
-//    func updateUIView(_ uiView: MyAppleIDButton.UIViewType, context: UIViewRepresentableContext<MyAppleIDButton>) {
-//
-//    }
-//}

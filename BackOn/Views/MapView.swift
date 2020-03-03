@@ -5,9 +5,9 @@
 //  Created by Giancarlo Sorrentino on 25/02/2020.
 //  Copyright © 2020 Emmanuel Tesauro. All rights reserved.
 //
-import Foundation
-import UIKit
+
 import SwiftUI
+import UIKit
 import MapKit
 
 struct MapView: UIViewRepresentable {
@@ -152,3 +152,74 @@ struct MapView: UIViewRepresentable {
 }
 
 
+struct SearchBar : UIViewRepresentable {
+    @Binding var text : String
+    
+    class Coordinator : NSObject, UISearchBarDelegate {
+        @Binding var text : String
+        
+        init(_ text : Binding<String>) {
+            _text = text
+        }
+        
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            text = searchText
+        }
+        
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.endEditing(true)
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator($text)
+    }
+    
+    func makeUIView(context: UIViewRepresentableContext<SearchBar>) -> UISearchBar {
+        let searchBar = UISearchBar(frame: .zero)
+        searchBar.delegate = context.coordinator
+        searchBar.searchBarStyle = .minimal
+        return searchBar
+    }
+    
+    func updateUIView(_ uiView: UISearchBar, context: UIViewRepresentableContext<SearchBar>) {
+        uiView.text = text
+    }
+}
+
+struct searchLocation: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Binding var selection: String
+    @State var userLocationAddress: String = "Processing your current location..."
+    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
+    
+    class AddressCompleterHandler: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
+        @Published var completer = MKLocalSearchCompleter()
+        override init() {
+            super.init()
+            completer.delegate = self
+        }
+    }
+    @ObservedObject var addressCompleter = AddressCompleterHandler()
+    
+    var body: some View {
+        Form {
+            Section (header: SearchBar(text: $addressCompleter.completer.queryFragment)) {
+                Text(userLocationAddress).onTapGesture {
+                    self.selection = self.userLocationAddress
+                    self.presentationMode.wrappedValue.dismiss()
+                }
+                ForEach(addressCompleter.completer.results, id: \.hashValue) { currentItem in
+                    Text("\(currentItem.title) (\(currentItem.subtitle))").onTapGesture {
+                        self.selection = "\(currentItem.title) (\(currentItem.subtitle))"
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }.onAppear() {
+            self.mapController.coordinatesToAddress() { result in
+                self.userLocationAddress = result
+            }
+        }
+    }
+}

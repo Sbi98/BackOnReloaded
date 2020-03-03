@@ -1,6 +1,4 @@
 import SwiftUI
-import CoreLocation
-import MapKit
 
 struct AddNeedView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
@@ -22,14 +20,6 @@ struct AddNeedView: View {
     @State var address = "Click to insert the location"
     @State var showAddressCompleter = false
     @State var toggleVerified = false
-    
-//    @State var toggleMyActualLocation = false {
-//        willSet {
-//            self.mapController.locationAsAddress() { result in
-//                self.address = result
-//            }
-//        }
-//    }
     
     var body: some View {
         Form {
