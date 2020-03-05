@@ -42,9 +42,9 @@ struct LoginPageView: View {
             Spacer()
         }
         .frame(width: UIScreen.main.bounds.width)
+        .offset(y: 50)
         .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom))
         .edgesIgnoringSafeArea(.all)
-        .offset(y: 50)
     }
 }
 

@@ -72,10 +72,10 @@ class Commitment: ObservableObject{
             guard error == nil else {print("Error while getting ETA");return}
             let eta = res!.expectedTravelTime
             let hour = eta>7200 ? "hrs" : "hr"
-            if eta > 3600{
-                self.etaText = "\(Int(eta/3600)) \(hour) \(Int((Int(eta)%3600)/60)) min by walk"
+            if eta > 3600 {
+                self.etaText = "\(Int(eta/3600)) \(hour) \(Int((Int(eta)%3600)/60)) min"
             } else {
-                self.etaText = "\(Int(eta/60)) min by walk"
+                self.etaText = "\(Int(eta/60)) min walk"
             }
         }
     }
