@@ -117,7 +117,7 @@ struct DoItButton: View {
         GenericButton(
             isFilled: true,
             color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 15)),
+            topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 17)),
             bottomText: nil
         ) {
             let coreDataController = CoreDataController()
@@ -257,7 +257,7 @@ struct OpenInMapsButton: View {
             dimensions: defaultDimensions,
             isFilled: isFilled,
             color:#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 15)),
+            topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 17)),
             bottomText: selectedCommitment.etaText != "Calculating..." ? Text(selectedCommitment.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
         ){
             self.mapController.openInMaps(commitment: self.selectedCommitment)

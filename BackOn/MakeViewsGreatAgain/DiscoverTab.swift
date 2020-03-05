@@ -54,41 +54,97 @@ struct DiscoverInfoDetailedView: View {
     let selectedCommitment = (UIApplication.shared.delegate as! AppDelegate).detailedViewController.commitment
     
     var body: some View {
-        VStack {
-            if selectedCommitment != nil {
-                HStack{
-                    Avatar(image: selectedCommitment!.userInfo.profilePic)
-                    VStack(alignment: .leading){
-                        Text(selectedCommitment!.userInfo.identity).font(.headline).foregroundColor(.black)
-                        Text(selectedCommitment!.title).font(.body).foregroundColor(.black)
-                    }.padding(.horizontal)
-                    Spacer()
-                    CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
-                }
-                .padding()
-                .background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
-                .onAppear {
-                    if self.mapController.lastLocation != nil {
-                        self.selectedCommitment!.requestETA(source: self.mapController.lastLocation!)
+        VStack(alignment: .leading) {
+                    if selectedCommitment != nil{
+                        
+                        VStack(alignment: .leading){
+                            
+                            HStack{
+                                Avatar(image: selectedCommitment!.userInfo.profilePic)
+                                VStack(alignment: .leading){
+                                    Text(selectedCommitment!.userInfo.identity)
+                                        .fontWeight(.bold)
+                                        .font(Font.custom("SF Pro Text", size: 23))
+                                        .foregroundColor(.black)
+                                        .animation(.easeOut(duration: 0))
+                                    Text(selectedCommitment!.title)
+                                        .fontWeight(.regular)
+                                        .font(Font.custom("SF Pro Text", size: 17))
+                                        .foregroundColor(.black)
+                                        .animation(.easeOut(duration: 0))
+                                }.padding(.horizontal)
+                                
+                                Spacer()
+                                CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
+                            }.frame(height: 54).padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
+        //                        .cornerRadius(20, corners: [.topLeft, .topRight])
+                         
+        //                Text("Address")
+        //                    .foregroundColor(.secondary)
+        //                    .fontWeight(.regular)
+        //                    .font(Font.custom("SF Pro Text", size: 17))
+        //                    .padding(.top, 10).padding(.horizontal, 25)
+        //                Text("Ciao")
+        //                Divider().padding(.horizontal, 25)
+                            
+                            if !selectedCommitment!.descr.isEmpty{
+                                Text(selectedCommitment!.descr)
+        //                    .lineLimit(5)
+                                .fontWeight(.regular)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .font(Font.custom("SF Pro Text", size: 19))
+        //                        .frame(height: 90)
+                                    .padding(.horizontal, 25).padding(.top, 5).padding(.bottom, 10)
+                                    .animation(.easeOut(duration: 0))
+                            }
+                            
+        //                    Divider().padding(.horizontal, 25)
+                            
+                            HStack{
+                                Spacer()
+                                OpenInMapsButton(isFilled: false, selectedCommitment: selectedCommitment! ).padding(.horizontal)
+                                DoItButton().padding(.horizontal)
+                                Spacer()
+                            }.padding(.vertical, 5)
+                            //                .padding(.top, 10)
+                            
+                            Text("Address")
+                                .foregroundColor(.secondary)
+                                .fontWeight(.regular)
+                                .font(Font.custom("SF Pro Text", size: 17))
+                                .padding(.top, 10).padding(.horizontal, 25)
+                                .animation(.easeOut(duration: 0))
+                            
+                            Divider().padding(.horizontal, 25).padding(.top, -5)
+                            //                    Text(selectedCommitment!.textAddress!)
+                            Text("Via Gianluca Rossi 16\n84088 Siano, Provincia di Salerno\nItalia")
+                                .padding(.horizontal, 25).padding(.top, -5)
+                                .animation(.easeOut(duration: 0))
+                            
+                            Text("Scheduled Date")
+                                .foregroundColor(.secondary)
+                                .fontWeight(.regular)
+                                .font(Font.custom("SF Pro Text", size: 17))
+                                .padding(.top, 10).padding(.horizontal, 25)
+                            .animation(.easeOut(duration: 0))
+                            
+                            Divider().padding(.horizontal, 25).padding(.top, -5)
+                            //                    Text(selectedCommitment!.textAddress!)
+                            Text( "\(self.selectedCommitment!.date, formatter: customDateFormat)"
+//                                self.shared.dateFormatter.string(from: self.selectedCommitment!.date)
+                            )
+                                .padding(.horizontal, 25).padding(.top, -5)
+                                .animation(.easeOut(duration: 0))
+                        }
+                            .onAppear{
+                            if self.mapController.lastLocation != nil {
+                                self.selectedCommitment!.requestETA(source: self.mapController.lastLocation!)
+                            }
+                        }
+                    } else{
+                        EmptyView()
                     }
                 }
-                Text(selectedCommitment!.descr).padding(.horizontal, 50)
-                Divider().padding(.horizontal, 25)
-                HStack(){
-                    Spacer()
-                    OpenInMapsButton(isFilled: false, selectedCommitment: selectedCommitment!).padding(.horizontal)
-                    DoItButton().padding(.horizontal)
-                    Spacer()
-                }
-                Divider()
-                Text("Qui ci va l'indirizzo")
-                Divider()
-                Text("Qui ci va la data")
-                Spacer()
-            } else {
-                EmptyView()
-            }
-        }
     }
 }
 

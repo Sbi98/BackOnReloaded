@@ -34,7 +34,7 @@ struct LoginPageView: View {
                     Text("Helper").tag(true)
                     Text("Needer").tag(false)
                 }.pickerStyle(SegmentedPickerStyle()).labelsHidden()
-                .frame(width: 200, height: 30, alignment: .center)
+                    .frame(width: 200, height: 30, alignment: .center)
             }
             Spacer()
             GoogleButton()
@@ -42,9 +42,10 @@ struct LoginPageView: View {
             Spacer()
         }
         .frame(width: UIScreen.main.bounds.width)
+        .offset(y: 50)
+            
         .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom))
         .edgesIgnoringSafeArea(.all)
-        .offset(y: 50)
     }
 }
 

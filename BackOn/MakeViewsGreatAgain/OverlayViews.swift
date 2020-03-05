@@ -61,8 +61,8 @@ struct SheetView<Content: View>: View {
     }
     
     init(isOpen: Binding<Bool>, @ViewBuilder content: () -> Content) {
-        self.minHeight = -40 //invece di mostrarla chiusa, la spinge fuori dallo schermo
-        self.maxHeight = UIScreen.main.bounds.height - 400 //valore da cambiare
+        self.minHeight = 0 //invece di mostrarla chiusa, la spinge fuori dallo schermo
+        self.maxHeight = UIScreen.main.bounds.height - 450 //valore da cambiare
         self.content = content()
         self._isOpen = isOpen
     }
