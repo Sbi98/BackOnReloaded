@@ -30,6 +30,7 @@ var locAlert = Alert(
 )
 
 struct CloseButton: View {
+    let detailedViewController = (UIApplication.shared.delegate as! AppDelegate).detailedViewController
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var externalColor = #colorLiteral(red: 0.9281502366, green: 0.8382813334, blue: 0.6886059642, alpha: 1)
     var internalColor = UIColor.systemGroupedBackground
@@ -42,8 +43,6 @@ struct CloseButton: View {
                     LoginPageView.show()
                 } else if self.shared.previousView == "CommitmentDetailedView"{
                     CommitmentDetailedView.show()
-                } else if self.shared.previousView == "DiscoverDetailedView"{
-                    DiscoverDetailedView.show()
                 } else if self.shared.previousView == "CommitmentsListView"{
                     CommitmentsListView.show()
                 } else if self.shared.previousView == "AddNeedView"{
@@ -57,6 +56,7 @@ struct CloseButton: View {
                 } else if self.shared.previousView == "LoadingPageView" {
                     LoadingPageView.show()
                 }
+                self.detailedViewController.showSheet = false
             }
         }){
             ZStack{

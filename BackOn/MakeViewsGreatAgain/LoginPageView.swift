@@ -15,9 +15,6 @@ struct LoginPageView: View {
     
     var body: some View {
         VStack {
-            HStack() {
-                Spacer()
-            }
             Text("BackOn")
                 .fontWeight(.bold).foregroundColor(.white)
                 .font(.title)
@@ -44,8 +41,10 @@ struct LoginPageView: View {
                 .frame(width: 200, height: 30, alignment: .center)
             Spacer()
         }
-        .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom)
-        .edgesIgnoringSafeArea(.all))
+        .frame(width: UIScreen.main.bounds.width)
+        .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom))
+        .edgesIgnoringSafeArea(.all)
+        .offset(y: 50)
     }
 }
 

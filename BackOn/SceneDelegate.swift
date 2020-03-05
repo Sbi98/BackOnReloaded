@@ -24,9 +24,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         //        QUI CONTROLLO SE L'UTENTE HA EFFETTUATO L'ACCESSO
         if CoreDataController.shared.userIsLogged() {
-            LoadingPageView.show()
+            (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
         } else {
-            LoginPageView.show()
+            (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView"
         }
         
         //              HO SCELTO AUTORIZZAZIONE AD ALERT, BADGE E NOTIFICATION SOUND
@@ -38,17 +38,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
         
-        
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let contentView = AppView()
+        let contentView = MainView()
         
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView
-//                .onTapGesture{window.endEditing(true)}
-            )
+            window.rootViewController = UIHostingController(rootView: contentView)
+//            contentView.onTapGesture{window.endEditing(true)}
             self.window = window
             window.makeKeyAndVisible()
         }

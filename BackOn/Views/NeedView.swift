@@ -20,7 +20,7 @@ struct NeedView: View {
             }
         }) {
             VStack (alignment: .leading, spacing: 5){
-                UserPreviewNeeder(user: need.userInfo, whiteText: self.darkMode)
+                UserPreview(user: need.userInfo, whiteText: self.darkMode)
                 Spacer()
                 Text(need.title)
                     .font(.title)

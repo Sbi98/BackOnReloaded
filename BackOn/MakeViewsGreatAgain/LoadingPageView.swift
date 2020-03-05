@@ -15,38 +15,30 @@ struct LoadingPageView: View {
     
     var body: some View {
         VStack {
-            HStack() {
-                Spacer()
-            }
             Text("BackOn")
                 .fontWeight(.bold).foregroundColor(.white)
                 .font(.title)
                 .padding([.top, .bottom], 40)
-            
             Image("iosapptemplate")
                 .resizable()
                 .frame(width: 250, height: 250)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.white, lineWidth: 4))
                 .shadow(radius: 10)
-            
             Spacer()
             ActivityIndicator(isAnimating: .constant(true), style: .large).padding(50)
             Spacer()
-            
         }
-        .onAppear(perform: {
+        .onAppear {
             self.shared.loading = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                if self.shared.helperMode {
-                    HomeView.show()
-                } else {
-                    NeederHomeView.show()
-                }
+                (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "CustomTabView"
             }
-        })
-        .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom)
-        .edgesIgnoringSafeArea(.all))
+        }
+        .frame(width: UIScreen.main.bounds.width)
+        .offset(y: 50)
+        .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom))
+        .edgesIgnoringSafeArea(.all)
     }
 }
 

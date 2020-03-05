@@ -18,7 +18,7 @@ struct NeedDetailedView: View {
         VStack {
             VStack {
                 ZStack {
-                    MapView(selectedCommitment: selectedCommitment)
+                    MapView(mode: .RequestDetailedModal, selectedCommitment: selectedCommitment)
                         .statusBar(hidden: true)
                         .edgesIgnoringSafeArea(.all)
                         .frame(height: 515)

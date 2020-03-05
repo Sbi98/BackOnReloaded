@@ -31,7 +31,7 @@ struct HomeView: View {
                         .foregroundColor(.black)
                 }
                 CommitmentRow().frame(width: UIScreen.main.bounds.width, height: CGFloat(400), alignment: .top)
-                DiscoverRow().frame(width: UIScreen.main.bounds.width, height: CGFloat(200), alignment: .top).padding(80)
+                //DiscoverRow().frame(width: UIScreen.main.bounds.width, height: CGFloat(200), alignment: .top).padding(80)
                 Spacer()
             }
         }

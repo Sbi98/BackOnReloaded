@@ -12,11 +12,13 @@ class CalendarController {
     static var eventStore = EKEventStore()
     static var destCalendar: EKCalendar?
     static var authorized = true
+    
     static func initController() {
         switch EKEventStore.authorizationStatus(for: .event) {
         case .authorized:
             print("Calendar access granted")
             authorized = true
+            initCalendar()
         case .denied:
             print("Calendar access denied")
             authorized = false
@@ -25,6 +27,7 @@ class CalendarController {
                 if granted {
                     print("Calendar access granted")
                     self.authorized = true
+                    initCalendar()
                 } else {
                     print("Calendar access denied")
                     self.authorized = false
@@ -34,7 +37,6 @@ class CalendarController {
             print("Case Default")
             authorized = false
         }
-        initCalendar()
     }
     
     static fileprivate func initCalendar() {
@@ -47,7 +49,7 @@ class CalendarController {
         if destCalendar == nil {
             destCalendar = EKCalendar(for: .event, eventStore: eventStore)
             destCalendar!.title = "BackOn Tasks"
-            destCalendar!.source = eventStore.defaultCalendarForNewEvents!.source
+            destCalendar!.source = eventStore.defaultCalendarForNewEvents?.source
             do {
                 try eventStore.saveCalendar(destCalendar!, commit:true)
             } catch {print(error.localizedDescription)}

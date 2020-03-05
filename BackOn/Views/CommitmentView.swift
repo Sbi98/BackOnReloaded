@@ -15,10 +15,11 @@ struct CommitmentView: View {
     var body: some View {
         VStack {
             ZStack{
-                MapView(selectedCommitment: commitment).cornerRadius(10)
+                MapView(mode: .TaskTab, selectedCommitment: commitment)
+                    .cornerRadius(10)
                 VStack(){
                     ZStack{
-                        Image("cannotation").foregroundColor(Color(UIColor.systemOrange)).offset(y: -5).scaleEffect(0.97)
+                        Image("cAnnotation").foregroundColor(Color(UIColor.systemOrange)).offset(y: -5).scaleEffect(0.97)
                         Avatar(image: commitment.userInfo.profilePic).offset(y:-9.65)
                     }.scaleEffect(1.3)
                 Text(commitment.userInfo.name).foregroundColor(Color.white).background(Rectangle().cornerRadius(10).scaleEffect(1.2).foregroundColor(Color(UIColor.systemOrange)))

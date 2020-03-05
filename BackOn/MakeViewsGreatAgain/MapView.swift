@@ -10,19 +10,26 @@ import SwiftUI
 import UIKit
 import MapKit
 
+enum MapFor {
+    case TaskTab
+    case DiscoverTab
+    case DiscoverDetailedModal
+    case TaskDetailedModal
+    case RequestDetailedModal
+}
+
 struct MapView: UIViewRepresentable {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+//    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
+    let mode: MapFor
     var selectedCommitment: Commitment?
     
     class CommitmentAnnotation: NSObject, MKAnnotation {
         var commitment: Commitment
-        
         // This property must be key-value observable, which the `@objc dynamic` attributes provide.
         @objc dynamic var coordinate: CLLocationCoordinate2D
         var title: String?
         var subtitle: String?
-        
         init(commitment: Commitment) {
             self.commitment = commitment
             self.coordinate = commitment.position.coordinate
@@ -33,7 +40,6 @@ struct MapView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
     
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: MapView
@@ -50,14 +56,11 @@ struct MapView: UIViewRepresentable {
         }
         
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            let view: MKMarkerAnnotationView
             guard !annotation.isKind(of: MKUserLocation.self) else {return nil}
-
-            
-            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
+            let view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
             view.canShowCallout = false
             view.displayPriority = .required
-            if parent.shared.viewToShow == "HomeView"{
+            if parent.mode == .TaskTab {
                 view.image = UIImage(named: "Empty")
                 view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
                 view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
@@ -66,17 +69,15 @@ struct MapView: UIViewRepresentable {
         }
         
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-            guard parent.shared.viewToShow == "FullDiscoverView" else {return}
+            guard parent.mode == .DiscoverTab else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
-            let commitmentAnnotation = view.annotation! as! CommitmentAnnotation
-            view.isSelected = false
-            ////Fa un brutto bbug grafico. Sarebbe bello che la deselezione avvenisse quando si chiude il popup. Come si potrebbe fare? Thread a parte?
-            parent.shared.selectedCommitment = commitmentAnnotation.commitment
-//            parent.mapController.showCallout = true
-//            parent.shared.showOverlay = true
-            parent.shared.showDetailed = true
-//            print(parent.shared.viewToShow)
-            
+            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.showSheet(commitment: (view.annotation! as! CommitmentAnnotation).commitment)
+        }
+        
+        func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+            guard parent.mode == .DiscoverTab else {return}
+            guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
+            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.closeSheet()
         }
         
     }
@@ -84,7 +85,7 @@ struct MapView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView(frame: UIScreen.main.bounds)
-        var title = selectedCommitment?.userInfo.name
+        let mapSpan = MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)
         mapView.delegate = context.coordinator
         mapView.showsCompass = false
         mapView.showsUserLocation = true;
@@ -92,36 +93,40 @@ struct MapView: UIViewRepresentable {
         //longPressGesture.minimumPressDuration = 1.0
         //mapView.addGestureRecognizer(...) quello che serve per riconoscere una gesture
         // vedi https://stackoverflow.com/questions/40844336/create-long-press-gesture-recognizer-with-annotation-pin
-        
-        switch shared.viewToShow {
-        case "FullDiscoverView":
-            for (_, discoverableCommitment) in shared.discoverSet {
+        switch mode {
+        case .RequestDetailedModal:
+            mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: "You"))
+            mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: mapSpan), animated: true)
+            return mapView
+        case .TaskTab:
+            mapView.isScrollEnabled = false;
+            mapView.isRotateEnabled = false;
+            mapView.isPitchEnabled = false;
+            mapView.isZoomEnabled = false;
+            mapView.showsUserLocation = false;
+            mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedCommitment!.position.coordinate.latitude + 0.00035, longitude: selectedCommitment!.position.coordinate.longitude) , span: mapSpan), animated: true)
+            mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: ""))
+            return mapView
+        case .TaskDetailedModal:
+            mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: selectedCommitment!.userInfo.name))
+            mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: mapSpan), animated: true)
+            addRoute(mapView: mapView)
+            return mapView
+        case .DiscoverDetailedModal:
+            let discoverCommitment = (UIApplication.shared.delegate as! AppDelegate).detailedViewController.commitment!
+            mapView.addAnnotation(generateAnnotation(discoverCommitment, title: discoverCommitment.userInfo.name))
+            mapView.setRegion(MKCoordinateRegion(center:discoverCommitment.position.coordinate, span: mapSpan), animated: true)
+            addRoute(mapView: mapView)
+            return mapView
+        case .DiscoverTab:
+            for (_, discoverableCommitment) in (UIApplication.shared.delegate as! AppDelegate).shared.discoverSet {
                 mapView.addAnnotation(generateAnnotation(discoverableCommitment, title: discoverableCommitment.userInfo.name))
             }
-            mapView.setRegion(MKCoordinateRegion(center: mapController.lastLocation!.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
-            mapView.showsUserLocation = true
+            mapView.setRegion(MKCoordinateRegion(center: mapController.lastLocation!.coordinate, span: mapSpan), animated: true)
+            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.baseMKMap = mapView
             return mapView
-            
-        case "NeedDetailedView":
-            title = "You"
-        case "HomeView":
-                mapView.isScrollEnabled = false;
-                mapView.isRotateEnabled = false;
-                mapView.isPitchEnabled = false;
-                mapView.isZoomEnabled = false;
-                mapView.showsUserLocation = false;
-                mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedCommitment!.position.coordinate.latitude + 0.00035, longitude: selectedCommitment!.position.coordinate.longitude) , span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
-                mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: ""))
-            return mapView
-        case "CommitmentDetailedView", "DiscoverDetailedView":
-            addRoute(mapView: mapView)
-        default:
-            print("Ciao")
-            //Ho aggiunto questo perché crashava prima
         }
-        mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: title!))
-        mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)), animated: true)
-        return mapView
+        
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {

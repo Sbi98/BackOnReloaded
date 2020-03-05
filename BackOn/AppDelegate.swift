@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 import CoreData
 import GoogleSignIn
 
@@ -16,11 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     let shared = Shared()
     let dbController: DatabaseController
     let mapController: MapController
-    
+    let detailedViewController: DetailedViewController
     
     override init() {
         mapController = MapController()
         dbController = DatabaseController(shared: self.shared)
+        detailedViewController = DetailedViewController()
         CalendarController.initController()
         super.init()
     }
@@ -44,12 +46,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 //        REGISTRA L'UTENTE NEL DATABASE LOCALE
         dbController.registerUser(user: myUser)
         
-        LoadingPageView.show()
+        (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
     }
     
     
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!,
-              withError error: Error!) {
+    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
         print("*** User disconnected ***\n")
         let coreDatacontroller = CoreDataController()
@@ -64,8 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         return GIDSignIn.sharedInstance().handle(url)
     }
     
-    func application(_ application: UIApplication,
-                     open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         return GIDSignIn.sharedInstance().handle(url)
     }
     
