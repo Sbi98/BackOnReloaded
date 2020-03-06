@@ -14,11 +14,12 @@ class Commitment: ObservableObject{
     let title: String
     let descr: String
     let date: Date
+    var position: CLLocation
     let ID: Int
     @Published var etaText = "Calculating..."
+    @Published var address = "Locating..."
+    @Published var city = "Locating..."
     
-    var position: CLLocation
-    var textAddress: String?
 
     
     init() {
@@ -77,6 +78,13 @@ class Commitment: ObservableObject{
             } else {
                 self.etaText = "\(Int(eta/60)) min walk"
             }
+        }
+    }
+    
+    func locate() {
+        (UIApplication.shared.delegate as! AppDelegate).mapController.coordinatesToAddress(location: self.position) { result in
+            self.address = result
+            self.city = "\(result.split(separator: ",")[2])" 
         }
     }
 }

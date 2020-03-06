@@ -227,7 +227,7 @@ class DatabaseController {
                 DispatchQueue.main.async {
                     
                     guard let json = try? JSONSerialization.jsonObject(with: data, options: []) else{
-                        print("Error!")
+                        print("Error parsing JSON when loading commitments")
                         return
                     }
                     
@@ -293,7 +293,7 @@ class DatabaseController {
                 DispatchQueue.main.async {
                     
                     guard let json = try? JSONSerialization.jsonObject(with: data, options: []) else{
-                        print("Error!")
+                        print("Error parsing JSON when loading discoverable requests")
                         return
                     }
                     
