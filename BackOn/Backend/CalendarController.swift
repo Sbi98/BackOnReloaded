@@ -22,7 +22,7 @@ class CalendarController {
         case .denied:
             print("Calendar access denied")
             authorized = false
-        case .notDetermined:
+        case .notDetermined, .restricted:
             eventStore.requestAccess(to: .event) { granted, error in
                 if granted {
                     print("Calendar access granted")
@@ -56,19 +56,25 @@ class CalendarController {
         }
     }
     
-    static func addEvent(title: String, startDate: Date, endDate: Date?, relativeAlarmTime: TimeInterval) {
+    static func addEvent(title: String, startDate: Date, endDate: Date?, relativeAlarmTime: TimeInterval = -60) {
         if authorized {
             let event = EKEvent(eventStore: eventStore)
-            event.title = "Titolo di prova"
-            event.startDate = Date(timeIntervalSinceNow: 120)
-            event.endDate = event.startDate!
-            event.addAlarm(EKAlarm(relativeOffset: -60))
+            event.title = title
+            event.startDate = startDate
+            event.endDate = endDate ?? startDate
+            event.addAlarm(EKAlarm(relativeOffset: relativeAlarmTime))
             event.calendar = destCalendar!
             do {
                 try eventStore.save(event, span: .thisEvent)
             } catch {print(error.localizedDescription)}
         } else {
-            print("Impossibile aggiungere un evento!")
+            print("Impossibile aggiungere un evento! Non sei autorizzato")
         }
+    }
+    
+    static func isNotBusy(when date: Date) -> Bool {
+        let predicate = eventStore.predicateForEvents(withStart: date, end: date.addingTimeInterval(3600), calendars: nil)
+        let events = eventStore.events(matching: predicate)
+        return events.isEmpty
     }
 }

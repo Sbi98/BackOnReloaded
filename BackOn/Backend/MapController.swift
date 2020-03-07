@@ -35,19 +35,24 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     
-    func coordinatesToAddress(location: CLLocation = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation!, completion: @escaping (String)-> Void) {
-        CLGeocoder().reverseGeocodeLocation(location) {(placemarks, error) in
-            guard error == nil, let p = placemarks?.first else {print("Reverse geocoder failed"); return}
-            completion(self.extractAddress(p))
+    func coordinatesToAddress(_ location: CLLocation?, completion: @escaping (String?, String?)-> Void) { //(address, error) -> Void
+        if location == nil {
+            let location = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation
+            if location == nil {
+                completion(nil,"Location access not granted")
+                return
+            }
+        }
+        CLGeocoder().reverseGeocodeLocation(location!) {(placemarks, error) in
+            guard error == nil, let p = placemarks?.first else {completion(nil,"Reverse geocoder failed"); return}
+            completion(self.extractAddress(p),nil)
         }
     }
     
-    func addressToCoordinates(address: String, completion: @escaping (CLLocationCoordinate2D)-> Void) {
+    func addressToCoordinates(_ address: String, completion: @escaping (CLLocationCoordinate2D?, String?)-> Void) { //(coordinates, error) -> Void
         CLGeocoder().geocodeAddressString(address) {(placemarks, error) in
-            guard error == nil else {return}
-            if let placemark = placemarks?.first {
-                completion(placemark.location!.coordinate)
-            }
+            guard error == nil, let placemark = placemarks?.first, let coordinate = placemark.location?.coordinate else {completion(nil,"Geocoder failed"); return}
+            completion(coordinate,nil)
         }
     }
     
@@ -73,7 +78,9 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func openInMaps(commitment: Commitment){
         let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: self.lastLocation!.coordinate))
+        if lastLocation != nil {
+            request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
+        }
         let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
         destination.name = "\(commitment.userInfo.name)'s request: \(commitment.title)"
         request.destination = destination

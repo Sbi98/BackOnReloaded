@@ -122,7 +122,9 @@ struct MapView: UIViewRepresentable {
             for (_, discoverableCommitment) in (UIApplication.shared.delegate as! AppDelegate).shared.discoverSet {
                 mapView.addAnnotation(generateAnnotation(discoverableCommitment, title: discoverableCommitment.userInfo.name))
             }
-            mapView.setRegion(MKCoordinateRegion(center: mapController.lastLocation!.coordinate, span: mapSpan), animated: true)
+            if let lastLocation = mapController.lastLocation {
+                mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
+            }
             (UIApplication.shared.delegate as! AppDelegate).detailedViewController.baseMKMap = mapView
             return mapView
         }
@@ -140,8 +142,9 @@ struct MapView: UIViewRepresentable {
     }
     
     func addRoute(mapView: MKMapView){
+        guard let lastLocation = mapController.lastLocation else {return}
         let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: mapController.lastLocation!.coordinate, addressDictionary: nil))
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation.coordinate, addressDictionary: nil))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: selectedCommitment!.position.coordinate, addressDictionary: nil))
         request.requestsAlternateRoutes = false
         request.transportType = .walking
@@ -224,7 +227,8 @@ struct searchLocation: View {
                 }
             }
         }.onAppear() {
-            self.mapController.coordinatesToAddress() { result in
+            self.mapController.coordinatesToAddress(nil) { result, error in
+                guard error == nil, let result = result else {return}
                 self.userLocationAddress = result
             }
         }

@@ -18,7 +18,7 @@ let customDateFormat: DateFormatter = {
     return formatter
 }()
 
-var locAlert = Alert(
+let locAlert = Alert(
     title: Text("Location permission denied"),
     message: Text("To let the app work properly, enable location permissions"),
     primaryButton: .default(Text("Open settings")) {

@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string></string>
+	<string>Calendar access is required in order to have the possibility to automatially add a task in a dedicated calendar</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Localization Services are required in order to get to get routes and automatically select your position</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Localization Services are required in order to get routes and automatically select your position</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

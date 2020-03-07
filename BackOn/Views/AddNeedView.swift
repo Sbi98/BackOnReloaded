@@ -73,7 +73,8 @@ struct AddNeedView: View {
                 HStack {
                     Spacer()
                     ConfirmAddNeedButton(){
-                        self.mapController.addressToCoordinates(address: self.address) { result in
+                        self.mapController.addressToCoordinates(self.address) { result, error in
+                            guard error == nil, let result = result else {return}
                             self.dbController.insertCommit(title: self.selectedTitle, description: self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude)
                             self.dbController.getCommitByUser()
                         }

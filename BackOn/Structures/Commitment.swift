@@ -82,7 +82,8 @@ class Commitment: ObservableObject{
     }
     
     func locate() {
-        (UIApplication.shared.delegate as! AppDelegate).mapController.coordinatesToAddress(location: self.position) { result in
+        (UIApplication.shared.delegate as! AppDelegate).mapController.coordinatesToAddress(self.position) { result, error in
+            guard error == nil, let result = result else {return}
             self.address = result
             self.city = "\(result.split(separator: ",")[2])" 
         }
