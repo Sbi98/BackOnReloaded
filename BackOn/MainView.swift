@@ -25,14 +25,9 @@ extension View {
         }
     }
     
-//    func showSheet<Content>(isPresented: Binding<Bool>, content: Content) where Content: View {
-//        self.sheet(isPresented: isPresented, content: {content})
-//    }
-    
     static func show() {
         let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-        shared.previousView = shared.viewToShow
-        shared.viewToShow = String(describing: self)
+        shared.activeView = String(describing: self)
     }
 }
 

@@ -17,20 +17,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     let shared: Shared
     let dbController: DatabaseController
     let mapController: MapController
-    let detailedViewController: DetailedViewController
+    let discoverTabController: DiscoverTabController
     
     override init() {
         shared = Shared()
         mapController = MapController()
         dbController = DatabaseController(shared: shared)
-        detailedViewController = DetailedViewController()
+        discoverTabController = DiscoverTabController()
         super.init()
     }
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         guard error == nil else {print("Sign error"); return}
-        
         // Perform any operations on signed in user here.
         //let userId = user.userID                  // For client-side use only!
         //let idToken = user.authentication.idToken // Safe to send to the server
@@ -47,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
         print("\n*** User signed out from Google ***\n")
-        guard let loggedUser = CoreDataController.getLoggedUser() else {return}
+        guard let loggedUser = CoreDataController.loggedUser else {return}
         CoreDataController.deleteUser(user: loggedUser)
         shared.mainWindow = "LoginPageView"
     }

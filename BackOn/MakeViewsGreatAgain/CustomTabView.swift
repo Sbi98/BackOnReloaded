@@ -13,13 +13,13 @@ struct CustomTabView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
-        TabView (selection: $shared.selectedTab) {
+        TabView {
             VStack {
-                if shared.viewToShow == "HomeView" {
+                if shared.activeView == "HomeView" {
                     HomeView()
-                } else if shared.viewToShow == "TasksListView" {
+                } else if shared.activeView == "TasksListView" {
                     TasksListView()
-                } else if shared.viewToShow == "AddNeedView" {
+                } else if shared.activeView == "AddNeedView" {
                     AddNeedView()
                 }
 //                else if shared.viewToShow == "NeederHomeView" {
@@ -28,7 +28,7 @@ struct CustomTabView: View {
 //                    NeedsListView()
 //                }
                 else {
-                    Text("Vista sbagliata qui :(\n\(shared.viewToShow)")
+                    Text("Vista sbagliata qui :(\n\(shared.activeView)")
                         .font(.title)
                         .fontWeight(.regular)
                         .foregroundColor(.primary)

@@ -54,7 +54,7 @@ class DatabaseController {
     // Usata dal needer per vedere le sue richieste di aiuto
     func getCommitByUser() {
         print("*** getCommitByUser ***")
-        let userEmail: String = CoreDataController.getLoggedUser()!.email
+        let userEmail: String = CoreDataController.loggedUser!.email
         let parameters: [String: String] = ["email": userEmail]
 
         //create the url with URL
@@ -115,7 +115,7 @@ class DatabaseController {
                                     c = Task(neederUser: nobodyHelped, title: title! as! String, descr: descrizione! as! String, date: date, latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue, ID: id! as! Int)
                                 }
                                 
-                                self.shared.requestSet[id! as! Int] = c
+                                self.shared.myRequests[id! as! Int] = c
                             }
                         }
                     }
@@ -127,7 +127,7 @@ class DatabaseController {
    //MARK: InsertCommit
    func insertCommit(title: String, description: String, date: Date, latitude: Double, longitude: Double) {
        print("INSERT COMMIT")
-       let userEmail: String = CoreDataController.getLoggedUser()!.email
+       let userEmail: String = CoreDataController.loggedUser!.email
        
        let format = DateFormatter()
        format.dateFormat = "yyyy-MM-dd HH:mm"
@@ -193,7 +193,7 @@ class DatabaseController {
     //MARK: loadMyCommitments
     func loadMyCommitments() {
         print("*** loadMyCommits ***")
-        let userEmail: String = CoreDataController.getLoggedUser()!.email
+        let userEmail: String = CoreDataController.loggedUser!.email
         let parameters: [String: String] = ["email": userEmail]
         
         //create the url with URL
@@ -216,7 +216,7 @@ class DatabaseController {
         //create dataTask using the session object to send data to the server
         
         //SE VOGLIO LEGGERE I DATI DAL SERVER
-        self.shared.taskSet = [:]
+        self.shared.myTasks = [:]
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
@@ -261,7 +261,7 @@ class DatabaseController {
                                 
                                 let c = Task(neederUser: user, title: titleCommit, descr: descrizioneCommit, date: date, latitude: (latitudeCommit as! NSString).doubleValue, longitude: (longitudeCommit as! NSString).doubleValue, ID: idCommit)
                                 
-                                self.shared.taskSet[idCommitment] = c
+                                self.shared.myTasks[idCommitment] = c
                                 
                             }
                         }
@@ -292,7 +292,7 @@ class DatabaseController {
                         return
                     }
                     
-                    let loggedUserEmail = CoreDataController.getLoggedUser()!.email
+                    let loggedUserEmail = CoreDataController.loggedUser!.email
             
                     if let array = json as? NSArray {
                         for obj in array {
@@ -323,7 +323,7 @@ class DatabaseController {
                                     
                                     let c = Task(neederUser: user, title: title! as! String, descr: descrizione! as! String, date: date, latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue, ID: id! as! Int)
                                     
-                                    self.shared.discoverSet[id! as! Int] = c
+                                    self.shared.myDiscoverables[id! as! Int] = c
                                 }
                             }
                         }

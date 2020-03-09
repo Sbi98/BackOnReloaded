@@ -16,7 +16,7 @@ struct HomeView: View {
     
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
-            VStack (alignment: .leading, spacing: 0){
+            VStack {
                 HStack{
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
                         .font(.largeTitle)
@@ -33,11 +33,12 @@ struct HomeView: View {
                     }
                 }.padding()
                 TaskRow()
-                GenericButton(isFilled: true, color: .orange, topText: Text("Save in CoreData")){
+                GenericButton(isFilled: true, color: .systemOrange, topText: Text("Save in C.D.")){
                     print("salvo in coredata")
                     CoreDataController.addTasks(tasks: self.shared.commitmentArray())
                 }
-                GenericButton(isFilled: true, color: .orange, topText: Text("Load from CoreData")){
+                Divider().hidden()
+                GenericButton(isFilled: true, color: .systemOrange, topText: Text("Load from C.D.")){
                     print("leggo da coredata")
                     print(CoreDataController.getCachedTasks())
                 }

@@ -39,7 +39,7 @@ struct SheetView<Content: View>: View {
     let radius: CGFloat = 16
     let indicatorHeight: CGFloat = 6
     let indicatorWidth: CGFloat = 60
-    let snapRatio: CGFloat = 0.25
+    let snapRatio: CGFloat = 0.40
     let minHeightRatio: CGFloat = 0.3
     
     @Binding var isOpen: Bool
@@ -84,7 +84,7 @@ struct SheetView<Content: View>: View {
                         guard abs(value.translation.height) > snapDistance else {return}
                         self.isOpen = value.translation.height < 0
                         if !self.isOpen {
-                            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.closeSheet()
+                            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.closeSheet()
                         }
                     }
                 )
