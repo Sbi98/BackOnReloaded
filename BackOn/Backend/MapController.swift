@@ -36,14 +36,15 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     
     func coordinatesToAddress(_ location: CLLocation?, completion: @escaping (String?, String?)-> Void) { //(address, error) -> Void
-        if location == nil {
-            let location = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation
-            if location == nil {
+        var toConvert = location
+        if toConvert == nil {
+            toConvert = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation
+            if toConvert == nil {
                 completion(nil,"Location access not granted")
                 return
             }
         }
-        CLGeocoder().reverseGeocodeLocation(location!) {(placemarks, error) in
+        CLGeocoder().reverseGeocodeLocation(toConvert!) {(placemarks, error) in
             guard error == nil, let p = placemarks?.first else {completion(nil,"Reverse geocoder failed"); return}
             completion(self.extractAddress(p),nil)
         }
@@ -76,13 +77,13 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
         return address
     }
     
-    func openInMaps(commitment: Commitment){
+    func openInMaps(commitment: Task){
         let request = MKDirections.Request()
         if lastLocation != nil {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
         }
         let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
-        destination.name = "\(commitment.userInfo.name)'s request: \(commitment.title)"
+        destination.name = "\(commitment.neederUser.name)'s request: \(commitment.title)"
         request.destination = destination
         request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
     }

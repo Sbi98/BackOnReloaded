@@ -17,19 +17,17 @@ struct CustomTabView: View {
             VStack {
                 if shared.viewToShow == "HomeView" {
                     HomeView()
-                } else if shared.viewToShow == "CommitmentDetailedView" {
-                    CommitmentDetailedView(selectedCommitment: shared.selectedCommitment)
-                } else if shared.viewToShow == "CommitmentsListView" {
-                    CommitmentsListView()
+                } else if shared.viewToShow == "TasksListView" {
+                    TasksListView()
                 } else if shared.viewToShow == "AddNeedView" {
                     AddNeedView()
-                } else if shared.viewToShow == "NeederHomeView" {
-                    NeederHomeView()
-                } else if shared.viewToShow == "NeedsListView" {
-                    NeedsListView()
-                } else if shared.viewToShow == "NeedDetailedView" {
-                    NeedDetailedView(selectedCommitment: shared.selectedCommitment)
-                } else {
+                }
+//                else if shared.viewToShow == "NeederHomeView" {
+//                    NeederHomeView()
+//                } else if shared.viewToShow == "NeedsListView" {
+//                    NeedsListView()
+//                }
+                else {
                     Text("Vista sbagliata qui :(\n\(shared.viewToShow)")
                         .font(.title)
                         .fontWeight(.regular)

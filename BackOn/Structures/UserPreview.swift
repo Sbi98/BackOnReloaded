@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct UserPreview: View {
-    var user: UserInfo
+    var user: User
     var descr: String
     var whiteText: Bool
     var textColor: Color{
@@ -18,13 +18,13 @@ struct UserPreview: View {
         }
     }
     
-    init(user: UserInfo, description descr: String, whiteText: Bool) {
+    init(user: User, description descr: String, whiteText: Bool) {
         self.user = user
         self.descr = descr
         self.whiteText = whiteText
     }
     
-    init(user: UserInfo, whiteText: Bool) {
+    init(user: User, whiteText: Bool) {
         self.user = user
         descr = ""
         self.whiteText = whiteText

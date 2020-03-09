@@ -21,12 +21,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Get the managed object context from the shared persistent container.
         // let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         // let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
         
         //        QUI CONTROLLO SE L'UTENTE HA EFFETTUATO L'ACCESSO
-        if CoreDataController.shared.userIsLogged() {
-            (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
+        if CoreDataController.userIsLogged() {
+            shared.mainWindow = "LoadingPageView"
+            shared.loggedUser = CoreDataController.getLoggedUser()
         } else {
-            (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView"
+            shared.mainWindow = "LoginPageView"
         }
         
         // Chiedo l'autorizzazione per le notifiche di tipo ALERT, BADGE E NOTIFICATION SOUND

@@ -9,6 +9,15 @@
 import SwiftUI
 import CoreLocation
 
+enum RequiredBy {
+    case TaskTab
+    case DiscoverTab
+    case DiscoverDetailedModal
+    case TaskDetailedModal
+    case RequestDetailedModal
+    case DiscoverDetailedSheet
+}
+
 extension View {
     var darkMode: Bool {
         get {

@@ -30,33 +30,34 @@ let locAlert = Alert(
 )
 
 struct CloseButton: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let detailedViewController = (UIApplication.shared.delegate as! AppDelegate).detailedViewController
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    var externalColor = #colorLiteral(red: 0.9281502366, green: 0.8382813334, blue: 0.6886059642, alpha: 1)
+    var externalColor = #colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)
     var internalColor = UIColor.systemGroupedBackground
     var body: some View {
         Button(action: {
             withAnimation{
-                if self.shared.previousView == "HomeView" {
+                    if self.shared.previousView == "HomeView" {
                     HomeView.show()
-                } else if self.shared.previousView == "LoginPageView"{
-                    LoginPageView.show()
-                } else if self.shared.previousView == "CommitmentDetailedView"{
-                    CommitmentDetailedView.show()
-                } else if self.shared.previousView == "CommitmentsListView"{
-                    CommitmentsListView.show()
-                } else if self.shared.previousView == "AddNeedView"{
-                    AddNeedView.show()
-                } else if self.shared.previousView == "NeederHomeView"{
-                    NeederHomeView.show()
-                } else if self.shared.previousView == "FullDiscoverView"{
-                    FullDiscoverView.show()
-                } else if self.shared.previousView == "NeedsListView"{
-                    NeedsListView.show()
-                } else if self.shared.previousView == "LoadingPageView" {
-                    LoadingPageView.show()
                 }
+//                else if self.shared.previousView == "LoginPageView"{
+//                    LoginPageView.show()
+//                } else if self.shared.previousView == "CommitmentDetailedView"{
+//                    CommitmentDetailedView.show()
+//                } else if self.shared.previousView == "AddNeedView"{
+//                    AddNeedView.show()
+//                } else if self.shared.previousView == "NeederHomeView"{
+//                    NeederHomeView.show()
+//                } else if self.shared.previousView == "FullDiscoverView"{
+//                    FullDiscoverView.show()
+//                } else if self.shared.previousView == "NeedsListView"{
+//                    NeedsListView.show()
+//                } else if self.shared.previousView == "LoadingPageView" {
+//                    LoadingPageView.show()
+//                }
                 self.detailedViewController.showSheet = false
+                self.presentationMode.wrappedValue.dismiss()
             }
         }){
             ZStack{
@@ -71,27 +72,12 @@ struct CloseButton: View {
     }
 }
 
-struct NeederButton: View {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
-    var body: some View {
-        Button(action: {
-            withAnimation{
-                NeederHomeView.show()
-                self.shared.helperMode = false
-            }}){
-                Image(systemName: "person")
-                    .font(.largeTitle)
-                    .foregroundColor(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)))
-        }
-    }
-}
 
 struct ConfirmAddNeedButton: View {
     var insertFunction: () -> Void
     var body: some View {
         Button(action: {
-            NeederHomeView.show()
+            //NeederHomeView.show()
             self.insertFunction()
         }) {
             HStack{
@@ -120,8 +106,7 @@ struct DoItButton: View {
             topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 17)),
             bottomText: nil
         ) {
-            let coreDataController = CoreDataController()
-            self.dbController.insertCommitment(userEmail: coreDataController.getLoggedUser().1.email!, commitId: self.shared.selectedCommitment.ID)
+            self.dbController.insertCommitment(userEmail: CoreDataController.getLoggedUser()!.email, commitId: self.shared.selectedCommitment.ID)
             //self.shared.loading = true
         }
     }
@@ -129,28 +114,19 @@ struct DoItButton: View {
 
 struct CantDoItButton: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
+    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
+
     var body: some View {
-        HStack{
-            Spacer()
-            Button(action: {
-                print("Can't do it")
-                HomeView.show()
-            }) {
-                HStack{
-                    Text("Can't do it ")
-                        .fontWeight(.regular)
-                        .font(.title)
-                    Image(systemName: "hand.raised.slash")
-                        .font(.title)
-                }
-                .padding(20)
-                .background(Color(.systemRed))
-                .cornerRadius(40)
-                .foregroundColor(.white)
-                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color(.systemRed), lineWidth: 0).foregroundColor(Color(.systemRed)))
-            }.buttonStyle(PlainButtonStyle())
-            Spacer()
+        GenericButton(
+            isFilled: false,
+            color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
+            topText: Text("Can't do it").font(Font.custom("SF Pro Text", size: 17)),
+            bottomText: nil
+        ) {
+            print("Can't do it anymore!")
+//            let coreDataController = CoreDataController()
+//            self.dbController.insertCommitment(userEmail: coreDataController.getLoggedUser().1.email!, commitId: self.shared.selectedCommitment.ID)
+            //self.shared.loading = true
         }
     }
 }
@@ -163,7 +139,7 @@ struct DontNeedAnymoreButton: View {
             Spacer()
             Button(action: {
                 print("Don't Need Anymore")
-                NeederHomeView.show()
+                //NeederHomeView.show()
             }) {
                 HStack{
                     Text("Don't need anymore ")
@@ -251,16 +227,16 @@ struct DatePickerGUI: View {
 struct OpenInMapsButton: View {
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     var isFilled: Bool
-    let selectedCommitment: Commitment
+    let selectedTask: Task
     var body: some View {
         GenericButton(
             dimensions: defaultDimensions,
             isFilled: isFilled,
             color:#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
             topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 17)),
-            bottomText: selectedCommitment.etaText != "Calculating..." ? Text(selectedCommitment.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
+            bottomText: selectedTask.etaText != "Calculating..." ? Text(selectedTask.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
         ){
-            self.mapController.openInMaps(commitment: self.selectedCommitment)
+            self.mapController.openInMaps(commitment: self.selectedTask)
         }
     }
 }
@@ -289,9 +265,19 @@ struct GenericButton: View {
     }
 }
 
-struct OpenInMapsButton_Previews: PreviewProvider {
-    static var previews: some View {
-        OpenInMapsButton(isFilled: true, selectedCommitment: Commitment(userInfo: UserInfo(name: "Giancarlo", surname: "Sorrentino", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Ho mal di testa", descr: "Ho bevuto troppo e sono in hangover, che posso farci? Devo andare in farmacia a prendere una moment ma non ho le forze.", date: Date(), position: CLLocation(latitude: 41, longitude: 15), ID: 2))
-    }
-}
 
+//struct NeederButton: View {
+//    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+//
+//    var body: some View {
+//        Button(action: {
+//            withAnimation{
+//                NeederHomeView.show()
+//                self.shared.helperMode = false
+//            }}){
+//                Image(systemName: "person")
+//                    .font(.largeTitle)
+//                    .foregroundColor(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)))
+//        }
+//    }
+//}

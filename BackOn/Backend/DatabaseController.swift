@@ -11,7 +11,7 @@ import CoreLocation
 import SwiftUI
 
 class DatabaseController {
-    let serverIPandPort = "80.183.85.125:8180"
+    let serverIPandPort = "79.27.95.10:8180"
     let shared: Shared
 //    let coreDataController = (UIApplication.shared.delegate as! AppDelegate)
     
@@ -21,11 +21,11 @@ class DatabaseController {
 //    MARK: USER
     
 //    Salvo l'utente nel database
-    func registerUser(user: UserInfo) {
+    func registerUser(user: User) {
         print("registerUser")
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
         
-        let parameters: [String: String] = ["name": user.name, "surname": user.surname, "email" : user.email!, "photo": "\(user.photo)"]
+        let parameters: [String: String] = ["name": user.name, "surname": user.surname ?? "", "email" : user.email, "photo": "\(user.photoURL)"]
                 
         //create the url with URL
         let url = URL(string: "http://\(self.serverIPandPort)/NewBackOn-0.0.1-SNAPSHOT/RegisterUser")! //change the url
@@ -54,8 +54,7 @@ class DatabaseController {
     // Usata dal needer per vedere le sue richieste di aiuto
     func getCommitByUser() {
         print("*** getCommitByUser ***")
-        let coreDataController: CoreDataController = CoreDataController()
-        let userEmail: String = coreDataController.getLoggedUser().1.email!
+        let userEmail: String = CoreDataController.getLoggedUser()!.email
         let parameters: [String: String] = ["email": userEmail]
 
         //create the url with URL
@@ -100,8 +99,8 @@ class DatabaseController {
                                 dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                 let date = dateFormatter.date(from:"\(data!)")!
                                 let isAccepted = dict.value(forKey: "isAccepted")
-                                let position: CLLocation = CLLocation(latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue)
-                                var c: Commitment
+                                //let position: CLLocation = CLLocation(latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue)
+                                var c: Task
                                 
                                 if (isAccepted! as! Int) == 1 {
                                     let userEmail = dict.value(forKey: "userEmail")
@@ -109,14 +108,14 @@ class DatabaseController {
                                     let userSurname = dict.value(forKey: "userSurname")
                                     let userName = dict.value(forKey: "userName")
                                     let userStatus = dict.value(forKey: "userStatus")
-                                    let user = UserInfo(name: userName! as! String, surname: userSurname! as! String, email: userEmail! as! String, photoURL: URL(string: userPhoto! as! String)!, isHelper: userStatus! as! Int)
-                                    c = Commitment(userInfo: user, title: title! as! String, descr: descrizione! as! String, date: date , position: position, ID: id! as! Int)
+                                    let user = User(name: userName! as! String, surname: userSurname! as! String, email: userEmail! as! String, photoURL: URL(string: userPhoto! as! String)!, isHelper: userStatus! as! Int)
+                                    c = Task(neederUser: user, title: title! as! String, descr: descrizione! as! String, date: date, latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue, ID: id! as! Int)
                                 } else {
-                                    let nobodyHelped = UserInfo(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "a")!, isHelper: 1)
-                                    c = Commitment(userInfo: nobodyHelped, title: title! as! String, descr: descrizione! as! String, date: date, position: position, ID: id! as! Int)
+                                    let nobodyHelped = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "a")!, isHelper: 1)
+                                    c = Task(neederUser: nobodyHelped, title: title! as! String, descr: descrizione! as! String, date: date, latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue, ID: id! as! Int)
                                 }
                                 
-                                self.shared.needSet[id! as! Int] = c
+                                self.shared.requestSet[id! as! Int] = c
                             }
                         }
                     }
@@ -128,9 +127,7 @@ class DatabaseController {
    //MARK: InsertCommit
    func insertCommit(title: String, description: String, date: Date, latitude: Double, longitude: Double) {
        print("INSERT COMMIT")
-       let coreDataController: CoreDataController = CoreDataController()
-       
-       let userEmail: String = coreDataController.getLoggedUser().1.email!
+       let userEmail: String = CoreDataController.getLoggedUser()!.email
        
        let format = DateFormatter()
        format.dateFormat = "yyyy-MM-dd HH:mm"
@@ -196,8 +193,7 @@ class DatabaseController {
     //MARK: loadMyCommitments
     func loadMyCommitments() {
         print("*** loadMyCommits ***")
-        let coreDataController: CoreDataController = CoreDataController()
-        let userEmail: String = coreDataController.getLoggedUser().1.email!
+        let userEmail: String = CoreDataController.getLoggedUser()!.email
         let parameters: [String: String] = ["email": userEmail]
         
         //create the url with URL
@@ -220,7 +216,7 @@ class DatabaseController {
         //create dataTask using the session object to send data to the server
         
         //SE VOGLIO LEGGERE I DATI DAL SERVER
-        self.shared.commitmentSet = [:]
+        self.shared.taskSet = [:]
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
@@ -259,15 +255,14 @@ class DatabaseController {
                                 dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                 let date = dateFormatter.date(from:"\(dataCommit)")!
                                 
-                                let position: CLLocation = CLLocation(latitude: (latitudeCommit as! NSString).doubleValue, longitude: (longitudeCommit as! NSString).doubleValue)
+                                //let position: CLLocation = CLLocation(latitude: (latitudeCommit as! NSString).doubleValue, longitude: (longitudeCommit as! NSString).doubleValue)
                                 
-                                let user = UserInfo(name: userName, surname: userSurname, email: userEmail, photoURL: URL(string: userPhoto)!, isHelper: userStatus)
+                                let user = User(name: userName, surname: userSurname, email: userEmail, photoURL: URL(string: userPhoto)!, isHelper: userStatus)
                                 
-                                let c = Commitment(userInfo: user, title: titleCommit, descr: descrizioneCommit, date: date , position: position, ID: idCommit)
+                                let c = Task(neederUser: user, title: titleCommit, descr: descrizioneCommit, date: date, latitude: (latitudeCommit as! NSString).doubleValue, longitude: (longitudeCommit as! NSString).doubleValue, ID: idCommit)
                                 
-                                self.shared.commitmentSet[idCommitment] = c
+                                self.shared.taskSet[idCommitment] = c
                                 
-                                //                                print(c.ID)
                             }
                         }
                     }
@@ -297,9 +292,8 @@ class DatabaseController {
                         return
                     }
                     
-                    let controller = CoreDataController()
-                    let loggedUserEmail = controller.getLoggedUser().1.email!
-                    
+                    let loggedUserEmail = CoreDataController.getLoggedUser()!.email
+            
                     if let array = json as? NSArray {
                         for obj in array {
                             if let dict = obj as? NSDictionary {
@@ -323,14 +317,11 @@ class DatabaseController {
                                     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                     let date = dateFormatter.date(from:"\(data!)")!
                                     
-                                    let position: CLLocation = CLLocation(latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue)
+//                                    let position: CLLocation = CLLocation(latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue)
                                     
+                                    let user = User(name: userName! as! String, surname: userSurname! as! String, email: userEmail! as! String, photoURL: URL(string: userPhoto! as! String)!, isHelper: userStatus! as! Int)
                                     
-                                    let user = UserInfo(name: userName! as! String, surname: userSurname! as! String, email: userEmail! as! String, photoURL: URL(string: userPhoto! as! String)!, isHelper: userStatus! as! Int)
-                                    
-                                    let c = Commitment(userInfo: user, title: title! as! String, descr: descrizione! as! String, date: date , position: position, ID: id! as! Int)
-                                    
-                                    //                                    print(c.title)
+                                    let c = Task(neederUser: user, title: title! as! String, descr: descrizione! as! String, date: date, latitude: (latitude as! NSString).doubleValue, longitude: (longitude as! NSString).doubleValue, ID: id! as! Int)
                                     
                                     self.shared.discoverSet[id! as! Int] = c
                                 }

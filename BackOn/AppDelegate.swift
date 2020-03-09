@@ -14,14 +14,15 @@ import GoogleSignIn
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
-    let shared = Shared()
+    let shared: Shared
     let dbController: DatabaseController
     let mapController: MapController
     let detailedViewController: DetailedViewController
     
     override init() {
+        shared = Shared()
         mapController = MapController()
-        dbController = DatabaseController(shared: self.shared)
+        dbController = DatabaseController(shared: shared)
         detailedViewController = DetailedViewController()
         CalendarController.initController()
         super.init()
@@ -29,33 +30,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        guard error == nil else {print("Sign error");return}
+        guard error == nil else {print("Sign error"); return}
         
         // Perform any operations on signed in user here.
         //let userId = user.userID                  // For client-side use only!
         //let idToken = user.authentication.idToken // Safe to send to the server
-        //let fullName = user.profile.name
-        let givenName = user.profile.givenName
-        let familyName = user.profile.familyName
-        let email = user.profile.email
-        let image = user.profile.imageURL(withDimension: 100)
-        let myUser: UserInfo = UserInfo(photo: image!, name: givenName!, surname: familyName!, email: email!)
+        let myUser = User(name: user.profile.givenName!, surname: user.profile.familyName, email: user.profile.email!, photoURL: user.profile.imageURL(withDimension: 100)!)
         
 //        LO AGGIUNGO A CORE DATA
-        CoreDataController.shared.addUser(user: myUser)
+        CoreDataController.addUser(user: myUser)
 //        REGISTRA L'UTENTE NEL DATABASE LOCALE
         dbController.registerUser(user: myUser)
-        
-        (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
+        shared.loggedUser = CoreDataController.getLoggedUser()
+        shared.mainWindow = "LoadingPageView"
     }
     
     
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
-        print("*** User disconnected ***\n")
-        let coreDatacontroller = CoreDataController()
-        coreDatacontroller.deleteUser(user: coreDatacontroller.getLoggedUser().1)
-        LoginPageView.show()
+        print("\n*** User signed out from Google ***\n")
+        guard let loggedUser = CoreDataController.getLoggedUser() else {return}
+        CoreDataController.deleteUser(user: loggedUser)
+        shared.mainWindow = "LoginPageView"
     }
     
     
@@ -117,7 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                fatalError("Unresolved error \(error)")
             }
         })
         return container

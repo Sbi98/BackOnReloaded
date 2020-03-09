@@ -18,13 +18,10 @@ struct HomeView: View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
             VStack (alignment: .leading, spacing: 0){
                 HStack{
-                    Text("Hi \(CoreDataController().getLoggedUser().1.name)!")
+                    Text("Hi \(shared.loggedUser!.name)!")
                         .font(.largeTitle)
                         .bold()
                         .fontWeight(.heavy)
-//                        .padding(.horizontal)
-//                        .padding(.top)
-//                        .frame(width: UIScreen.main.bounds.width, alignment: .leading)
                     Spacer()
                     Button(action: {
                         print("Logout!")
@@ -36,9 +33,15 @@ struct HomeView: View {
                     }
                 }.padding()
                 TaskRow()
-//                    .frame(width: UIScreen.main.bounds.width, height: CGFloat(400), alignment: .top)
-                //DiscoverRow().frame(width: UIScreen.main.bounds.width, height: CGFloat(200), alignment: .top).padding(80)
-//                Spacer()
+                GenericButton(isFilled: true, color: .orange, topText: Text("Save in CoreData")){
+                    print("salvo in coredata")
+                    CoreDataController.addTasks(tasks: self.shared.commitmentArray())
+                }
+                GenericButton(isFilled: true, color: .orange, topText: Text("Load from CoreData")){
+                    print("leggo da coredata")
+                    print(CoreDataController.getCachedTasks())
+                }
+                AddNeedButton()
             }
         }
         .padding(.top, 40)

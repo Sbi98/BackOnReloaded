@@ -15,49 +15,53 @@ class Shared: ObservableObject {
                 (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
                 if helperMode{
                     discoverSet = [:]
-                    commitmentSet = [:]
+                    taskSet = [:]
                     (UIApplication.shared.delegate as! AppDelegate).dbController.loadCommitByOther()
                     (UIApplication.shared.delegate as! AppDelegate).dbController.loadMyCommitments()
                 } else {
-                    needSet = [:]
+                    requestSet = [:]
                     (UIApplication.shared.delegate as! AppDelegate).dbController.getCommitByUser()
                 }
                 self.loading = false
             }
         }
     }
+    @Published var loggedUser: User?
     @Published var previousView = "HomeView"
     @Published var viewToShow = "HomeView"
     @Published var mainWindow = "CustomTabView"
     @Published var selectedTab = 0
-    @Published var selectedCommitment = Commitment()
-    @Published var commitmentSet: [Int:Commitment] = [:]
-    @Published var discoverSet: [Int:Commitment] = [:]
-    @Published var needSet: [Int:Commitment] = [:]
+    @Published var selectedCommitment = Task()
+    @Published var taskSet: [Int:Task] = [:]
+    @Published var discoverSet: [Int:Task] = [:]
+    @Published var requestSet: [Int:Task] = [:]
     @Published var helperMode = true
     
     @Published var fullDiscoverViewMode = 0
-    
-    private static var formatter = DateFormatter()
-    var dateFormatter: DateFormatter{
-        get{
-            Shared.formatter.dateFormat = "MMM dd, yyyy  HH:mm"
-            return Shared.formatter
-        }
-    }
-    @Published var neederInfo: UserInfo?
-    
 
     
-    func commitmentArray() -> [Commitment] {
-        return Array(commitmentSet.values)
+    func commitmentArray() -> [Task] {
+        return Array(taskSet.values)
     }
     
-    func needArray() -> [Commitment] {
-        return Array(needSet.values)
+    func needArray() -> [Task] {
+        return Array(requestSet.values)
     }
     
-    func discoverArray() -> [Commitment] {
+    func discoverArray() -> [Task] {
         return Array(discoverSet.values)
     }
 }
+
+
+
+    
+//    private static var formatter = DateFormatter()
+//    var dateFormatter: DateFormatter{
+//        get{
+//            Shared.formatter.dateFormat = "MMM dd, yyyy  HH:mm"
+//            return Shared.formatter
+//        }
+//    }
+//    @Published var neederInfo: User?
+    

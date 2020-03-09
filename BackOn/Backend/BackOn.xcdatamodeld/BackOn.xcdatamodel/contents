@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15702" systemVersion="19C57" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15702" systemVersion="19D76" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="PTask" representedClassName="PTask" syncable="YES" codeGenerationType="class">
+        <attribute name="address" optional="YES" attributeType="String"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="descr" optional="YES" attributeType="String"/>
+        <attribute name="helperEmail" optional="YES" attributeType="String" valueTransformerName="nil" customClassName="PUser"/>
+        <attribute name="helperName" optional="YES" attributeType="String"/>
+        <attribute name="helperPhotoURL" optional="YES" attributeType="URI"/>
+        <attribute name="helperSurname" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="neederEmail" attributeType="String" valueTransformerName="nil" customClassName="PUser"/>
+        <attribute name="neederName" attributeType="String"/>
+        <attribute name="neederPhotoURL" attributeType="URI"/>
+        <attribute name="neederSurname" optional="YES" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+    </entity>
     <entity name="PUser" representedClassName="PUser" syncable="YES" codeGenerationType="class">
-        <attribute name="email" optional="YES" attributeType="String"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="photo" optional="YES" attributeType="URI"/>
+        <attribute name="email" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="photoURL" attributeType="URI"/>
         <attribute name="surname" optional="YES" attributeType="String"/>
     </entity>
     <elements>
+        <element name="PTask" positionX="-45" positionY="-36" width="128" height="268"/>
         <element name="PUser" positionX="-45" positionY="0" width="128" height="103"/>
     </elements>
 </model>

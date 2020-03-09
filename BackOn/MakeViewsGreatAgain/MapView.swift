@@ -10,29 +10,20 @@ import SwiftUI
 import UIKit
 import MapKit
 
-enum MapFor {
-    case TaskTab
-    case DiscoverTab
-    case DiscoverDetailedModal
-    case TaskDetailedModal
-    case RequestDetailedModal
-}
-
 struct MapView: UIViewRepresentable {
-//    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
-    let mode: MapFor
-    var selectedCommitment: Commitment?
+    let mode: RequiredBy
+    var selectedTask: Task?
     
-    class CommitmentAnnotation: NSObject, MKAnnotation {
-        var commitment: Commitment
+    class TaskAnnotation: NSObject, MKAnnotation {
+        var task: Task
         // This property must be key-value observable, which the `@objc dynamic` attributes provide.
         @objc dynamic var coordinate: CLLocationCoordinate2D
         var title: String?
         var subtitle: String?
-        init(commitment: Commitment) {
-            self.commitment = commitment
-            self.coordinate = commitment.position.coordinate
+        init(task: Task) {
+            self.task = task
+            self.coordinate = task.position.coordinate
             super.init()
         }
     }
@@ -64,6 +55,8 @@ struct MapView: UIViewRepresentable {
                 view.image = UIImage(named: "Empty")
                 view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
                 view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
+                view.titleVisibility = .hidden
+                view.subtitleVisibility = .hidden
             }
             return view
         }
@@ -71,7 +64,7 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard parent.mode == .DiscoverTab else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
-            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.showSheet(commitment: (view.annotation! as! CommitmentAnnotation).commitment)
+            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
         }
         
         func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
@@ -95,8 +88,8 @@ struct MapView: UIViewRepresentable {
         // vedi https://stackoverflow.com/questions/40844336/create-long-press-gesture-recognizer-with-annotation-pin
         switch mode {
         case .RequestDetailedModal:
-            mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: "You"))
-            mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: mapSpan), animated: true)
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "You"))
+            mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             return mapView
         case .TaskTab:
             mapView.isScrollEnabled = false;
@@ -104,28 +97,29 @@ struct MapView: UIViewRepresentable {
             mapView.isPitchEnabled = false;
             mapView.isZoomEnabled = false;
             mapView.showsUserLocation = false;
-            mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedCommitment!.position.coordinate.latitude + 0.00035, longitude: selectedCommitment!.position.coordinate.longitude) , span: mapSpan), animated: true)
-            mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: ""))
+            mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedTask!.position.coordinate.latitude, longitude: selectedTask!.position.coordinate.longitude) , span: mapSpan), animated: true)
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: ""))
             return mapView
         case .TaskDetailedModal:
-            mapView.addAnnotation(generateAnnotation(selectedCommitment!, title: selectedCommitment!.userInfo.name))
-            mapView.setRegion(MKCoordinateRegion(center:selectedCommitment!.position.coordinate, span: mapSpan), animated: true)
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: selectedTask!.neederUser.name))
+            mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView
         case .DiscoverDetailedModal:
-            let discoverCommitment = (UIApplication.shared.delegate as! AppDelegate).detailedViewController.commitment!
-            mapView.addAnnotation(generateAnnotation(discoverCommitment, title: discoverCommitment.userInfo.name))
-            mapView.setRegion(MKCoordinateRegion(center:discoverCommitment.position.coordinate, span: mapSpan), animated: true)
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: selectedTask!.neederUser.name))
+            mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView
         case .DiscoverTab:
-            for (_, discoverableCommitment) in (UIApplication.shared.delegate as! AppDelegate).shared.discoverSet {
-                mapView.addAnnotation(generateAnnotation(discoverableCommitment, title: discoverableCommitment.userInfo.name))
+            for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.discoverSet {
+                mapView.addAnnotation(generateAnnotation(discoverableTask, title: discoverableTask.neederUser.name))
             }
             if let lastLocation = mapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
             }
             (UIApplication.shared.delegate as! AppDelegate).detailedViewController.baseMKMap = mapView
+            return mapView
+        case .DiscoverDetailedSheet:
             return mapView
         }
         
@@ -134,18 +128,18 @@ struct MapView: UIViewRepresentable {
     func updateUIView(_ uiView: MKMapView, context: Context) {
     }
     
-    private func generateAnnotation( _ commitment: Commitment, title: String) -> MKAnnotation {
-        let commitmentAnnotation = CommitmentAnnotation(commitment: commitment)
-        commitmentAnnotation.title = title
-        commitmentAnnotation.subtitle = commitment.title
-        return commitmentAnnotation
+    private func generateAnnotation( _ Task: Task, title: String) -> MKAnnotation {
+        let taskAnnotation = TaskAnnotation(task: Task)
+        taskAnnotation.title = title
+        taskAnnotation.subtitle = Task.title
+        return taskAnnotation
     }
     
     func addRoute(mapView: MKMapView){
         guard let lastLocation = mapController.lastLocation else {return}
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation.coordinate, addressDictionary: nil))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: selectedCommitment!.position.coordinate, addressDictionary: nil))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: selectedTask!.position.coordinate, addressDictionary: nil))
         request.requestsAlternateRoutes = false
         request.transportType = .walking
         MKDirections(request: request).calculate { (response, error) in
@@ -215,15 +209,17 @@ struct searchLocation: View {
     var body: some View {
         Form {
             Section (header: SearchBar(text: $addressCompleter.completer.queryFragment)) {
-                Text(userLocationAddress).onTapGesture {
-                    self.selection = self.userLocationAddress
-                    self.presentationMode.wrappedValue.dismiss()
-                }
-                ForEach(addressCompleter.completer.results, id: \.hashValue) { currentItem in
-                    Text("\(currentItem.title) (\(currentItem.subtitle))").onTapGesture {
-                        self.selection = "\(currentItem.title) (\(currentItem.subtitle))"
+                Text(userLocationAddress)
+                    .onTapGesture {
+                        self.selection = self.userLocationAddress
                         self.presentationMode.wrappedValue.dismiss()
                     }
+                ForEach(addressCompleter.completer.results, id: \.hashValue) { currentItem in
+                    Text("\(currentItem.title) (\(currentItem.subtitle))")
+                        .onTapGesture {
+                            self.selection = "\(currentItem.title) (\(currentItem.subtitle))"
+                            self.presentationMode.wrappedValue.dismiss()
+                        }
                 }
             }
         }.onAppear() {

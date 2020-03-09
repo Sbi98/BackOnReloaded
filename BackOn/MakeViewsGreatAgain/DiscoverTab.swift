@@ -24,11 +24,11 @@ struct FullDiscoverView: View {
                 VStack (alignment: .center, spacing: 25){
                     ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
                         Button(action: {
-                            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.commitment = currentDiscover
+                            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.task = currentDiscover
                             self.showDetailedModal = true
                         }) {
                             HStack {
-                                UserPreview(user: currentDiscover.userInfo, description: "\(currentDiscover.title)", whiteText: self.darkMode)
+                                UserPreview(user: currentDiscover.neederUser, description: "\(currentDiscover.title)", whiteText: self.darkMode)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.headline)
@@ -51,23 +51,23 @@ struct FullDiscoverView: View {
 
 struct DiscoverInfoDetailedView: View {
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
-    let selectedCommitment = (UIApplication.shared.delegate as! AppDelegate).detailedViewController.commitment
+    let selectedTask = (UIApplication.shared.delegate as! AppDelegate).detailedViewController.task
     
     var body: some View {
         VStack(alignment: .leading) {
-                    if selectedCommitment != nil{
+                    if selectedTask != nil{
                         
                         VStack(alignment: .leading){
                             
                             HStack{
-                                Avatar(image: selectedCommitment!.userInfo.profilePic)
+                                Avatar(image: selectedTask!.neederUser.profilePic)
                                 VStack(alignment: .leading){
-                                    Text(selectedCommitment!.userInfo.identity)
+                                    Text(selectedTask!.neederUser.identity)
                                         .fontWeight(.bold)
                                         .font(Font.custom("SF Pro Text", size: 23))
                                         .foregroundColor(.black)
                                         .animation(.easeOut(duration: 0))
-                                    Text(selectedCommitment!.title)
+                                    Text(selectedTask!.title)
                                         .fontWeight(.regular)
                                         .font(Font.custom("SF Pro Text", size: 17))
                                         .foregroundColor(.black)
@@ -77,36 +77,22 @@ struct DiscoverInfoDetailedView: View {
                                 Spacer()
                                 CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
                             }.frame(height: 54).padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
-        //                        .cornerRadius(20, corners: [.topLeft, .topRight])
-                         
-        //                Text("Address")
-        //                    .foregroundColor(.secondary)
-        //                    .fontWeight(.regular)
-        //                    .font(Font.custom("SF Pro Text", size: 17))
-        //                    .padding(.top, 10).padding(.horizontal, 25)
-        //                Text("Ciao")
-        //                Divider().padding(.horizontal, 25)
                             
-                            if !selectedCommitment!.descr.isEmpty{
-                                Text(selectedCommitment!.descr)
-        //                    .lineLimit(5)
+                            if selectedTask!.descr != nil {
+                                Text(selectedTask!.descr!)
                                 .fontWeight(.regular)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .font(Font.custom("SF Pro Text", size: 19))
-        //                        .frame(height: 90)
                                     .padding(.horizontal, 25).padding(.top, 5).padding(.bottom, 10)
                                     .animation(.easeOut(duration: 0))
                             }
                             
-        //                    Divider().padding(.horizontal, 25)
-                            
                             HStack{
                                 Spacer()
-                                OpenInMapsButton(isFilled: false, selectedCommitment: selectedCommitment! ).padding(.horizontal)
+                                OpenInMapsButton(isFilled: false, selectedTask: selectedTask! ).padding(.horizontal)
                                 DoItButton().padding(.horizontal)
                                 Spacer()
                             }.padding(.vertical, 5)
-                            //                .padding(.top, 10)
                             
                             Text("Address")
                                 .foregroundColor(.secondary)
@@ -116,7 +102,6 @@ struct DiscoverInfoDetailedView: View {
                                 .animation(.easeOut(duration: 0))
                             
                             Divider().padding(.horizontal, 25).padding(.top, -5)
-                            //                    Text(selectedCommitment!.textAddress!)
                             Text("Via Gianluca Rossi 16\n84088 Siano, Provincia di Salerno\nItalia")
                                 .padding(.horizontal, 25).padding(.top, -5)
                                 .animation(.easeOut(duration: 0))
@@ -126,22 +111,19 @@ struct DiscoverInfoDetailedView: View {
                                 .fontWeight(.regular)
                                 .font(Font.custom("SF Pro Text", size: 17))
                                 .padding(.top, 10).padding(.horizontal, 25)
-                            .animation(.easeOut(duration: 0))
+                                .animation(.easeOut(duration: 0))
                             
                             Divider().padding(.horizontal, 25).padding(.top, -5)
-                            //                    Text(selectedCommitment!.textAddress!)
-                            Text( "\(self.selectedCommitment!.date, formatter: customDateFormat)"
-//                                self.shared.dateFormatter.string(from: self.selectedCommitment!.date)
-                            )
+                            Text( "\(self.selectedTask!.date, formatter: customDateFormat)")
                                 .padding(.horizontal, 25).padding(.top, -5)
                                 .animation(.easeOut(duration: 0))
                         }
-                            .onAppear{
+                        .onAppear{
                             if self.mapController.lastLocation != nil {
-                                self.selectedCommitment!.requestETA(source: self.mapController.lastLocation!)
+                                self.selectedTask!.requestETA(source: self.mapController.lastLocation!)
                             }
                         }
-                    } else{
+                    } else {
                         EmptyView()
                     }
                 }
@@ -175,17 +157,17 @@ struct DiscoverSheetView: View {
 
 class DetailedViewController: ObservableObject {
     @Published var showSheet = false
-    @Published var commitment: Commitment?
+    @Published var task: Task?
     @Published var baseMKMap: MKMapView?
     
-    func showSheet(commitment: Commitment) {
-        self.commitment = commitment
+    func showSheet(task: Task) {
+        self.task = task
         showSheet = true
     }
     
     func closeSheet() {
         showSheet = false
-        commitment = nil
+        task = nil
         baseMKMap?.deselectAnnotation(baseMKMap?.selectedAnnotations.first, animated: true)
     }
 }
