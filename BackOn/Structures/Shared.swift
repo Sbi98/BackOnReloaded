@@ -29,7 +29,7 @@ class Shared: ObservableObject {
     @Published var loggedUser: User?
     @Published var previousView = "HomeView"
     @Published var viewToShow = "HomeView"
-    @Published var mainWindow = "CustomTabView"
+    @Published var mainWindow = "LoadingPageView"
     @Published var selectedTab = 0
     @Published var selectedCommitment = Task()
     @Published var taskSet: [Int:Task] = [:]
