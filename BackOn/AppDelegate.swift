@@ -24,7 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         mapController = MapController()
         dbController = DatabaseController(shared: shared)
         detailedViewController = DetailedViewController()
-        CalendarController.initController()
         super.init()
     }
     
@@ -41,7 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         CoreDataController.addUser(user: myUser)
 //        REGISTRA L'UTENTE NEL DATABASE LOCALE
         dbController.registerUser(user: myUser)
-        shared.loggedUser = CoreDataController.getLoggedUser()
         shared.mainWindow = "LoadingPageView"
     }
     

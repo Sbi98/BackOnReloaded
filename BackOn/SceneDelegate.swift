@@ -21,24 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Get the managed object context from the shared persistent container.
         // let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         // let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
         
-        //        QUI CONTROLLO SE L'UTENTE HA EFFETTUATO L'ACCESSO
-        if CoreDataController.userIsLogged() {
-            shared.mainWindow = "LoadingPageView"
-            shared.loggedUser = CoreDataController.getLoggedUser()
-        } else {
-            shared.mainWindow = "LoginPageView"
-        }
-        
-        // Chiedo l'autorizzazione per le notifiche di tipo ALERT, BADGE E NOTIFICATION SOUND
-//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-//            if success {
-//                print("Notification permission set!")
-//            } else if let error = error {
-//                print(error.localizedDescription)
-//            }
-//        }
+        CalendarController.initController() //controlla i permessi del calendario
+        CoreDataController.initController() //Qui se l'utente non ha fatto l'accesso imposta la LoginPageView
         
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
@@ -85,6 +70,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
     }
     
-    
 }
 
+        // Chiedo l'autorizzazione per le notifiche di tipo ALERT, BADGE E NOTIFICATION SOUND
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+//            if success {
+//                print("Notification permission set!")
+//            } else if let error = error {
+//                print(error.localizedDescription)
+//            }
+//        }

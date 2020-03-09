@@ -18,7 +18,7 @@ struct TaskView: View {
                 MapView(mode: .TaskTab, selectedTask: task)
                 VStack (spacing: 2){
                     ZStack {
-                        Image("cannotation")
+                        Image("cAnnotation")
                             .foregroundColor(Color(UIColor.systemOrange))
                             .offset(y: -5)
                             .scaleEffect(0.97)

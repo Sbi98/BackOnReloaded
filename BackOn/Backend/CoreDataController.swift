@@ -11,6 +11,14 @@ import CoreData
 import SwiftUI
 
 class CoreDataController {
+    static var loggedUser: User?
+    
+    static func initController() {
+        loggedUser = getLoggedUser()
+        if loggedUser == nil {
+            (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView"
+        }
+    }
     
     static func addUser(user: User) { // save to CoreData
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -26,8 +34,8 @@ class CoreDataController {
             print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n")
             return
         }
-        print("\(newUser.name!) saved in memory")
-        (UIApplication.shared.delegate as! AppDelegate).shared.loggedUser = getLoggedUser()
+        print("\(user.name) saved in memory")
+        loggedUser = user
     }
     
     static func userIsLogged() -> Bool {
