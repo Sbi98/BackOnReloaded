@@ -132,21 +132,21 @@ struct DiscoverInfoDetailedView: View {
     }
 }
 
-struct DiscoverFullDetailedView: View {
-    var body: some View {
-        VStack {
-            ZStack {
-                MapView(mode: .DiscoverDetailedModal)
-                    .statusBar(hidden: true)
-                    .edgesIgnoringSafeArea(.all)
-                    .frame(height: 515)
-                CloseButton()
-                    .offset(x:173, y:-265)
-            }
-            DiscoverInfoDetailedView()
-        }
-    }
-}
+//struct DiscoverFullDetailedView: View {
+//    var body: some View {
+//        VStack {
+//            ZStack {
+//                MapView(mode: .DiscoverDetailedModal)
+//                    .statusBar(hidden: true)
+//                    .edgesIgnoringSafeArea(.all)
+//                    .frame(height: 515)
+//                CloseButton()
+//                    .offset(x:173, y:-265)
+//            }
+//            DiscoverInfoDetailedView()
+//        }
+//    }
+//}
 
 struct DiscoverSheetView: View {
     @ObservedObject var detailedViewController = (UIApplication.shared.delegate as! AppDelegate).detailedViewController
