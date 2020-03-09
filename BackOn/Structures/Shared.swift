@@ -19,7 +19,7 @@ class Shared: ObservableObject {
                     (UIApplication.shared.delegate as! AppDelegate).dbController.loadCommitByOther()
                     (UIApplication.shared.delegate as! AppDelegate).dbController.loadMyCommitments()
                 } else {
-                    requestSet = [:]
+//                    requestSet = [:]
                     (UIApplication.shared.delegate as! AppDelegate).dbController.getCommitByUser()
                 }
                 self.loading = false
@@ -34,17 +34,17 @@ class Shared: ObservableObject {
     @Published var selectedCommitment = Task()
     @Published var taskSet: [Int:Task] = [:]
     @Published var discoverSet: [Int:Task] = [:]
-    @Published var requestSet: [Int:Task] = [:]
+    @Published var requestSet: [Int:Task] = [1:Task(neederUser: User(name: "Gianfranco", surname: "Salentino", email: "giovannifalzone@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!), title: "Wheelchair transport", descr: "Sono un po' scemo e mi non ho le gambe ho bisogno di aiuto.", date: Date(), latitude: 41.5, longitude: 15, ID: 1)]
     @Published var helperMode = true
     
     @Published var fullDiscoverViewMode = 0
 
     
-    func commitmentArray() -> [Task] {
+    func taskArray() -> [Task] {
         return Array(taskSet.values)
     }
     
-    func needArray() -> [Task] {
+    func requestArray() -> [Task] {
         return Array(requestSet.values)
     }
     

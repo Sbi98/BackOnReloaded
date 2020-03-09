@@ -33,9 +33,10 @@ struct HomeView: View {
                     }
                 }.padding()
                 TaskRow()
+                RequestRow()
                 GenericButton(isFilled: true, color: .orange, topText: Text("Save in CoreData")){
                     print("salvo in coredata")
-                    CoreDataController.addTasks(tasks: self.shared.commitmentArray())
+                    CoreDataController.addTasks(tasks: self.shared.taskArray())
                 }
                 GenericButton(isFilled: true, color: .orange, topText: Text("Load from CoreData")){
                     print("leggo da coredata")

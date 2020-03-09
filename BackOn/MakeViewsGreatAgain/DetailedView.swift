@@ -15,7 +15,6 @@ struct DetailedView: View {
     var requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task
     var body: some View {
-
         VStack(alignment: .leading){
             HStack{
                 Avatar(image: selectedTask.neederUser.profilePic)

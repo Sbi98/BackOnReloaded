@@ -54,7 +54,7 @@ struct TaskView: View {
             .frame(width: 320, height: 350)
             .cornerRadius(10)
             .shadow(radius: 5)
-       }.buttonStyle(PlainButtonStyle())
+        }.buttonStyle(PlainButtonStyle())
             .sheet(isPresented: self.$showModal, content: {
                 DetailedView(requiredBy: .TaskDetailedModal, selectedTask: self.task)
             })
@@ -80,9 +80,9 @@ struct TaskRow: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
-                    ForEach(shared.commitmentArray(), id: \.ID) { currentTask in
+                    ForEach(shared.taskArray(), id: \.ID) { currentTask in
                         ZStack{
-                            Color(.black).cornerRadius(10).opacity(0.45)
+                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
                             TaskView(task: currentTask)
                         }
                     }
@@ -115,7 +115,7 @@ struct TasksListView: View {
             }.buttonStyle(PlainButtonStyle())
             RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
                 VStack (alignment: .center, spacing: 25){
-                    ForEach(shared.commitmentArray(), id: \.ID) { currentTask in
+                    ForEach(shared.taskArray(), id: \.ID) { currentTask in
                         Button(action: {withAnimation{
                             self.selectedTask = currentTask
                             self.showModal = true
