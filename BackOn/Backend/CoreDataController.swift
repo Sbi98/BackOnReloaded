@@ -38,18 +38,6 @@ class CoreDataController {
         loggedUser = user
     }
     
-    static func userIsLogged() -> Bool {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<PUser> = PUser.fetchRequest()
-        do {
-            let array = try context.fetch(fetchRequest)
-            return !array.isEmpty
-        } catch let error {
-            print("PUser fetchRequest error: \(error.localizedDescription)")
-            return false
-        }
-    }
-    
     static func getLoggedUser() -> User? {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<PUser> = PUser.fetchRequest()
@@ -135,3 +123,16 @@ class CoreDataController {
         return cachedTasks
     }
 }
+
+
+//static func userIsLogged() -> Bool {
+//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//    let fetchRequest: NSFetchRequest<PUser> = PUser.fetchRequest()
+//    do {
+//        let array = try context.fetch(fetchRequest)
+//        return !array.isEmpty
+//    } catch let error {
+//        print("PUser fetchRequest error: \(error.localizedDescription)")
+//        return false
+//    }
+//}
