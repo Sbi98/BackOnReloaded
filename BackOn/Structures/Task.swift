@@ -32,17 +32,6 @@ public class Task: NSObject, ObservableObject {
         super.init()
     }
     
-    
-//    init(neederUser: User, title: String, descr: String, date: Date, position: CLLocation, ID: Int) {
-//        self.neederUser = neederUser
-//        self.title = title
-//        self.descr = descr
-//        self.date = date
-//        self.ID = ID
-//        self.position = position
-//        super.init()
-//    }
-    
     init(neederUser: User, title: String, descr: String, date: Date, latitude: Double, longitude: Double, ID: Int) {
         self.neederUser = neederUser
         self.title = title

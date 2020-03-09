@@ -28,15 +28,6 @@ struct LoginPageView: View {
                 .shadow(radius: 10)
             
             Spacer()
-            VStack {
-                Text("How would you use the app?").font(.headline).colorInvert()
-                Picker(selection: self.$shared.helperMode, label: Text("Helper or needer")) {
-                    Text("Helper").tag(true)
-                    Text("Needer").tag(false)
-                }.pickerStyle(SegmentedPickerStyle()).labelsHidden()
-                    .frame(width: 200, height: 30, alignment: .center)
-            }
-            Spacer()
             GoogleButton()
                 .frame(width: 200, height: 30, alignment: .center)
             Spacer()

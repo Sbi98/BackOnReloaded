@@ -13,43 +13,54 @@ class Shared: ObservableObject {
         didSet {
             if oldValue == false && loading == true {
                 (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
-                if helperMode{
-                    discoverSet = [:]
-                    taskSet = [:]
-                    (UIApplication.shared.delegate as! AppDelegate).dbController.loadCommitByOther()
-                    (UIApplication.shared.delegate as! AppDelegate).dbController.loadMyCommitments()
-                } else {
-//                    requestSet = [:]
-                    (UIApplication.shared.delegate as! AppDelegate).dbController.getCommitByUser()
-                }
+                myDiscoverables = [:]
+                myTasks = [:]
+//                myRequests = [:]
+                (UIApplication.shared.delegate as! AppDelegate).dbController.loadCommitByOther()
+                (UIApplication.shared.delegate as! AppDelegate).dbController.loadMyCommitments()
+                (UIApplication.shared.delegate as! AppDelegate).dbController.getCommitByUser()
                 self.loading = false
             }
         }
     }
-    @Published var loggedUser: User?
-    @Published var previousView = "HomeView"
-    @Published var viewToShow = "HomeView"
-    @Published var mainWindow = "LoadingPageView"
-    @Published var selectedTab = 0
-    @Published var selectedCommitment = Task()
-    @Published var taskSet: [Int:Task] = [:]
-    @Published var discoverSet: [Int:Task] = [:]
-    @Published var requestSet: [Int:Task] = [1:Task(neederUser: User(name: "Gianfranco", surname: "Salentino", email: "giovannifalzone@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!), title: "Wheelchair transport", descr: "Sono un po' scemo e mi non ho le gambe ho bisogno di aiuto.", date: Date(), latitude: 41.5, longitude: 15, ID: 1)]
-    @Published var helperMode = true
     
-    @Published var fullDiscoverViewMode = 0
+    @Published var activeView = "HomeView"
+    @Published var mainWindow = "LoadingPageView"
+    @Published var selectedCommitment = Task()
+    @Published var myTasks: [Int:Task] = [:]
+    @Published var myDiscoverables: [Int:Task] = [:]
+    @Published var myRequests: [Int:Task] = [1:Task(neederUser: User(name: "Gianfranco", surname: "Salentino", email: "giovannifalzone@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!), title: "Wheelchair transport", descr: "Sono un po' scemo e mi non ho le gambe ho bisogno di aiuto.", date: Date(), latitude: 41.5, longitude: 15, ID: 1)]
 
     
     func taskArray() -> [Task] {
-        return Array(taskSet.values)
+        return Array(myTasks.values)
     }
     
     func requestArray() -> [Task] {
-        return Array(requestSet.values)
+        return Array(myRequests.values)
     }
     
     func discoverArray() -> [Task] {
-        return Array(discoverSet.values)
+        return Array(myDiscoverables.values)
+    }
+    
+    func loadFromCoreData() {
+        let tasks = CoreDataController.getCachedTasks()
+        for task in tasks {
+            if task.helperUser == nil {
+                if task.neederUser.email == CoreDataController.loggedUser!.email {
+                    myRequests[task.ID] = task
+                } else {
+                    myDiscoverables[task.ID] = task
+                }
+            } else {
+                if task.helperUser!.email == CoreDataController.loggedUser!.email {
+                    myTasks[task.ID] = task
+                } else {
+                    print("loadFromCoreData: inconsistent state for task: \(task)")
+                }
+            }
+        }
     }
 }
 

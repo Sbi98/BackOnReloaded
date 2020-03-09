@@ -64,13 +64,13 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard parent.mode == .DiscoverTab else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
-            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
+            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
         }
         
         func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
             guard parent.mode == .DiscoverTab else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
-            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.closeSheet()
+            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.closeSheet()
         }
         
     }
@@ -111,13 +111,13 @@ struct MapView: UIViewRepresentable {
             addRoute(mapView: mapView)
             return mapView
         case .DiscoverTab:
-            for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.discoverSet {
+            for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
                 mapView.addAnnotation(generateAnnotation(discoverableTask, title: discoverableTask.neederUser.name))
             }
             if let lastLocation = mapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
             }
-            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.baseMKMap = mapView
+            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap = mapView
             return mapView
         case .DiscoverDetailedSheet:
             return mapView

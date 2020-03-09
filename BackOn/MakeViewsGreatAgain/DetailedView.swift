@@ -12,7 +12,7 @@ import MapKit
 struct DetailedView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
-    var requiredBy: RequiredBy
+    let requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task
     var body: some View {
         VStack(alignment: .leading){
@@ -34,7 +34,7 @@ struct DetailedView: View {
                 CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
             }
             .frame(height: 54).padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
-            if requiredBy != RequiredBy.DiscoverDetailedSheet {
+            if requiredBy != .DiscoverDetailedSheet {
                 MapView(mode: requiredBy, selectedTask: selectedTask).offset(y:-10)
             }
             
@@ -51,7 +51,7 @@ struct DetailedView: View {
                 Spacer()
                 OpenInMapsButton(isFilled: requiredBy == RequiredBy.TaskDetailedModal, selectedTask: selectedTask).padding(.horizontal)
                 if requiredBy == RequiredBy.DiscoverDetailedModal || requiredBy == RequiredBy.DiscoverDetailedSheet {
-                    DoItButton().padding(.horizontal)
+                    DoItButton(task: selectedTask).padding(.horizontal)
                 } else if requiredBy == RequiredBy.RequestDetailedModal {
                     CantDoItButton().padding(.horizontal) ///CI VA IL BOTTONE DI ANNULLAMENTO DELLA REQUEST
                 } else {

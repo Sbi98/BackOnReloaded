@@ -9,7 +9,7 @@
 import SwiftUI
 import MapKit
 
-let defaultDimensions = (width: CGFloat(155.52), height: CGFloat(48))
+let defaultButtonDimensions = (width: CGFloat(155.52), height: CGFloat(48))
 
 let customDateFormat: DateFormatter = {
     let formatter = DateFormatter()
@@ -31,32 +31,15 @@ let locAlert = Alert(
 
 struct CloseButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let detailedViewController = (UIApplication.shared.delegate as! AppDelegate).detailedViewController
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     var externalColor = #colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)
     var internalColor = UIColor.systemGroupedBackground
+    
     var body: some View {
         Button(action: {
-            withAnimation{
-                    if self.shared.previousView == "HomeView" {
-                    HomeView.show()
-                }
-//                else if self.shared.previousView == "LoginPageView"{
-//                    LoginPageView.show()
-//                } else if self.shared.previousView == "CommitmentDetailedView"{
-//                    CommitmentDetailedView.show()
-//                } else if self.shared.previousView == "AddNeedView"{
-//                    AddNeedView.show()
-//                } else if self.shared.previousView == "NeederHomeView"{
-//                    NeederHomeView.show()
-//                } else if self.shared.previousView == "FullDiscoverView"{
-//                    FullDiscoverView.show()
-//                } else if self.shared.previousView == "NeedsListView"{
-//                    NeedsListView.show()
-//                } else if self.shared.previousView == "LoadingPageView" {
-//                    LoadingPageView.show()
-//                }
-                self.detailedViewController.showSheet = false
+            withAnimation {
+                HomeView.show()
+                self.discoverTabController.showSheet = false
                 self.presentationMode.wrappedValue.dismiss()
             }
         }){
@@ -96,8 +79,7 @@ struct ConfirmAddNeedButton: View {
 }
 
 struct DoItButton: View {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
+    let task: Task
     
     var body: some View {
         GenericButton(
@@ -106,15 +88,12 @@ struct DoItButton: View {
             topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 17)),
             bottomText: nil
         ) {
-            self.dbController.insertCommitment(userEmail: CoreDataController.getLoggedUser()!.email, commitId: self.shared.selectedCommitment.ID)
-            //self.shared.loading = true
+            (UIApplication.shared.delegate as! AppDelegate).dbController.insertCommitment(userEmail: CoreDataController.loggedUser!.email, commitId: self.task.ID)
         }
     }
 }
 
 struct CantDoItButton: View {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
 
     var body: some View {
         GenericButton(
@@ -123,10 +102,7 @@ struct CantDoItButton: View {
             topText: Text("Can't do it").font(Font.custom("SF Pro Text", size: 17)),
             bottomText: nil
         ) {
-            print("Can't do it anymore!")
-//            let coreDataController = CoreDataController()
-//            self.dbController.insertCommitment(userEmail: coreDataController.getLoggedUser().1.email!, commitId: self.shared.selectedCommitment.ID)
-            //self.shared.loading = true
+            print("Can't do it anymore!\nIMPLEMENTALO!")
         }
     }
 }
@@ -212,15 +188,12 @@ struct DatePickerGUI: View {
     @Binding var selectedDate: Date
     
     var body: some View {
-        VStack {
-            DatePicker(selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
-                Text("Select a date")
-            }
-            .labelsHidden()
-            .frame(width: UIScreen.main.bounds.width, height: 250)
-            .background(Color.primary.colorInvert())
-        }.frame(width: UIScreen.main.bounds.width, height: 250)
-            .background(Color.primary.colorInvert())
+        DatePicker(selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
+            Text("Select a date")
+        }
+        .labelsHidden()
+        .frame(width: UIScreen.main.bounds.width, height: 250)
+        .background(Color.primary.colorInvert())
     }
 }
 
@@ -230,7 +203,6 @@ struct OpenInMapsButton: View {
     let selectedTask: Task
     var body: some View {
         GenericButton(
-            dimensions: defaultDimensions,
             isFilled: isFilled,
             color:#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
             topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 17)),
@@ -242,15 +214,15 @@ struct OpenInMapsButton: View {
 }
 
 struct GenericButton: View {
-    var dimensions: (width: CGFloat, height: CGFloat) = defaultDimensions
+    var dimensions: (width: CGFloat, height: CGFloat) = defaultButtonDimensions
     var isFilled: Bool
     var color: UIColor
     var topText: Text
     var bottomText: Text?
-    var insertFunction: () -> Void
+    var action: () -> Void
     
     var body: some View{
-        Button(action: insertFunction){
+        Button(action: action){
             VStack{
                 topText.foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 if bottomText != nil {
@@ -264,20 +236,3 @@ struct GenericButton: View {
         }.buttonStyle(PlainButtonStyle())
     }
 }
-
-
-//struct NeederButton: View {
-//    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-//
-//    var body: some View {
-//        Button(action: {
-//            withAnimation{
-//                NeederHomeView.show()
-//                self.shared.helperMode = false
-//            }}){
-//                Image(systemName: "person")
-//                    .font(.largeTitle)
-//                    .foregroundColor(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)))
-//        }
-//    }
-//}
