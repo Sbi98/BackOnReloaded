@@ -16,7 +16,7 @@ struct DetailedView: View {
     @ObservedObject var selectedTask: Task
     var body: some View {
 
-        VStack{
+        VStack(alignment: .leading){
             HStack{
                 Avatar(image: selectedTask.neederUser.profilePic)
                 VStack(alignment: .leading){

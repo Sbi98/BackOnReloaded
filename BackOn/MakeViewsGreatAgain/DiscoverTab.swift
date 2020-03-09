@@ -13,7 +13,8 @@ struct FullDiscoverView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     @State var showDetailedModal: Bool = false
-     
+    @State var selectedDiscover: Task?
+    
     var body: some View {
         VStack (alignment: .leading, spacing: 10){
             Picker(selection: $shared.fullDiscoverViewMode, label: Text("Select")) {
@@ -24,7 +25,7 @@ struct FullDiscoverView: View {
                 VStack (alignment: .center, spacing: 25){
                     ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
                         Button(action: {
-                            (UIApplication.shared.delegate as! AppDelegate).detailedViewController.task = currentDiscover
+                            self.selectedDiscover = currentDiscover
                             self.showDetailedModal = true
                         }) {
                             HStack {
@@ -45,7 +46,8 @@ struct FullDiscoverView: View {
         .padding(.top, 40)
         .background(Color("background"))
         .edgesIgnoringSafeArea(.all)
-//        .sheet(isPresented: self.$showDetailedModal, content: {DiscoverFullDetailedView()})
+        .sheet(isPresented: self.$showDetailedModal, content: {
+            DetailedView(requiredBy: .DiscoverDetailedModal, selectedTask: self.selectedDiscover!)})
     }
 }
 
