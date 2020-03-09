@@ -18,7 +18,7 @@ struct TaskView: View {
                 MapView(mode: .TaskTab, selectedTask: task)
                 VStack (spacing: 2){
                     ZStack {
-                        Image("cannotation")
+                        Image("cAnnotation")
                             .foregroundColor(Color(UIColor.systemOrange))
                             .offset(y: -5)
                             .scaleEffect(0.97)
@@ -102,7 +102,6 @@ struct TasksListView: View {
     var body: some View {
         VStack (alignment: .leading, spacing: 10){
             Button(action: {withAnimation{
-                print("CIAO\n\n\n")
                 HomeView.show()}}) {
                     HStack {
                         Image(systemName: "chevron.left")
@@ -120,7 +119,6 @@ struct TasksListView: View {
                         Button(action: {withAnimation{
                             self.selectedTask = currentTask
                             self.showModal = true
-                            print("Ciao")
                             }}) {
                                 HStack {
                                     UserPreview(user: currentTask.neederUser, description: currentTask.title, whiteText: self.darkMode)
