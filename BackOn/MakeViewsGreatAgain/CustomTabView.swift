@@ -14,7 +14,7 @@ struct CustomTabView: View {
     
     var body: some View {
         TabView {
-            VStack {
+            Group {
                 if shared.activeView == "HomeView" {
                     HomeView()
                 } else if shared.activeView == "TasksListView" {

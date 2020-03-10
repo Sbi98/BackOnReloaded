@@ -57,12 +57,9 @@ struct CloseButton: View {
 
 
 struct ConfirmAddNeedButton: View {
-    var insertFunction: () -> Void
+    var action: () -> Void
     var body: some View {
-        Button(action: {
-            //NeederHomeView.show()
-            self.insertFunction()
-        }) {
+        Button(action: action) {
             HStack{
                 Text("Confirm ")
                     .fontWeight(.regular)
@@ -137,15 +134,11 @@ struct DontNeedAnymoreButton: View {
 
 
 struct AddNeedButton: View {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
+    @Binding var showModal: Bool
     var body: some View {
-        HStack{
+        HStack {
             Spacer()
-            Button(action: {
-                print("Need help!")
-                AddNeedView.show()
-            }) {
+            Button(action: {self.showModal.toggle()}) {
                 HStack{
                     Text("Add Need ")
                         .fontWeight(.regular)
@@ -157,8 +150,7 @@ struct AddNeedButton: View {
                 .background(Color.blue)
                 .cornerRadius(40)
                 .foregroundColor(.white)
-                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue)
-                )
+                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
             }
             Spacer()
         }
