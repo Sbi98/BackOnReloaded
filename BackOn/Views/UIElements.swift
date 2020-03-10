@@ -91,7 +91,7 @@ struct DoItButton: View {
 }
 
 struct CantDoItButton: View {
-
+    
     var body: some View {
         GenericButton(
             isFilled: false,
@@ -136,23 +136,17 @@ struct DontNeedAnymoreButton: View {
 struct AddNeedButton: View {
     @Binding var showModal: Bool
     var body: some View {
-        HStack {
-            Spacer()
-            Button(action: {self.showModal.toggle()}) {
-                HStack{
-                    Text("Add Need ")
-                        .fontWeight(.regular)
-                        .font(.title)
-                    Image(systemName: "person.2")
-                        .font(.title)
-                }
-                .padding(20)
-                .background(Color.blue)
-                .cornerRadius(40)
-                .foregroundColor(.white)
-                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
-            }
-            Spacer()
+        Button(action: {self.showModal.toggle()}) {
+            Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
+        }
+    }
+}
+
+struct ProfileButton: View {
+    @Binding var showModal: Bool
+    var body: some View {
+        Button(action: {self.showModal.toggle()}) {
+            Image(systemName: "person.crop.circle").foregroundColor(Color(UIColor.systemOrange)).font(.largeTitle)
         }
     }
 }
