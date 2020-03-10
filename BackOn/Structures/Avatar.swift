@@ -33,13 +33,13 @@ struct Avatar: View {
     }
 
     var body: some View {
-        Image(systemName: "questionmark.circle.fill")
+        image
             .renderingMode(.original)
             .resizable()
             .frame(width: size, height: size)
             .background(Color.white)
             .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white, lineWidth: 2))
+            .overlay(Circle().stroke(Color.white, lineWidth: 1))
 //            .shadow(radius: 7)
 //            le omre servono per quando non siamo nella mappa, da modificare
     }
