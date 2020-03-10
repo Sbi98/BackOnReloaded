@@ -11,7 +11,6 @@ import MapKit
 
 struct DetailedView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     let requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task
     var body: some View {
@@ -86,8 +85,8 @@ struct DetailedView: View {
                 .animation(.easeOut(duration: 0))
         }
         .onAppear{
-            if self.mapController.lastLocation != nil {
-                self.selectedTask.requestETA(source: self.mapController.lastLocation!)
+            if MapController.lastLocation != nil {
+                self.selectedTask.requestETA(source: MapController.lastLocation!)
             }
         }
         

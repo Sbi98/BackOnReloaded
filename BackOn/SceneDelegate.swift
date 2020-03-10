@@ -22,9 +22,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         // let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
-        CalendarController.initController() //controlla i permessi del calendario
-        CoreDataController.initController() //Qui se l'utente non ha fatto l'accesso imposta la LoginPageView
-        
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
         let contentView = MainView()
