@@ -25,12 +25,15 @@ import SwiftUI
 //}
 
 struct Avatar: View {
-    let image: Image?
+    let image: Image
     let size: CGFloat = 50
+    
+    init(image: Image?) {
+        self.image = image == nil ? Image(systemName: "questionmark.circle.fill") : image!
+    }
 
     var body: some View {
-        if image == nil {
-            return Image(systemName: "questionmark.circle.fill")
+        Image(systemName: "questionmark.circle.fill")
             .renderingMode(.original)
             .resizable()
             .frame(width: size, height: size)
@@ -38,16 +41,6 @@ struct Avatar: View {
             .clipShape(Circle())
             .overlay(Circle().stroke(Color.white, lineWidth: 2))
 //            .shadow(radius: 7)
-        } else {
-            return image!
-            .renderingMode(.original)
-            .resizable()
-            .frame(width: size, height: size)
-            .background(Color.white)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white, lineWidth: 1))
-//            .shadow(radius: 7)
 //            le omre servono per quando non siamo nella mappa, da modificare
-        }
     }
 }

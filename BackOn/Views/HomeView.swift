@@ -13,6 +13,7 @@ struct HomeView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     @State var isLoading: Bool = true
+    @State var showAddNeedModal = false
     
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
@@ -36,19 +37,22 @@ struct HomeView: View {
                 RequestRow()
                 GenericButton(isFilled: true, color: .systemOrange, topText: Text("Save in C.D.")){
                     print("salvo in coredata")
-                    CoreDataController.addTasks(tasks: self.shared.taskArray())
+                    CoreDataController.addTasks(tasks: self.shared.tasksArray())
                 }
                 Divider().hidden()
                 GenericButton(isFilled: true, color: .systemOrange, topText: Text("Load from C.D.")){
                     print("leggo da coredata")
                     print(CoreDataController.getCachedTasks())
                 }
-                AddNeedButton()
+                AddNeedButton(showModal: $showAddNeedModal)
             }
         }
         .padding(.top, 40)
         .background(Color("background"))
         .edgesIgnoringSafeArea(.vertical)
+        .sheet(isPresented: self.$showAddNeedModal){
+            AddNeedView()
+        }
     }
     
 }

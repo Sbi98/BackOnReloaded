@@ -9,8 +9,8 @@
 import CoreLocation
 import MapKit
 
-public class Task: NSObject, ObservableObject {
-    var neederUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "a")!, isHelper: 1)
+public class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
+    var neederUser: User
     let title: String
     let descr: String?
     let date: Date
@@ -29,7 +29,6 @@ public class Task: NSObject, ObservableObject {
         self.date = date
         self.ID = ID
         self.position = CLLocation(latitude: latitude, longitude: longitude)
-        super.init()
     }
     
     func timeRemaining() -> TimeInterval {

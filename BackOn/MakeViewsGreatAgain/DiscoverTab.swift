@@ -21,7 +21,7 @@ struct FullDiscoverView: View {
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
             if discoverTabController.discoverMode == 1 {
                 VStack (alignment: .center, spacing: 25){
-                    ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
+                    ForEach(shared.discoverablesArray(), id: \.ID) { currentDiscover in
                         Button(action: {
                             self.discoverTabController.selectedTask = currentDiscover
                             self.discoverTabController.showModal = true
