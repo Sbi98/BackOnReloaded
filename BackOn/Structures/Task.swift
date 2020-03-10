@@ -21,16 +21,6 @@ public class Task: NSObject, ObservableObject {
     @Published var address = "Locating..."
     @Published var city = "Locating..."
     
-
-    override init() {
-        self.neederUser = User(name: "Tim", surname: "Cook", email: "timcook@apple.com", photoURL: URL(string: "tim")!)
-        self.title = "Default title"
-        self.descr = "Default description"
-        self.date = Date()
-        ID = Int()
-        position = CLLocation(latitude: 40.675293, longitude: 14.772105)
-        super.init()
-    }
     
     init(neederUser: User, title: String, descr: String, date: Date, latitude: Double, longitude: Double, ID: Int) {
         self.neederUser = neederUser
