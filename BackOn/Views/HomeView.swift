@@ -18,7 +18,7 @@ struct HomeView: View {
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
             VStack {
-                HStack{
+                HStack {
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
                         .font(.largeTitle)
                         .bold()
@@ -32,7 +32,7 @@ struct HomeView: View {
                             .bold()
                             .foregroundColor(.black)
                     }
-                }.padding()
+                }.padding(.horizontal)
                 TaskRow()
                 RequestRow()
                 GenericButton(isFilled: true, color: .systemOrange, topText: Text("Save in C.D.")){

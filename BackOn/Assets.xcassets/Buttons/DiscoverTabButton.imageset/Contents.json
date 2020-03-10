@@ -21,7 +21,9 @@
     "author" : "xcode"
   },
   "properties" : {
-    "template-rendering-intent" : "template",
-    "preserves-vector-representation" : true
+    "auto-scaling" : "auto",
+    "compression-type" : "automatic",
+    "preserves-vector-representation" : true,
+    "template-rendering-intent" : "template"
   }
 }
