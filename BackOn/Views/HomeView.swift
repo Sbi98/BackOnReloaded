@@ -45,10 +45,11 @@ struct HomeView: View {
                     print(CoreDataController.getCachedTasks())
                 }
                 AddNeedButton(showModal: $showAddNeedModal)
+                Spacer()
             }
         }
         .padding(.top, 40)
-        .background(Color("background"))
+//        .background(Color.primary.colorInvert())
         .edgesIgnoringSafeArea(.vertical)
         .sheet(isPresented: self.$showAddNeedModal){
             AddNeedView()

@@ -33,7 +33,7 @@ struct Avatar: View {
     }
 
     var body: some View {
-        Image(systemName: "questionmark.circle.fill")
+        image
             .renderingMode(.original)
             .resizable()
             .frame(width: size, height: size)

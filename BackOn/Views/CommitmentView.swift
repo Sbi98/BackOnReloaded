@@ -125,7 +125,7 @@
 //            Spacer()
 //        }
 //        .padding(.top, 40)
-//        .background(Color("background"))
+//        .background(Color.primary.colorInvert())
 //        .edgesIgnoringSafeArea(.all)
 //    }
 //}

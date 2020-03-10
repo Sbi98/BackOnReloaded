@@ -42,7 +42,7 @@ struct FullDiscoverView: View {
             }
         }
         .padding(.top, 40)
-        .background(Color("background"))
+//        .background(Color.primary.colorInvert())
         .edgesIgnoringSafeArea(.all)
         .sheet(isPresented: self.$discoverTabController.showModal) {
             DetailedView(requiredBy: .DiscoverDetailedModal, selectedTask: self.discoverTabController.selectedTask!)

@@ -52,7 +52,7 @@ struct MainView: View {
             } else if LoadingPageView.isMainWindow() {
                 LoadingPageView().transition(.scale)
             } else {
-                Text("Vista sbagliata :(")
+                Text("Something's wrong, I can feel it")
                     .font(.title)
                     .fontWeight(.regular)
                     .foregroundColor(.primary)
