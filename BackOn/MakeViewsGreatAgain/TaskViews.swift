@@ -16,7 +16,7 @@ struct TaskView: View {
         Button(action: {self.showModal = true}) {
             ZStack (alignment: .bottom){
                 MapView(mode: .TaskTab, selectedTask: task)
-                VStack (spacing: 2){
+                VStack (spacing: 0){
                     ZStack {
                         Image("cAnnotation")
                             .foregroundColor(Color(UIColor.systemOrange))
@@ -26,12 +26,13 @@ struct TaskView: View {
                             .offset(y: -9.65)
                     }.scaleEffect(1.2)
                     Text(task.neederUser.name)
-                        .foregroundColor(Color.white)
+                        .fontWeight(.black)
+                        .foregroundColor(.primary)
                         .font(Font.custom("SF Pro Text", size: 20))
-                        .background(Rectangle()
-                            .cornerRadius(20)
-                            .scaleEffect(1.1)
-                            .foregroundColor(Color(UIColor.systemOrange)))
+                        //.background(Rectangle()
+                        //.cornerRadius(20)
+                        //.scaleEffect(1.1)
+                        //.foregroundColor(Color(UIColor.systemOrange)))
                 }
                 .offset(y: -160)
                 VStack (spacing: 5){
@@ -39,17 +40,16 @@ struct TaskView: View {
                         .font(.title)
                         .fontWeight(.regular)
                         .foregroundColor(Color.white)
-                    //Text(self.commitment.city).onAppear{self.commitment.locate()}
                     Text("\(self.task.date, formatter: customDateFormat)")
                         .foregroundColor(Color.secondary)
                         .padding(.horizontal, 10)
                         .frame(width: 320, alignment: .trailing)
-                        .offset(y:10)
+                        .offset(y: 1)
                 }
-                .frame(width: 320, height: 90)
+                .frame(width: 320, height: 75)
                 .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                 .cornerRadius(10)
-                    .shadow(radius: 5) ///LA METTIAMO?
+                //.shadow(radius: 5) //LA METTIAMO?
             }
             .frame(width: 320, height: 350)
             .cornerRadius(10)

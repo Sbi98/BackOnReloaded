@@ -25,6 +25,10 @@ extension View {
         }
     }
     
+    func myoverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
+        return self.overlay(myOverlay(isPresented: isPresented, toOverlay: AnyView(toOverlay)))
+    }
+    
     static func show() {
         (UIApplication.shared.delegate as! AppDelegate).shared.activeView = String(describing: self)
     }
