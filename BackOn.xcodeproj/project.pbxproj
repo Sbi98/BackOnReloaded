@@ -111,15 +111,15 @@
 		14A77D25240ED03100BCBF80 /* MakeViewsGreatAgain */ = {
 			isa = PBXGroup;
 			children = (
-				1468EB6F2417ABD40065E0EF /* RequestViews.swift */,
+				12F3808D23FBE6AA00B35497 /* AddNeedView.swift */,
+				14BBE73D2410005800C68D93 /* CustomTabView.swift */,
 				140DA6B9241552C90088B9FB /* DetailedView.swift */,
-				2F1075A523FD6DD50076C507 /* OverlayViews.swift */,
+				14BBE73F241003DA00C68D93 /* DiscoverTab.swift */,
 				1418E0D523FEE8EA00C2B166 /* LoadingPageView.swift */,
 				2F575FFD23F686F7001D97F6 /* LoginPageView.swift */,
 				14016BDB24093C19000611C3 /* MapView.swift */,
-				12F3808D23FBE6AA00B35497 /* AddNeedView.swift */,
-				14BBE73D2410005800C68D93 /* CustomTabView.swift */,
-				14BBE73F241003DA00C68D93 /* DiscoverTab.swift */,
+				2F1075A523FD6DD50076C507 /* OverlayViews.swift */,
+				1468EB6F2417ABD40065E0EF /* RequestViews.swift */,
 				146E5FE824129E7400DE1180 /* TaskViews.swift */,
 			);
 			path = MakeViewsGreatAgain;
@@ -148,15 +148,15 @@
 			isa = PBXGroup;
 			children = (
 				2F575FF623F686F7001D97F6 /* AppDelegate.swift */,
-				2F575FF823F686F7001D97F6 /* SceneDelegate.swift */,
-				2F57603323F6B4AC001D97F6 /* MainView.swift */,
 				2F575FFF23F686F8001D97F6 /* Assets.xcassets */,
 				2F57601823F6B403001D97F6 /* Backend */,
 				2FE9A30F23F6E68E00E3419A /* BackOn.entitlements */,
 				2F57600723F686F8001D97F6 /* Info.plist */,
 				2F57600423F686F8001D97F6 /* LaunchScreen.storyboard */,
-				2F57601B23F6B467001D97F6 /* Structures */,
+				2F57603323F6B4AC001D97F6 /* MainView.swift */,
 				14A77D25240ED03100BCBF80 /* MakeViewsGreatAgain */,
+				2F575FF823F686F7001D97F6 /* SceneDelegate.swift */,
+				2F57601B23F6B467001D97F6 /* Structures */,
 				2F57601F23F6B467001D97F6 /* Views */,
 			);
 			path = BackOn;
@@ -166,10 +166,10 @@
 			isa = PBXGroup;
 			children = (
 				2F575FFA23F686F7001D97F6 /* BackOn.xcdatamodeld */,
+				14A77D26240ED37500BCBF80 /* CalendarController.swift */,
 				2FEAAF1623F820A000225F13 /* CoreDataController.swift */,
 				2F0AA70223FBD53E008DA6E3 /* DatabaseController.swift */,
 				2F57601923F6B42D001D97F6 /* MapController.swift */,
-				14A77D26240ED37500BCBF80 /* CalendarController.swift */,
 			);
 			path = Backend;
 			sourceTree = "<group>";
@@ -177,11 +177,11 @@
 		2F57601B23F6B467001D97F6 /* Structures */ = {
 			isa = PBXGroup;
 			children = (
+				2F57601E23F6B467001D97F6 /* Avatar.swift */,
 				2F57601623F6A9A2001D97F6 /* Shared.swift */,
 				2F57603623F6B4D1001D97F6 /* Task.swift */,
 				2F57601C23F6B467001D97F6 /* User.swift */,
 				2F57601D23F6B467001D97F6 /* UserPreview.swift */,
-				2F57601E23F6B467001D97F6 /* Avatar.swift */,
 			);
 			path = Structures;
 			sourceTree = "<group>";
@@ -189,17 +189,17 @@
 		2F57601F23F6B467001D97F6 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1418E0D923FEEBE700C2B166 /* UserPreviewNeeder.swift */,
-				2F57603123F6B494001D97F6 /* UIElements.swift */,
-				14457B3923FEF2F500B617FF /* NeedDetailedView.swift */,
-				1418E0D723FEEB7300C2B166 /* NeedView.swift */,
 				2F57602223F6B467001D97F6 /* CommitmentDetailedView.swift */,
 				2F57602623F6B467001D97F6 /* CommitmentView.swift */,
 				81A0C4B823F9C6F00065CC87 /* DiscoverDetailedViewOLD.swift */,
 				2F57602523F6B467001D97F6 /* DiscoverView.swift */,
 				2F57602423F6B467001D97F6 /* HomeView.swift */,
+				14457B3923FEF2F500B617FF /* NeedDetailedView.swift */,
 				14817F8523F82BB00051A89A /* NeederHomeView.swift */,
+				1418E0D723FEEB7300C2B166 /* NeedView.swift */,
 				81A674A123FF1550006465EE /* RefreshableScrollView.swift */,
+				2F57603123F6B494001D97F6 /* UIElements.swift */,
+				1418E0D923FEEBE700C2B166 /* UserPreviewNeeder.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
