@@ -190,7 +190,6 @@ struct DatePickerGUI: View {
 }
 
 struct OpenInMapsButton: View {
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     var isFilled: Bool
     let selectedTask: Task
     var body: some View {
@@ -200,7 +199,7 @@ struct OpenInMapsButton: View {
             topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 17)),
             bottomText: selectedTask.etaText != "Calculating..." ? Text(selectedTask.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
         ){
-            self.mapController.openInMaps(commitment: self.selectedTask)
+            MapController.openInMaps(commitment: self.selectedTask)
         }
     }
 }

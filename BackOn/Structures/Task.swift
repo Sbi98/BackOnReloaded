@@ -55,7 +55,7 @@ public class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra
     }
     
     func locate() {
-        (UIApplication.shared.delegate as! AppDelegate).mapController.coordinatesToAddress(self.position) { result, error in
+        MapController.coordinatesToAddress(self.position) { result, error in
             guard error == nil, let result = result else {return}
             self.address = result
             self.city = "\(result.split(separator: ",")[2])" 

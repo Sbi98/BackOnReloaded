@@ -2,43 +2,29 @@ import CoreLocation
 import MapKit
 import SwiftUI
 
-class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
-
-    private let locationManager = CLLocationManager()
-    var showLocationAlert = true
-    var lastLocation: CLLocation?
-    @Published var showCallout = false
+class MapController {
+    private static let locationManager = CLLocationManager()
+    private static let delegate = LocationManagerDelegate(action: updateLocation(lastLocation:))
+    static var lastLocation: CLLocation?
     
-    override init() {
-        super.init()
+    static func initController() {
         locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
+            locationManager.delegate = delegate
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.requestWhenInUseAuthorization()
             locationManager.startUpdatingLocation()
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .authorizedAlways, .authorizedWhenInUse, .notDetermined:
-            showLocationAlert = false
-        default:
-            showLocationAlert = true
-        }
+    static func updateLocation(lastLocation: CLLocation) {
+        self.lastLocation = lastLocation
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        self.lastLocation = location
-    }
-    
-    
-    func coordinatesToAddress(_ location: CLLocation?, completion: @escaping (String?, String?)-> Void) { //(address, error) -> Void
+    static func coordinatesToAddress(_ location: CLLocation?, completion: @escaping (String?, String?)-> Void) { //(address, error) -> Void
         var toConvert = location
         if toConvert == nil {
-            toConvert = (UIApplication.shared.delegate as! AppDelegate).mapController.lastLocation
+            toConvert = lastLocation
             if toConvert == nil {
                 completion(nil,"Location access not granted")
                 return
@@ -50,14 +36,14 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
-    func addressToCoordinates(_ address: String, completion: @escaping (CLLocationCoordinate2D?, String?)-> Void) { //(coordinates, error) -> Void
+    static func addressToCoordinates(_ address: String, completion: @escaping (CLLocationCoordinate2D?, String?)-> Void) { //(coordinates, error) -> Void
         CLGeocoder().geocodeAddressString(address) {(placemarks, error) in
             guard error == nil, let placemark = placemarks?.first, let coordinate = placemark.location?.coordinate else {completion(nil,"Geocoder failed"); return}
             completion(coordinate,nil)
         }
     }
     
-    private func extractAddress(_ p: CLPlacemark) -> String {
+    static private func extractAddress(_ p: CLPlacemark) -> String {
         var address = ""
         if let streetInfo1 = p.thoroughfare {
             address = "\(address)\(streetInfo1), "
@@ -77,7 +63,7 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
         return address
     }
     
-    func openInMaps(commitment: Task){
+    static func openInMaps(commitment: Task){
         let request = MKDirections.Request()
         if lastLocation != nil {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
@@ -88,5 +74,19 @@ class MapController: NSObject, ObservableObject, CLLocationManagerDelegate {
         request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
     }
 
+}
+
+class LocationManagerDelegate: NSObject, CLLocationManagerDelegate {
+    var action: (CLLocation) -> Void
+    
+    init(action: @escaping (CLLocation) -> Void) {
+        self.action = action
+        super.init()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        action(location)
+    }
 }
 

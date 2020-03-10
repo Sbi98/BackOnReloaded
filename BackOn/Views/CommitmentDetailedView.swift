@@ -10,8 +10,6 @@
 //import MapKit
 //
 //struct CommitmentDetailedView: View {
-//    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-//    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
 //    @ObservedObject var selectedTask: Task
 //    
 //    var body: some View {

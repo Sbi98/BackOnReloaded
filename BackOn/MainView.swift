@@ -41,7 +41,6 @@ extension View {
 
 struct MainView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della mainWindow alla View
-    @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     
     var body: some View {
         VStack{
@@ -58,6 +57,5 @@ struct MainView: View {
                     .foregroundColor(.primary)
             }
         }
-        .alert(isPresented: $mapController.showLocationAlert){locAlert}
     }
 }

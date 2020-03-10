@@ -11,7 +11,6 @@ import UIKit
 import MapKit
 
 struct MapView: UIViewRepresentable {
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     let mode: RequiredBy
     var selectedTask: Task?
     
@@ -114,7 +113,7 @@ struct MapView: UIViewRepresentable {
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
                 mapView.addAnnotation(generateAnnotation(discoverableTask, title: discoverableTask.neederUser.name))
             }
-            if let lastLocation = mapController.lastLocation {
+            if let lastLocation = MapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
             }
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap = mapView
@@ -136,7 +135,7 @@ struct MapView: UIViewRepresentable {
     }
     
     func addRoute(mapView: MKMapView){
-        guard let lastLocation = mapController.lastLocation else {return}
+        guard let lastLocation = MapController.lastLocation else {return}
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation.coordinate, addressDictionary: nil))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: selectedTask!.position.coordinate, addressDictionary: nil))
@@ -195,7 +194,6 @@ struct searchLocation: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Binding var selection: String
     @State var userLocationAddress: String = "Processing your current location..."
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     
     class AddressCompleterHandler: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
         @Published var completer = MKLocalSearchCompleter()
@@ -223,7 +221,7 @@ struct searchLocation: View {
                 }
             }
         }.onAppear() {
-            self.mapController.coordinatesToAddress(nil) { result, error in
+            MapController.coordinatesToAddress(nil) { result, error in
                 guard error == nil, let result = result else {return}
                 self.userLocationAddress = result
             }

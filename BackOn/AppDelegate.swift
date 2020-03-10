@@ -16,15 +16,20 @@ import GoogleSignIn
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     let shared: Shared
     let dbController: DatabaseController
-    let mapController: MapController
     let discoverTabController: DiscoverTabController
     
     override init() {
         shared = Shared()
-        mapController = MapController()
         dbController = DatabaseController(shared: shared)
         discoverTabController = DiscoverTabController()
         super.init()
+    }
+    
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        MapController.initController()
+        CalendarController.initController() //controlla i permessi del calendario
+        CoreDataController.initController() //Qui se l'utente non ha fatto l'accesso imposta la LoginPageView
+        return true
     }
     
     //Metodo di accesso
@@ -61,8 +66,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         return GIDSignIn.sharedInstance().handle(url)
     }
-    
-    
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.

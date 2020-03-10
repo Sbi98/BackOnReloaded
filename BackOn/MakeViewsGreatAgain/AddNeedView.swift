@@ -2,7 +2,6 @@ import SwiftUI
 
 struct AddNeedView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     
     var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
@@ -73,7 +72,7 @@ struct AddNeedView: View {
                 HStack {
                     Spacer()
                     ConfirmAddNeedButton(){
-                        self.mapController.addressToCoordinates(self.address) { result, error in
+                        MapController.addressToCoordinates(self.address) { result, error in
                             guard error == nil, let result = result else {return}
                             self.dbController.insertCommit(title: self.selectedTitle, description: self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude)
                             self.dbController.getCommitByUser()
