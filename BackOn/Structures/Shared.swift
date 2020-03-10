@@ -15,7 +15,7 @@ class Shared: ObservableObject {
                 (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
                 myDiscoverables = [:]
                 myTasks = [:]
-                myRequests = [:]
+//                myRequests = [:]
                 (UIApplication.shared.delegate as! AppDelegate).dbController.loadCommitByOther()
                 (UIApplication.shared.delegate as! AppDelegate).dbController.loadMyCommitments()
                 (UIApplication.shared.delegate as! AppDelegate).dbController.getCommitByUser()
@@ -29,14 +29,14 @@ class Shared: ObservableObject {
     @Published var selectedCommitment = Task()
     @Published var myTasks: [Int:Task] = [:]
     @Published var myDiscoverables: [Int:Task] = [:]
-    @Published var myRequests: [Int:Task] = [:]
+    @Published var myRequests: [Int:Task] = [1:Task(neederUser: User(name: "Gianfranco", surname: "Salentino", email: "giovannifalzone@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!), title: "Wheelchair transport", descr: "Sono un po' scemo e mi non ho le gambe ho bisogno di aiuto.", date: Date(), latitude: 41.5, longitude: 15, ID: 1)]
 
     
-    func commitmentArray() -> [Task] {
+    func taskArray() -> [Task] {
         return Array(myTasks.values)
     }
     
-    func needArray() -> [Task] {
+    func requestArray() -> [Task] {
         return Array(myRequests.values)
     }
     

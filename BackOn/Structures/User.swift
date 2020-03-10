@@ -39,3 +39,5 @@ class User {
         } catch {}
     }
 }
+
+let noUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "noUser")!, isHelper: 1)
