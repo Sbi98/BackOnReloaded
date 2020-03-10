@@ -27,7 +27,7 @@ struct RequestRow: View{
             }.buttonStyle(PlainButtonStyle())
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
-                    ForEach(shared.requestArray(), id: \.ID) { currentRequest in
+                    ForEach(shared.requestsArray(), id: \.ID) { currentRequest in
                         ZStack{
 //                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.9999)
                             RequestView(request: currentRequest)

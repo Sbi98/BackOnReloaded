@@ -26,23 +26,30 @@ extension View {
     }
     
     static func show() {
-        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-        shared.activeView = String(describing: self)
+        (UIApplication.shared.delegate as! AppDelegate).shared.activeView = String(describing: self)
+    }
+    
+    static func isActive() -> Bool {
+        return (UIApplication.shared.delegate as! AppDelegate).shared.activeView == String(describing: self)
+    }
+    
+    static func isMainWindow() -> Bool {
+        return (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow == String(describing: self)
     }
 }
 
 
 struct MainView: View {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della mainWindow alla View
     @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     
     var body: some View {
         VStack{
-            if shared.mainWindow == "CustomTabView" {
+            if CustomTabView.isMainWindow() {
                 CustomTabView()
-            } else if shared.mainWindow == "LoginPageView" {
+            } else if LoginPageView.isMainWindow() {
                 LoginPageView()
-            } else if shared.mainWindow == "LoadingPageView" {
+            } else if LoadingPageView.isMainWindow() {
                 LoadingPageView().transition(.scale)
             } else {
                 Text("Vista sbagliata :(")

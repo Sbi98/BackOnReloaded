@@ -37,7 +37,7 @@ struct HomeView: View {
                 RequestRow()
                 GenericButton(isFilled: true, color: .systemOrange, topText: Text("Save in C.D.")){
                     print("salvo in coredata")
-                    CoreDataController.addTasks(tasks: self.shared.taskArray())
+                    CoreDataController.addTasks(tasks: self.shared.tasksArray())
                 }
                 Divider().hidden()
                 GenericButton(isFilled: true, color: .systemOrange, topText: Text("Load from C.D.")){

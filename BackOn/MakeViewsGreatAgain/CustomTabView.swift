@@ -10,25 +10,18 @@ import SwiftUI
 import CoreLocation
 
 struct CustomTabView: View {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della activeView alla View
     
     var body: some View {
         TabView {
             Group {
-                if shared.activeView == "HomeView" {
+                if HomeView.isActive() {
                     HomeView()
-                } else if shared.activeView == "TasksListView" {
+                } else if TasksListView.isActive() {
                     TasksListView()
-                } else if shared.activeView == "AddNeedView" {
-                    AddNeedView()
                 }
-//                else if shared.viewToShow == "NeederHomeView" {
-//                    NeederHomeView()
-//                } else if shared.viewToShow == "NeedsListView" {
-//                    NeedsListView()
-//                }
                 else {
-                    Text("Vista sbagliata qui :(\n\(shared.activeView)")
+                    Text("Vista sbagliata nella CustomTab")
                         .font(.title)
                         .fontWeight(.regular)
                         .foregroundColor(.primary)
@@ -44,7 +37,7 @@ struct CustomTabView: View {
                 Image(systemName: "list.dash")
                 Text("Discover")
             }.tag(1)
-        }
+        }.accentColor(Color(.systemOrange))
         .edgesIgnoringSafeArea(.top)
         .overlay(DiscoverSheetView())
     }
