@@ -134,20 +134,20 @@ struct DontNeedAnymoreButton: View {
 
 
 struct AddNeedButton: View {
-    @Binding var showModal: Bool
+    @State var showModal = false
     var body: some View {
-        Button(action: {self.showModal.toggle()}) {
-            Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
-        }
+        Button(action: {self.showModal.toggle();print("Tappo, \(self.showModal)")}) {
+        Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
+        }.sheet(isPresented: $showModal, content: {AddNeedView()})
     }
 }
 
 struct ProfileButton: View {
-    @Binding var showModal: Bool
+    @State var showModal = false
     var body: some View {
         Button(action: {self.showModal.toggle()}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(UIColor.systemOrange)).font(.largeTitle)
-        }
+        }.sheet(isPresented: $showModal, content: {HomeView()})
     }
 }
 
