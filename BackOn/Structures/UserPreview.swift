@@ -33,7 +33,6 @@ struct UserPreview: View {
     
     var body: some View {
         HStack {
-//            Avatar(image: "\(user.photo)", size: 60)
             Avatar(image: user.profilePic)
             VStack (alignment: .leading){
                 Text(user.identity)

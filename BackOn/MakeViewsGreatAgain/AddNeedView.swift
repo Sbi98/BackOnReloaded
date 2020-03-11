@@ -29,7 +29,7 @@ struct AddNeedView: View {
                     .foregroundColor(.primary)
                 Spacer()
                 CloseButton()
-            }){EmptyView()}
+            }){EmptyView()}.padding(.top, 10)
             Section(header: Text("Need informations")) {
                 HStack {
                     Text("Title: ")
@@ -81,11 +81,12 @@ struct AddNeedView: View {
                     Spacer()
                 }
             ){EmptyView()}
+        }.onTapGesture {
+            UIApplication.shared.windows.first!.endEditing(true)
         }
         .frame(width: UIScreen.main.bounds.width, alignment: .leading)
-        .background(Color(.blue))
-        .overlay(myOverlay(isPresented: self.$showTitlePicker, toOverlay: AnyView(ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))))
-        .overlay(myOverlay(isPresented: self.$showDatePicker, toOverlay: AnyView(DatePickerGUI(selectedDate: self.$selectedDate))))
+        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))
+        .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
         .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
     }
 }

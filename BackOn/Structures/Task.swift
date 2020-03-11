@@ -9,12 +9,12 @@
 import CoreLocation
 import MapKit
 
-public class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
-    var neederUser: User
+class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
+    let neederUser: User
     let title: String
     let descr: String?
     let date: Date
-    var position: CLLocation
+    let position: CLLocation
     let ID: Int
     var helperUser: User?
     @Published var etaText = "Calculating..."

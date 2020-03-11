@@ -19,7 +19,7 @@ struct HomeView: View {
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
             VStack {
-                HStack{
+                HStack {
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
                         .font(.largeTitle)
                         .bold()

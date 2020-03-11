@@ -37,7 +37,7 @@ struct CustomTabView: View {
                 .tabItem {
                     Image("DiscoverTabButton")
                     Text("Discover").font(.largeTitle)
-            }.tag(1)
+                }.tag(1)
         }.accentColor(Color(.systemOrange))
             .edgesIgnoringSafeArea(.top)
             .overlay(DiscoverSheetView())
