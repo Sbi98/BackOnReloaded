@@ -37,7 +37,7 @@ struct UserPreview: View {
             Avatar(image: user.profilePic)
             VStack (alignment: .leading){
                 Text(user.identity)
-                    .font(.title)
+                    .font(Font.custom("SF Pro Text", size: 26))
                     .fontWeight(.regular)
                     .foregroundColor(textColor)
                     .offset(x: 0, y: -3)

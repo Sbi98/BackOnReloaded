@@ -20,23 +20,7 @@ struct FullDiscoverView: View {
                 Text("Map").tag(0)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
             if discoverTabController.discoverMode == 1 {
-                VStack (alignment: .center, spacing: 25){
-                    ForEach(shared.discoverablesArray(), id: \.ID) { currentDiscover in
-                        Button(action: {
-                            self.discoverTabController.selectedTask = currentDiscover
-                            self.discoverTabController.showModal = true
-                        }) {
-                            HStack {
-                                UserPreview(user: currentDiscover.neederUser, description: "\(currentDiscover.title)", whiteText: self.darkMode)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.headline)
-                                    .foregroundColor(Color(UIColor.systemBlue))
-                            }.padding(.horizontal, 15)
-                        }.buttonStyle(PlainButtonStyle())
-                    }
-                    Spacer()
-                }.padding(.top,20)
+                ListView(mode: .DiscoverTab).cornerRadius(20)
             } else {
                 MapView(mode: .DiscoverTab).cornerRadius(20)
             }

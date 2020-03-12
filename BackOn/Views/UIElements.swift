@@ -151,7 +151,7 @@ struct AddNeedButton: View {
                 .cornerRadius(40)
                 .foregroundColor(.white)
                 .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
-            }
+            }.padding(.bottom, 50)
             Spacer()
         }
     }

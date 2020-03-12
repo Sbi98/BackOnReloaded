@@ -19,6 +19,8 @@ struct CustomTabView: View {
                     HomeView()
                 } else if TasksListView.isActive() {
                     TasksListView()
+                } else if RequestsListView.isActive() {
+                    RequestsListView()
                 }
                 else {
                     Text("Vista sbagliata nella CustomTab")
