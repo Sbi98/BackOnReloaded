@@ -10,10 +10,11 @@ import Foundation
 import SwiftUI
 import MapKit
 
+
 struct myOverlay: View {
     @Binding var isPresented: Bool
-    var opacity: Double = 0.7
-    var alignment: Alignment = .bottom
+    let opacity: Double = 0.7
+    let alignment: Alignment = .bottom
     let toOverlay: AnyView
     
     var body: some View {

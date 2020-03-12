@@ -14,7 +14,7 @@ struct FullDiscoverView: View {
     @ObservedObject var discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     
     var body: some View {
-        VStack (alignment: .leading, spacing: 10){
+        VStack (alignment: .leading, spacing: 15){
             Picker(selection: $discoverTabController.discoverMode, label: Text("Select")) {
                 Text("List").tag(1)
                 Text("Map").tag(0)
@@ -25,9 +25,6 @@ struct FullDiscoverView: View {
                 MapView(mode: .DiscoverTab).cornerRadius(20)
             }
         }
-        .padding(.top, 40)
-        .background(Color("background"))
-        .edgesIgnoringSafeArea(.all)
         .sheet(isPresented: self.$discoverTabController.showModal) {
             DetailedView(requiredBy: .DiscoverDetailedModal, selectedTask: self.discoverTabController.selectedTask!)
         }
@@ -61,6 +58,16 @@ class DiscoverTabController: ObservableObject {
                 self.closeSheet()
             }
         }
+    }
+    
+    func showModal(task: Task) {
+        self.selectedTask = task
+        showModal = true
+    }
+    
+    func closeModal() {
+        showModal = false
+        selectedTask = nil
     }
     
     func showSheet(task: Task) {

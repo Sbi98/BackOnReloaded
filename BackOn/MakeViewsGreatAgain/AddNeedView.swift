@@ -2,7 +2,6 @@ import SwiftUI
 
 struct AddNeedView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     
     var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
@@ -30,7 +29,7 @@ struct AddNeedView: View {
                     .foregroundColor(.primary)
                 Spacer()
                 CloseButton()
-            }){EmptyView()}
+            }){EmptyView()}.padding(.top, 10)
             Section(header: Text("Need informations")) {
                 HStack {
                     Text("Title: ")
@@ -73,7 +72,7 @@ struct AddNeedView: View {
                 HStack {
                     Spacer()
                     ConfirmAddNeedButton(){
-                        self.mapController.addressToCoordinates(self.address) { result, error in
+                        MapController.addressToCoordinates(self.address) { result, error in
                             guard error == nil, let result = result else {return}
                             self.dbController.insertCommit(title: self.selectedTitle, description: self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude)
                             self.dbController.getCommitByUser()
@@ -82,11 +81,12 @@ struct AddNeedView: View {
                     Spacer()
                 }
             ){EmptyView()}
+        }.onTapGesture {
+            UIApplication.shared.windows.first!.endEditing(true)
         }
         .frame(width: UIScreen.main.bounds.width, alignment: .leading)
-        .background(Color(.blue))
-        .overlay(myOverlay(isPresented: self.$showTitlePicker, toOverlay: AnyView(ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))))
-        .overlay(myOverlay(isPresented: self.$showDatePicker, toOverlay: AnyView(DatePickerGUI(selectedDate: self.$selectedDate))))
+        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))
+        .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
         .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
     }
 }

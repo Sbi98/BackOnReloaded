@@ -13,28 +13,30 @@ struct HomeView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     @State var isLoading: Bool = true
-    @State var showAddNeedModal = false
+    
     
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
             VStack {
-                HStack{
+                HStack {
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
                         .font(.largeTitle)
                         .bold()
                         .fontWeight(.heavy)
                     Spacer()
-                    Button(action: {
-                        print("Logout!")
-                        GIDSignIn.sharedInstance()?.disconnect()
-                    }) {
-                        Text("Logout")
-                            .bold()
-                            .foregroundColor(.black)
-                    }
-                }.padding()
-                TaskRow()
-                RequestRow()
+                    ProfileButton().offset(x: 10, y:2)
+                    AddNeedButton().offset(y: 3)
+                }.padding(.horizontal).padding(.top, 10)
+                TaskRow().offset(y: -20)
+                RequestRow().offset(y: -35)
+                Button(action: {
+                    print("Logout!")
+                    GIDSignIn.sharedInstance()?.disconnect()
+                }) {
+                    Text("Logout")
+                        .bold()
+                        .foregroundColor(.black)
+                }
                 GenericButton(isFilled: true, color: .systemOrange, topText: Text("Save in C.D.")){
                     print("salvo in coredata")
                     CoreDataController.addTasks(tasks: self.shared.tasksArray())
@@ -44,15 +46,14 @@ struct HomeView: View {
                     print("leggo da coredata")
                     print(CoreDataController.getCachedTasks())
                 }
-                AddNeedButton(showModal: $showAddNeedModal)
             }
         }
         .padding(.top, 40)
-        .background(Color("background"))
-        .edgesIgnoringSafeArea(.vertical)
-        .sheet(isPresented: self.$showAddNeedModal){
-            AddNeedView()
-        }
+            //        .background(Color.primary.colorInvert())
+            .edgesIgnoringSafeArea(.vertical)
+        
+        
+        
     }
     
 }

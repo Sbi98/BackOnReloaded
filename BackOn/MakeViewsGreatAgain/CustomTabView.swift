@@ -23,25 +23,25 @@ struct CustomTabView: View {
                     RequestsListView()
                 }
                 else {
-                    Text("Vista sbagliata nella CustomTab")
+                    Text("Something's wrong in CustomTab, I can feel it.")
                         .font(.title)
                         .fontWeight(.regular)
                         .foregroundColor(.primary)
                 }
             }
             .tabItem {
-                Image(systemName: "list.dash")
-                Text("Tasks")
+                Image(systemName: "rectangle.stack.fill.badge.person.crop").font(.title)
+                Text("Tasks").font(.largeTitle)
             }.tag(0)
             
             FullDiscoverView()
-            .tabItem {
-                Image(systemName: "list.dash")
-                Text("Discover")
-            }.tag(1)
+                .accentColor(Color(.systemBlue))
+                .tabItem {
+                    Image("DiscoverTabButton")
+                    Text("Discover").font(.largeTitle)
+                }.tag(1)
         }.accentColor(Color(.systemOrange))
-        .edgesIgnoringSafeArea(.top)
-        .overlay(DiscoverSheetView())
+            .edgesIgnoringSafeArea(.top)
+            .overlay(DiscoverSheetView())
     }
 }
-

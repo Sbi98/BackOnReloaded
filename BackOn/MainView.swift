@@ -25,6 +25,10 @@ extension View {
         }
     }
     
+    func myoverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
+        return self.overlay(myOverlay(isPresented: isPresented, toOverlay: AnyView(toOverlay)))
+    }
+    
     static func show() {
         (UIApplication.shared.delegate as! AppDelegate).shared.activeView = String(describing: self)
     }
@@ -41,7 +45,6 @@ extension View {
 
 struct MainView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della mainWindow alla View
-    @ObservedObject var mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     
     var body: some View {
         VStack{
@@ -52,12 +55,11 @@ struct MainView: View {
             } else if LoadingPageView.isMainWindow() {
                 LoadingPageView().transition(.scale)
             } else {
-                Text("Vista sbagliata :(")
+                Text("Something's wrong, I can feel it")
                     .font(.title)
                     .fontWeight(.regular)
                     .foregroundColor(.primary)
             }
         }
-        .alert(isPresented: $mapController.showLocationAlert){locAlert}
     }
 }

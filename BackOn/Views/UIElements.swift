@@ -91,7 +91,7 @@ struct DoItButton: View {
 }
 
 struct CantDoItButton: View {
-
+    
     var body: some View {
         GenericButton(
             isFilled: false,
@@ -134,26 +134,20 @@ struct DontNeedAnymoreButton: View {
 
 
 struct AddNeedButton: View {
-    @Binding var showModal: Bool
+    @State var showModal = false
     var body: some View {
-        HStack {
-            Spacer()
-            Button(action: {self.showModal.toggle()}) {
-                HStack{
-                    Text("Add Need ")
-                        .fontWeight(.regular)
-                        .font(.title)
-                    Image(systemName: "person.2")
-                        .font(.title)
-                }
-                .padding(20)
-                .background(Color.blue)
-                .cornerRadius(40)
-                .foregroundColor(.white)
-                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
-            }.padding(.bottom, 50)
-            Spacer()
-        }
+        Button(action: {self.showModal.toggle();print("Tappo, \(self.showModal)")}) {
+        Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
+        }.sheet(isPresented: $showModal, content: {AddNeedView()})
+    }
+}
+
+struct ProfileButton: View {
+    @State var showModal = false
+    var body: some View {
+        Button(action: {self.showModal.toggle()}) {
+            Image(systemName: "person.crop.circle").foregroundColor(Color(UIColor.systemOrange)).font(.largeTitle)
+        }.sheet(isPresented: $showModal, content: {HomeView()})
     }
 }
 
@@ -190,7 +184,6 @@ struct DatePickerGUI: View {
 }
 
 struct OpenInMapsButton: View {
-    let mapController = (UIApplication.shared.delegate as! AppDelegate).mapController
     var isFilled: Bool
     let selectedTask: Task
     var body: some View {
@@ -200,7 +193,7 @@ struct OpenInMapsButton: View {
             topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 17)),
             bottomText: selectedTask.etaText != "Calculating..." ? Text(selectedTask.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
         ){
-            self.mapController.openInMaps(commitment: self.selectedTask)
+            MapController.openInMaps(commitment: self.selectedTask)
         }
     }
 }

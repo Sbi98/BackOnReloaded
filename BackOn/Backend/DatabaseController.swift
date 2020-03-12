@@ -273,7 +273,7 @@ class DatabaseController {
     
     //MARK: loadCommitByOther
     func loadCommitByOther() {
-        print("loadCommitByOther")
+        print("*** loadCommitByOther ***")
         guard let url = URL(string: "http://\(serverIPandPort)/NewBackOn-0.0.1-SNAPSHOT/GetAllOtherCommit") else {
             print("Invalid URL")
             return
