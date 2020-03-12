@@ -11,11 +11,9 @@ import MapKit
 
 struct ListView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
-    @ObservedObject var discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
-    
     let mode: RequiredBy
-    
+    @State var selectedTask: Task?
+    @State var showModal = false
     var body: some View {
         ScrollView(Axis.Set.vertical, showsIndicators: true){
             VStack (alignment: .leading){
@@ -28,8 +26,8 @@ struct ListView: View {
                 
                 ForEach(mode == RequiredBy.DiscoverTab ? shared.discoverablesArray() : mode == RequiredBy.RequestDetailedModal ? shared.requestsArray() : shared.tasksArray(), id: \.ID) { current in
                     Button(action: {
-                        self.discoverTabController.selectedTask = current
-                        self.discoverTabController.showModal = true
+                        self.selectedTask = current
+                        self.showModal = true
                     }) {
                         VStack(alignment: .leading){
                             HStack{
@@ -87,8 +85,8 @@ struct ListView: View {
             .padding(.horizontal, 10)
             .padding(.bottom, 65)
             .edgesIgnoringSafeArea(.all)
-            .sheet(isPresented: self.$discoverTabController.showModal) {
-                DetailedView(requiredBy: .DiscoverDetailedModal, selectedTask: self.discoverTabController.selectedTask!)
+            .sheet(isPresented: self.$showModal) {
+                DetailedView(requiredBy: self.mode, selectedTask: self.selectedTask!)
             }
         }
     } //Body
