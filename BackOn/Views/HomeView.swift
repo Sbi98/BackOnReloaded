@@ -23,8 +23,8 @@ struct HomeView: View {
                         .bold()
                         .fontWeight(.heavy)
                     Spacer()
-                    ProfileButton()//.offset(y: 2)
-                    AddNeedButton()//.offset(y: 2)
+                    ProfileButton()
+                    AddNeedButton()
                 }.padding(.horizontal).padding(.top, 10)
                 TaskRow().offset(y: -20)
                 RequestRow().offset(y: -35)
@@ -36,23 +36,18 @@ struct HomeView: View {
                         .bold()
                         .foregroundColor(.black)
                 }
-                GenericButton(isFilled: true, color: .systemOrange, topText: Text("Save in C.D.")){
+                GenericButton(isFilled: true, color: .systemOrange, topText: "Save in C.D."){
                     print("salvo in coredata")
                     CoreDataController.addTasks(tasks: self.shared.tasksArray())
                 }
                 Divider().hidden()
-                GenericButton(isFilled: true, color: .systemOrange, topText: Text("Load from C.D.")){
+                GenericButton(isFilled: true, color: .systemOrange, topText: "Load from C.D."){
                     print("leggo da coredata")
                     print(CoreDataController.getCachedTasks())
                 }
             }
         }
-        .padding(.top, 40)
-            //        .background(Color.primary.colorInvert())
-            .edgesIgnoringSafeArea(.vertical)
-        
-        
-        
+        //.padding(.top, 40)
     }
     
 }

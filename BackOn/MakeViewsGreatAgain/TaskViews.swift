@@ -8,6 +8,52 @@
 
 import SwiftUI
 
+struct TaskPreview: View {
+    let mode: RequiredBy
+    @ObservedObject var task: Task
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                if mode == .RequestViews {
+                    Avatar(image: task.helperUser != nil ? task.helperUser!.profilePic : nil)
+                } else {
+                    Avatar(image: task.neederUser.profilePic)
+                }
+                VStack(alignment: .leading) {
+                    if mode == .RequestViews {
+                        Text(task.helperUser != nil ? task.helperUser!.identity : "Still nobody")
+                            .font(Font.custom("SF Pro Text", size: 26))
+                            .fontWeight(.regular)
+                            .lineLimit(1)
+                    } else {
+                        Text(task.neederUser.identity)
+                            .font(Font.custom("SF Pro Text", size: 26))
+                            .fontWeight(.regular)
+                            .lineLimit(1)
+                    }
+                    Text(task.title)
+                        .font(.subheadline)
+                        .fontWeight(.light)
+                }.padding(.leading, 5).offset(y: -1)
+                Spacer()
+            }
+            Spacer()
+            HStack {
+                Text(task.city)
+                    .foregroundColor(.secondary)
+                    .fontWeight(.regular)
+                    .font(Font.custom("SF Pro Text", size: 17))
+                Spacer()
+                Text("\(task.date, formatter: customDateFormat)")
+                    .foregroundColor(.secondary)
+                    .fontWeight(.regular)
+                    .font(Font.custom("SF Pro Text", size: 17))
+            }.offset(y: 1)
+        }.padding(12).onAppear{self.task.locate()}
+    }
+}
+
 struct TaskView: View {
     @State var task: Task
     @State var showModal = false
@@ -65,10 +111,9 @@ struct TaskView: View {
             .frame(width: 320, height: 350)
             .cornerRadius(10)
             .shadow(radius: 5)
-        }.buttonStyle(PlainButtonStyle())
-            .sheet(isPresented: self.$showModal, content: {
-                DetailedView(requiredBy: .TaskDetailedModal, selectedTask: self.task)
-            })
+        }
+        .buttonStyle(PlainButtonStyle())
+        .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: .TaskViews, selectedTask: self.task)}
     }
 }
 
@@ -104,7 +149,6 @@ struct TaskRow: View {
     }
 }
 
-
 struct TasksListView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     @State var selectedTask: Task?
@@ -112,8 +156,7 @@ struct TasksListView: View {
     
     var body: some View {
         VStack (alignment: .leading, spacing: 10){
-            Button(action: {withAnimation{
-                HomeView.show()}}) {
+            Button(action: {withAnimation{HomeView.show()}}) {
                     HStack {
                         Image(systemName: "chevron.left")
                             .font(.headline).foregroundColor(Color(UIColor.systemBlue))
@@ -125,11 +168,9 @@ struct TasksListView: View {
                     }.padding([.top,.horizontal])
             }.buttonStyle(PlainButtonStyle())
             RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
-                ListView(mode: RequiredBy.TaskTab)
+                ListView(mode: .TaskViews)
             }
             Spacer()
         }
-        .padding(.top, 40)
-        .edgesIgnoringSafeArea(.all)
     }
 }

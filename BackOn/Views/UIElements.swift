@@ -18,17 +18,6 @@ let customDateFormat: DateFormatter = {
     return formatter
 }()
 
-let locAlert = Alert(
-    title: Text("Location permission denied"),
-    message: Text("To let the app work properly, enable location permissions"),
-    primaryButton: .default(Text("Open settings")) {
-        if let url = URL(string:UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(url)
-        }
-    },
-    secondaryButton: .cancel()
-)
-
 struct CloseButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
@@ -38,9 +27,9 @@ struct CloseButton: View {
     var body: some View {
         Button(action: {
             withAnimation {
-                HomeView.show()
-                self.discoverTabController.showSheet = false
                 self.presentationMode.wrappedValue.dismiss()
+                self.discoverTabController.closeSheet()
+                HomeView.show()
             }
         }){
             ZStack{
@@ -82,7 +71,7 @@ struct DoItButton: View {
         GenericButton(
             isFilled: true,
             color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: Text("I'll do it").font(Font.custom("SF Pro Text", size: 17)),
+            topText: "I'll do it",
             bottomText: nil
         ) {
             (UIApplication.shared.delegate as! AppDelegate).dbController.insertCommitment(userEmail: CoreDataController.loggedUser!.email, commitId: self.task.ID)
@@ -96,7 +85,7 @@ struct CantDoItButton: View {
         GenericButton(
             isFilled: false,
             color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: Text("Can't do it").font(Font.custom("SF Pro Text", size: 17)),
+            topText: "Can't do it",
             bottomText: nil
         ) {
             print("Can't do it anymore!\nIMPLEMENTALO!")
@@ -136,8 +125,8 @@ struct DontNeedAnymoreButton: View {
 struct AddNeedButton: View {
     @State var showModal = false
     var body: some View {
-        Button(action: {self.showModal.toggle();print("Tappo, \(self.showModal)")}) {
-        Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
+        Button(action: {self.showModal.toggle()}) {
+            Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
         }.sheet(isPresented: $showModal, content: {AddNeedView()})
     }
 }
@@ -150,7 +139,6 @@ struct ProfileButton: View {
         }.sheet(isPresented: $showModal, content: {HomeView()})
     }
 }
-
 
 struct ElementPickerGUI: View {
     var pickerElements: [String]
@@ -183,35 +171,53 @@ struct DatePickerGUI: View {
     }
 }
 
-struct OpenInMapsButton: View {
-    var isFilled: Bool
-    let selectedTask: Task
+struct DirectionsButton: View {
+    let isFilled: Bool
+    @ObservedObject var selectedTask: Task
+    
     var body: some View {
-        GenericButton(
-            isFilled: isFilled,
-            color:#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: Text("Directions").fontWeight(.semibold).font(Font.custom("SF Pro Text", size: 17)),
-            bottomText: selectedTask.etaText != "Calculating..." ? Text(selectedTask.etaText).fontWeight(.regular).font(Font.custom("SF Pro Text", size: 15)) : nil
-        ){
-            MapController.openInMaps(commitment: self.selectedTask)
-        }
+        Button(action: {MapController.openInMaps(commitment: self.selectedTask)}){
+            VStack{
+                Text("Directions")
+                    .fontWeight(.semibold)
+                    .font(Font.custom("SF Pro Text", size: 17))
+                    .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                if selectedTask.etaText != "Calculating..." {
+                    Text("\(selectedTask.etaText)")
+                        .fontWeight(.regular)
+                        .font(Font.custom("SF Pro Text", size: 15))
+                        .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                }
+            }
+            .padding()
+            .frame(width: defaultButtonDimensions.width, height: defaultButtonDimensions.height)
+            .background(isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
+        }.buttonStyle(PlainButtonStyle())
     }
+    
 }
 
 struct GenericButton: View {
     var dimensions: (width: CGFloat, height: CGFloat) = defaultButtonDimensions
     var isFilled: Bool
-    var color: UIColor
-    var topText: Text
-    var bottomText: Text?
+    var color: UIColor = #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)
+    var topText: String
+    var bottomText: String?
     var action: () -> Void
     
-    var body: some View{
-        Button(action: action){
-            VStack{
-                topText.foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+    var body: some View {
+        Button(action: action) {
+            VStack {
+                Text(topText)
+                    .fontWeight(.semibold)
+                    .font(Font.custom("SF Pro Text", size: 17))
+                    .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 if bottomText != nil {
-                    bottomText!.foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                    Text(bottomText!)
+                        .fontWeight(.regular)
+                        .font(Font.custom("SF Pro Text", size: 15))
+                        .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
             }
             .padding()
@@ -221,3 +227,14 @@ struct GenericButton: View {
         }.buttonStyle(PlainButtonStyle())
     }
 }
+
+//let locAlert = Alert(
+//    title: Text("Location permission denied"),
+//    message: Text("To let the app work properly, enable location permissions"),
+//    primaryButton: .default(Text("Open settings")) {
+//        if let url = URL(string:UIApplication.openSettingsURLString) {
+//            UIApplication.shared.open(url)
+//        }
+//    },
+//    secondaryButton: .cancel()
+//)

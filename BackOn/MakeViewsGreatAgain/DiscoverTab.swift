@@ -14,19 +14,16 @@ struct FullDiscoverView: View {
     @ObservedObject var discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     
     var body: some View {
-        VStack (alignment: .leading, spacing: 15){
+        VStack (alignment: .leading) {
             Picker(selection: $discoverTabController.discoverMode, label: Text("Select")) {
                 Text("List").tag(1)
                 Text("Map").tag(0)
-            }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
+            }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding()
             if discoverTabController.discoverMode == 1 {
-                ListView(mode: .DiscoverTab).cornerRadius(20)
+                ListView(mode: .DiscoverableViews).cornerRadius(20)
             } else {
-                MapView(mode: .DiscoverTab).cornerRadius(20)
+                MapView(mode: .AroundYouMap).cornerRadius(20)
             }
-        }
-        .sheet(isPresented: self.$discoverTabController.showModal) {
-            DetailedView(requiredBy: .DiscoverDetailedModal, selectedTask: self.discoverTabController.selectedTask!)
         }
     }
 }
@@ -37,7 +34,7 @@ struct DiscoverSheetView: View {
     var body: some View {
         SheetView(isOpen: $discoverTabController.showSheet) {
             if discoverTabController.selectedTask != nil {
-                DetailedView(requiredBy: .DiscoverDetailedSheet, selectedTask: self.discoverTabController.selectedTask!)
+                DetailedView(requiredBy: .DiscoverableViews, selectedTask: self.discoverTabController.selectedTask!)
                     .transition(.move(edge: .bottom))
             } else {
                 EmptyView()

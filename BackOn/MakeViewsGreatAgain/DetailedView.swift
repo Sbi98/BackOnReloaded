@@ -33,7 +33,7 @@ struct DetailedView: View {
                 CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
             }
             .frame(height: 54).padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
-            if requiredBy != .DiscoverDetailedSheet {
+            if requiredBy != .AroundYouMap {
                 MapView(mode: requiredBy, selectedTask: selectedTask).offset(y:-10)
             }
             
@@ -48,13 +48,11 @@ struct DetailedView: View {
             
             HStack {
                 Spacer()
-                OpenInMapsButton(isFilled: requiredBy == RequiredBy.TaskDetailedModal, selectedTask: selectedTask).padding(.horizontal)
-                if requiredBy == RequiredBy.DiscoverDetailedModal || requiredBy == RequiredBy.DiscoverDetailedSheet {
+                DirectionsButton(isFilled: true, selectedTask: selectedTask).padding(.horizontal)
+                if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
                     DoItButton(task: selectedTask).padding(.horizontal)
-                } else if requiredBy == RequiredBy.RequestDetailedModal {
-                    CantDoItButton().padding(.horizontal) ///CI VA IL BOTTONE DI ANNULLAMENTO DELLA REQUEST
                 } else {
-                     CantDoItButton().padding(.horizontal)
+                    CantDoItButton().padding(.horizontal)
                 }
 
                 Spacer()
@@ -68,7 +66,7 @@ struct DetailedView: View {
                 .animation(.easeOut(duration: 0))
 
             Divider().padding(.horizontal, 25).padding(.top, -5)
-            Text("Via Gianluca Rossi 16\n84088 Siano, Provincia di Salerno\nItalia")
+            Text(selectedTask.address)
                 .padding(.horizontal, 25).padding(.top, -5)
                 .animation(.easeOut(duration: 0))
 
@@ -84,9 +82,10 @@ struct DetailedView: View {
                 .padding(.horizontal, 25).padding(.top, -5)
                 .animation(.easeOut(duration: 0))
         }
-        .onAppear{
+        .onAppear {
             if MapController.lastLocation != nil {
                 self.selectedTask.requestETA(source: MapController.lastLocation!)
+                self.selectedTask.locate()
             }
         }
         

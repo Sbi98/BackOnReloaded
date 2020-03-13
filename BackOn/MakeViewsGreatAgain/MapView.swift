@@ -50,24 +50,24 @@ struct MapView: UIViewRepresentable {
             let view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
             view.canShowCallout = false
             view.displayPriority = .required
-            if parent.mode == .TaskTab {
-                view.image = UIImage(named: "Empty")
-                view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
-                view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
-                view.titleVisibility = .hidden
-                view.subtitleVisibility = .hidden
-            }
+//            if parent.mode == .TaskTab {
+//                view.image = UIImage(named: "Empty")
+//                view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
+//                view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
+//                view.titleVisibility = .hidden
+//                view.subtitleVisibility = .hidden
+//            }
             return view
         }
         
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-            guard parent.mode == .DiscoverTab else {return}
+            guard parent.mode == .AroundYouMap else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
         }
         
         func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-            guard parent.mode == .DiscoverTab else {return}
+            guard parent.mode == .AroundYouMap else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.closeSheet()
         }
@@ -86,30 +86,25 @@ struct MapView: UIViewRepresentable {
         //mapView.addGestureRecognizer(...) quello che serve per riconoscere una gesture
         // vedi https://stackoverflow.com/questions/40844336/create-long-press-gesture-recognizer-with-annotation-pin
         switch mode {
-        case .RequestDetailedModal:
-            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "You"))
+        case .RequestViews:
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "Your request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             return mapView
-        case .TaskTab:
-            mapView.isScrollEnabled = false;
-            mapView.isRotateEnabled = false;
-            mapView.isPitchEnabled = false;
-            mapView.isZoomEnabled = false;
-            mapView.showsUserLocation = false;
-            mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedTask!.position.coordinate.latitude, longitude: selectedTask!.position.coordinate.longitude) , span: mapSpan), animated: true)
-            mapView.addAnnotation(generateAnnotation(selectedTask!, title: ""))
-            return mapView
-        case .TaskDetailedModal:
-            mapView.addAnnotation(generateAnnotation(selectedTask!, title: selectedTask!.neederUser.name))
-            mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
-            addRoute(mapView: mapView)
-            return mapView
-        case .DiscoverDetailedModal:
-            mapView.addAnnotation(generateAnnotation(selectedTask!, title: selectedTask!.neederUser.name))
+//        case .TaskTab:
+//            mapView.isScrollEnabled = false;
+//            mapView.isRotateEnabled = false;
+//            mapView.isPitchEnabled = false;
+//            mapView.isZoomEnabled = false;
+//            mapView.showsUserLocation = false;
+//            mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedTask!.position.coordinate.latitude, longitude: selectedTask!.position.coordinate.longitude) , span: mapSpan), animated: true)
+//            mapView.addAnnotation(generateAnnotation(selectedTask!, title: ""))
+//            return mapView
+        case .TaskViews, .DiscoverableViews:
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(selectedTask!.neederUser.name)'s request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView
-        case .DiscoverTab:
+        case .AroundYouMap:
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
                 mapView.addAnnotation(generateAnnotation(discoverableTask, title: discoverableTask.neederUser.name))
             }
@@ -118,7 +113,7 @@ struct MapView: UIViewRepresentable {
             }
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap = mapView
             return mapView
-        case .DiscoverDetailedSheet:
+        default:
             return mapView
         }
         

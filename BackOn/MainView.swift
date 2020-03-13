@@ -10,12 +10,10 @@ import SwiftUI
 import CoreLocation
 
 enum RequiredBy {
-    case TaskTab
-    case DiscoverTab
-    case DiscoverDetailedModal
-    case TaskDetailedModal
-    case RequestDetailedModal
-    case DiscoverDetailedSheet
+    case TaskViews
+    case RequestViews
+    case DiscoverableViews
+    case AroundYouMap
 }
 
 extension View {
