@@ -19,6 +19,8 @@ struct CustomTabView: View {
                     HomeView()
                 } else if TasksListView.isActive() {
                     TasksListView()
+                } else if RequestsListView.isActive() {
+                    RequestsListView()
                 }
                 else {
                     Text("Something's wrong in CustomTab, I can feel it.")

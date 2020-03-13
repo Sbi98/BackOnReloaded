@@ -124,25 +124,9 @@ struct TasksListView: View {
                         Spacer()
                     }.padding([.top,.horizontal])
             }.buttonStyle(PlainButtonStyle())
-            VStack (alignment: .center, spacing: 25){
-                ForEach(shared.tasksArray(), id: \.ID) { currentTask in
-                    Button(action: {withAnimation{
-                        self.selectedTask = currentTask
-                        self.showModal = true
-                        }}) {
-                            HStack {
-                                UserPreview(user: currentTask.neederUser, description: currentTask.title, whiteText: self.darkMode)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.headline)
-                                    .foregroundColor(Color(UIColor.systemBlue))
-                            }.padding(.horizontal, 15)
-                    }.buttonStyle(PlainButtonStyle())
-                        .sheet(isPresented: self.$showModal, content: {
-                            DetailedView(requiredBy: .TaskDetailedModal, selectedTask: self.selectedTask!)
-                        })
-                }
-            }.padding(.top,20)
+            RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
+                ListView(mode: RequiredBy.TaskTab)
+            }
             Spacer()
         }
         .padding(.top, 40)

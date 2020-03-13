@@ -14,7 +14,7 @@ struct RequestRow: View{
     
     var body: some View {
         VStack {
-            Button(action: {withAnimation{TasksListView.show()}}) {
+            Button(action: {withAnimation{RequestsListView.show()}}) {
                 HStack {
                     Text("Your requests")
                         .fontWeight(.bold)
@@ -77,6 +77,35 @@ struct RequestView: View {
             })
     }
     
+}
+
+struct RequestsListView: View {
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @State var selectedTask: Task?
+    @State var showModal = false
+    
+    var body: some View {
+        VStack (alignment: .leading, spacing: 10){
+            Button(action: {withAnimation{
+                HomeView.show()}}) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.headline).foregroundColor(Color(UIColor.systemBlue))
+                        Text("Your requests")
+                            .fontWeight(.bold)
+                            .font(.title)
+                            .padding(.leading, 5)
+                        Spacer()
+                    }.padding([.top,.horizontal])
+            }.buttonStyle(PlainButtonStyle())
+            RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
+                ListView(mode: RequiredBy.RequestDetailedModal)
+            }
+            Spacer()
+        }
+        .padding(.top, 40)
+        .edgesIgnoringSafeArea(.all)
+    }
 }
 
 struct RequestView_Previews: PreviewProvider {
