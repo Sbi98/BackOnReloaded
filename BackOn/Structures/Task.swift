@@ -8,6 +8,7 @@
 
 import CoreLocation
 import MapKit
+import SwiftUI
 
 class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
     let neederUser: User
@@ -17,18 +18,27 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
     let position: CLLocation
     let ID: Int
     var helperUser: User?
+    @Published var mapSnap: UIImage?
     @Published var etaText = "Calculating..."
     @Published var address = "Locating..."
     @Published var city = "Locating..."
     
     
-    init(neederUser: User, title: String, descr: String, date: Date, latitude: Double, longitude: Double, ID: Int) {
+    init(neederUser: User, title: String, descr: String, date: Date, latitude: Double, longitude: Double, ID: Int, mapSnap: UIImage? = nil) {
         self.neederUser = neederUser
         self.title = title
         self.descr = descr
         self.date = date
         self.ID = ID
         self.position = CLLocation(latitude: latitude, longitude: longitude)
+        self.mapSnap = mapSnap
+    }
+    
+    func getMapSnap() {
+        MapController.getSnapshot(location: position.coordinate) { snapshot, error in
+           guard error == nil, let snapshot = snapshot else {return}
+           self.mapSnap = snapshot.image
+       }
     }
     
     func timeRemaining() -> TimeInterval {

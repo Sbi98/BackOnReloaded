@@ -11,6 +11,7 @@
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="mapSnap" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="neederEmail" attributeType="String" valueTransformerName="nil" customClassName="PUser"/>
         <attribute name="neederName" attributeType="String"/>
         <attribute name="neederPhotoURL" attributeType="URI"/>
@@ -24,7 +25,7 @@
         <attribute name="surname" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="PTask" positionX="-45" positionY="-36" width="128" height="268"/>
+        <element name="PTask" positionX="-45" positionY="-36" width="128" height="283"/>
         <element name="PUser" positionX="-45" positionY="0" width="128" height="103"/>
     </elements>
 </model>

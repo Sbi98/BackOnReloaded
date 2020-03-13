@@ -11,11 +11,17 @@ import SwiftUI
 struct TaskView: View {
     @State var task: Task
     @State var showModal = false
+    @State var mapSnap: Image?
     
     var body: some View {
         Button(action: {self.showModal = true}) {
             ZStack (alignment: .bottom){
-                MapView(mode: .TaskTab, selectedTask: task)
+                if mapSnap == nil {
+                    Color.orange.frame(width: 320, height: 350)
+                } else {
+                    mapSnap
+                }
+//                MapView(mode: .TaskTab, selectedTask: task)
                 VStack (spacing: 0){
                     ZStack {
                         Image("cAnnotation")
@@ -27,12 +33,12 @@ struct TaskView: View {
                     }.scaleEffect(1.2)
                     Text(task.neederUser.name)
                         .fontWeight(.black)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                         .font(Font.custom("SF Pro Text", size: 20))
-                        //.background(Rectangle()
-                        //.cornerRadius(20)
-                        //.scaleEffect(1.1)
-                        //.foregroundColor(Color(UIColor.systemOrange)))
+                        .background(Rectangle()
+                        .cornerRadius(20)
+                        .scaleEffect(1.1)
+                        .foregroundColor(Color(UIColor.systemOrange)))
                 }
                 .offset(y: -160)
                 VStack (spacing: 5){
@@ -50,6 +56,11 @@ struct TaskView: View {
                 .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                 .cornerRadius(10)
                 //.shadow(radius: 5) //LA METTIAMO?
+            }.onAppear{
+                MapController.getSnapshot(location: self.task.position.coordinate, width: 320, height: 350){ snapshot, error in
+                    guard error == nil, let snapshot = snapshot else {return}
+                    self.mapSnap = Image(uiImage: snapshot.image)
+                }
             }
             .frame(width: 320, height: 350)
             .cornerRadius(10)
@@ -113,27 +124,25 @@ struct TasksListView: View {
                         Spacer()
                     }.padding([.top,.horizontal])
             }.buttonStyle(PlainButtonStyle())
-            RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
-                VStack (alignment: .center, spacing: 25){
-                    ForEach(shared.tasksArray(), id: \.ID) { currentTask in
-                        Button(action: {withAnimation{
-                            self.selectedTask = currentTask
-                            self.showModal = true
-                            }}) {
-                                HStack {
-                                    UserPreview(user: currentTask.neederUser, description: currentTask.title, whiteText: self.darkMode)
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.headline)
-                                        .foregroundColor(Color(UIColor.systemBlue))
-                                }.padding(.horizontal, 15)
-                        }.buttonStyle(PlainButtonStyle())
-                            .sheet(isPresented: self.$showModal, content: {
-                                DetailedView(requiredBy: .TaskDetailedModal, selectedTask: self.selectedTask!)
-                            })
-                    }
-                }.padding(.top,20)
-            }
+            VStack (alignment: .center, spacing: 25){
+                ForEach(shared.tasksArray(), id: \.ID) { currentTask in
+                    Button(action: {withAnimation{
+                        self.selectedTask = currentTask
+                        self.showModal = true
+                        }}) {
+                            HStack {
+                                UserPreview(user: currentTask.neederUser, description: currentTask.title, whiteText: self.darkMode)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.headline)
+                                    .foregroundColor(Color(UIColor.systemBlue))
+                            }.padding(.horizontal, 15)
+                    }.buttonStyle(PlainButtonStyle())
+                        .sheet(isPresented: self.$showModal, content: {
+                            DetailedView(requiredBy: .TaskDetailedModal, selectedTask: self.selectedTask!)
+                        })
+                }
+            }.padding(.top,20)
             Spacer()
         }
         .padding(.top, 40)

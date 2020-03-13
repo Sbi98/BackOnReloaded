@@ -47,7 +47,7 @@ struct MainView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della mainWindow alla View
     
     var body: some View {
-        VStack{
+        Group {
             if CustomTabView.isMainWindow() {
                 CustomTabView()
             } else if LoginPageView.isMainWindow() {

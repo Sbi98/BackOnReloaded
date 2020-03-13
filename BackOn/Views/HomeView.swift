@@ -14,18 +14,17 @@ struct HomeView: View {
     let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     @State var isLoading: Bool = true
     
-    
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
             VStack {
-                HStack {
+                HStack (spacing: 0) {
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
                         .font(.largeTitle)
                         .bold()
                         .fontWeight(.heavy)
                     Spacer()
-                    ProfileButton().offset(x: 10, y:2)
-                    AddNeedButton().offset(y: 3)
+                    ProfileButton()//.offset(y: 2)
+                    AddNeedButton()//.offset(y: 2)
                 }.padding(.horizontal).padding(.top, 10)
                 TaskRow().offset(y: -20)
                 RequestRow().offset(y: -35)

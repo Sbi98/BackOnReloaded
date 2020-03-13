@@ -28,7 +28,7 @@ struct RefreshableScrollView<Content: View>: View {
     }
     
     var body: some View {
-        return VStack {
+//        return VStack {
             ScrollView {
                 ZStack(alignment: .top) {
                     MovingView()
@@ -42,7 +42,7 @@ struct RefreshableScrollView<Content: View>: View {
             .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                 self.refreshLogic(values: values)
             }
-        }
+//        }
     }
     
     func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {

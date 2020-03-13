@@ -87,6 +87,7 @@ class CoreDataController {
         newTask.neederName = task.neederUser.name
         newTask.neederSurname = task.neederUser.surname
         newTask.neederPhotoURL = task.neederUser.photoURL
+        newTask.mapSnap = task.mapSnap?.pngData()
         
         do {
             try context.save()
@@ -114,6 +115,9 @@ class CoreDataController {
                 let myTask = Task(neederUser: neederUser, title: task.title!, descr: task.descr!, date: task.date!, latitude: task.latitude, longitude: task.longitude, ID: Int(clamping: task.id))
                 if task.helperEmail != nil {
                     myTask.helperUser = User(name: task.helperName!, surname: task.helperSurname, email: task.helperEmail!, photoURL: task.helperPhotoURL!)
+                }
+                if let mapSnap = task.mapSnap {
+                    myTask.mapSnap = UIImage(data: mapSnap)
                 }
                 cachedTasks.append(myTask)
             }

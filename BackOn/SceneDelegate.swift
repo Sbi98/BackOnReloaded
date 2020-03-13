@@ -30,7 +30,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             window.rootViewController = UIHostingController(rootView: contentView)
-//            contentView.onTapGesture{window.endEditing(true)}
             self.window = window
             window.makeKeyAndVisible()
         }
