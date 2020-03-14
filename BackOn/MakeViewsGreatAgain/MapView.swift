@@ -13,6 +13,7 @@ import MapKit
 struct MapView: UIViewRepresentable {
     let mode: RequiredBy
     var selectedTask: Task?
+    let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     
     class TaskAnnotation: NSObject, MKAnnotation {
         var task: Task
@@ -73,13 +74,13 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard parent.mode == .AroundYouMap else {return}
             guard view.annotation!.isKind(of: TaskAnnotation.self) else {return}
-            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
+            parent.discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
         }
         
         func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
             guard parent.mode == .AroundYouMap else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
-            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.closeSheet()
+            parent.discoverTabController.closeSheet()
         }
         
         func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
@@ -120,19 +121,18 @@ struct MapView: UIViewRepresentable {
             addRoute(mapView: mapView)
             return mapView
         case .AroundYouMap:
-            let map = (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap
-            guard map == nil else { return map! }
+            guard discoverTabController.baseMKMap == nil else { return discoverTabController.baseMKMap! }
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
                 mapView.addAnnotation(generateAnnotation(discoverableTask, title: discoverableTask.neederUser.name))
             }
             if let lastLocation = MapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
             }
-            (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap = mapView
+            discoverTabController.baseMKMap = mapView
             return mapView
-            
+        default:
+            return mapView
         }
-        
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {}
