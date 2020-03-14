@@ -8,6 +8,22 @@
 
 import SwiftUI
 
+/*
+@State var rating = -1
+
+HStack(alignment: .center, spacing: 10, content: {
+    ForEach(0..<5){ i in
+        Image(systemName: "star.fill")
+            .resizable()
+            .frame(width: 35, height: 35)
+            .foregroundColor(self.rating < i ? .gray : .yellow)
+            .onTapGesture {
+                self.rating = i
+        }
+    }
+})
+*/
+
 struct TaskPreview: View {
     let mode: RequiredBy
     @ObservedObject var task: Task
