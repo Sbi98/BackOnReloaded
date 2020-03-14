@@ -48,13 +48,12 @@ struct DetailedView: View {
             
             HStack {
                 Spacer()
-                DirectionsButton(isFilled: true, selectedTask: selectedTask).padding(.horizontal)
+                DirectionsButton(selectedTask: selectedTask).padding(.horizontal)
                 if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
                     DoItButton(task: selectedTask).padding(.horizontal)
                 } else {
                     CantDoItButton().padding(.horizontal)
                 }
-
                 Spacer()
             }.padding(.vertical, 5)
 
@@ -82,12 +81,12 @@ struct DetailedView: View {
                 .padding(.horizontal, 25).padding(.top, -5)
                 .animation(.easeOut(duration: 0))
         }
-        .onAppear {
-            if MapController.lastLocation != nil {
-                self.selectedTask.requestETA(source: MapController.lastLocation!)
-                self.selectedTask.locate()
-            }
-        }
+//        .onAppear {
+//            if MapController.lastLocation != nil {
+//                self.selectedTask.requestETA(source: MapController.lastLocation!)
+//                self.selectedTask.locate()
+//            }
+//        }
         
     }
 }

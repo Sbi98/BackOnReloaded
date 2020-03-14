@@ -46,10 +46,21 @@ struct MapView: UIViewRepresentable {
         }
         
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            guard !annotation.isKind(of: MKUserLocation.self) else {return nil}
-            let view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
-            view.canShowCallout = false
-            view.displayPriority = .required
+            if annotation.isKind(of: TaskAnnotation.self) {
+                let view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
+                view.canShowCallout = false
+                view.displayPriority = .required
+                return view
+            }
+            if annotation.isKind(of: MKPointAnnotation.self) {
+                let view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: nil)
+                view.canShowCallout = true
+                view.displayPriority = .required
+                view.pinTintColor = .systemBlue
+                
+                return view
+            }
+            return nil
 //            if parent.mode == .TaskTab {
 //                view.image = UIImage(named: "Empty")
 //                view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
@@ -57,12 +68,11 @@ struct MapView: UIViewRepresentable {
 //                view.titleVisibility = .hidden
 //                view.subtitleVisibility = .hidden
 //            }
-            return view
         }
         
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard parent.mode == .AroundYouMap else {return}
-            guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
+            guard view.annotation!.isKind(of: TaskAnnotation.self) else {return}
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
         }
         
@@ -70,6 +80,19 @@ struct MapView: UIViewRepresentable {
             guard parent.mode == .AroundYouMap else {return}
             guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.closeSheet()
+        }
+        
+        func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+            guard let location = userLocation.location else { return }
+            print(location.horizontalAccuracy)
+            if location.horizontalAccuracy < 35.0 {
+                print("Fermo la locating nelle mappe")
+                let myLocation = MKPointAnnotation()
+                myLocation.coordinate = location.coordinate
+                myLocation.title = "You"
+                mapView.addAnnotation(myLocation)
+                mapView.showsUserLocation = false
+            }
         }
         
     }
@@ -80,7 +103,8 @@ struct MapView: UIViewRepresentable {
         let mapSpan = MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)
         mapView.delegate = context.coordinator
         mapView.showsCompass = false
-        mapView.showsUserLocation = true;
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .none
         //let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(addAnnotationOnLongPress(gesture:)))
         //longPressGesture.minimumPressDuration = 1.0
         //mapView.addGestureRecognizer(...) quello che serve per riconoscere una gesture
@@ -90,21 +114,14 @@ struct MapView: UIViewRepresentable {
             mapView.addAnnotation(generateAnnotation(selectedTask!, title: "Your request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             return mapView
-//        case .TaskTab:
-//            mapView.isScrollEnabled = false;
-//            mapView.isRotateEnabled = false;
-//            mapView.isPitchEnabled = false;
-//            mapView.isZoomEnabled = false;
-//            mapView.showsUserLocation = false;
-//            mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: selectedTask!.position.coordinate.latitude, longitude: selectedTask!.position.coordinate.longitude) , span: mapSpan), animated: true)
-//            mapView.addAnnotation(generateAnnotation(selectedTask!, title: ""))
-//            return mapView
         case .TaskViews, .DiscoverableViews:
             mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(selectedTask!.neederUser.name)'s request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView
         case .AroundYouMap:
+            let map = (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap
+            guard map == nil else { return map! }
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
                 mapView.addAnnotation(generateAnnotation(discoverableTask, title: discoverableTask.neederUser.name))
             }
@@ -119,8 +136,7 @@ struct MapView: UIViewRepresentable {
         
     }
     
-    func updateUIView(_ uiView: MKMapView, context: Context) {
-    }
+    func updateUIView(_ uiView: MKMapView, context: Context) {}
     
     private func generateAnnotation( _ Task: Task, title: String) -> MKAnnotation {
         let taskAnnotation = TaskAnnotation(task: Task)
@@ -137,7 +153,7 @@ struct MapView: UIViewRepresentable {
         request.requestsAlternateRoutes = false
         request.transportType = .walking
         MKDirections(request: request).calculate { (response, error) in
-            guard error == nil, let response = response else {print(error!.localizedDescription);return}
+            guard error == nil, let response = response else {print("Error while adding route:",error!.localizedDescription);return}
             var fastestRoute: MKRoute = response.routes[0]
             for route in response.routes {
                 if route.expectedTravelTime < fastestRoute.expectedTravelTime {

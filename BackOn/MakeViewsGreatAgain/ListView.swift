@@ -35,8 +35,7 @@ struct ListView: View {
                     .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1)))))   
                 }
             }
-            .padding(.top, 10)
-            .padding(.horizontal, 10)
+            .padding(10)
             .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: self.mode, selectedTask: self.selectedTask!)}
         }
     } //Body

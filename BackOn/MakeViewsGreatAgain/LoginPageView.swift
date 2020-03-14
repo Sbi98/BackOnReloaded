@@ -10,9 +10,7 @@ import SwiftUI
 import GoogleSignIn
 import AuthenticationServices
 
-struct LoginPageView: View {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
+struct LoginPageView: View { 
     var body: some View {
         VStack {
             Text("BackOn")
@@ -34,7 +32,6 @@ struct LoginPageView: View {
         }
         .frame(width: UIScreen.main.bounds.width)
         .offset(y: 50)
-            
         .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom))
         .edgesIgnoringSafeArea(.all)
     }

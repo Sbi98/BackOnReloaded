@@ -172,7 +172,7 @@ struct DatePickerGUI: View {
 }
 
 struct DirectionsButton: View {
-    let isFilled: Bool
+    let isFilled: Bool = false
     @ObservedObject var selectedTask: Task
     
     var body: some View {

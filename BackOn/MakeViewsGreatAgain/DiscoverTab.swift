@@ -10,19 +10,23 @@ import SwiftUI
 import MapKit
 
 struct FullDiscoverView: View {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     @ObservedObject var discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     
     var body: some View {
         VStack (alignment: .leading) {
-            Picker(selection: $discoverTabController.discoverMode, label: Text("Select")) {
-                Text("List").tag(1)
-                Text("Map").tag(0)
-            }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding()
-            if discoverTabController.discoverMode == 1 {
-                ListView(mode: .DiscoverableViews).cornerRadius(20)
+            Text("Around you")
+                .fontWeight(.bold)
+                .font(.title)
+                .padding(.leading)
+                .offset(y: 2)
+            Picker(selection: $discoverTabController.mapMode, label: Text("Select")) {
+                Text("List").tag(false)
+                Text("Map").tag(true)
+            }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
+            if discoverTabController.mapMode {
+                MapView(mode: .AroundYouMap)
             } else {
-                MapView(mode: .AroundYouMap).cornerRadius(20)
+                ListView(mode: .DiscoverableViews)
             }
         }
     }
@@ -34,7 +38,7 @@ struct DiscoverSheetView: View {
     var body: some View {
         SheetView(isOpen: $discoverTabController.showSheet) {
             if discoverTabController.selectedTask != nil {
-                DetailedView(requiredBy: .DiscoverableViews, selectedTask: self.discoverTabController.selectedTask!)
+                DetailedView(requiredBy: .AroundYouMap, selectedTask: self.discoverTabController.selectedTask!)
                     .transition(.move(edge: .bottom))
             } else {
                 EmptyView()
@@ -49,9 +53,9 @@ class DiscoverTabController: ObservableObject {
     @Published var showModal = false
     @Published var selectedTask: Task?
     @Published var baseMKMap: MKMapView?
-    @Published var discoverMode = 0 {
+    @Published var mapMode = true {
         didSet {
-            if oldValue == 0 && self.discoverMode == 1 {
+            if oldValue == true && self.mapMode == false {
                 self.closeSheet()
             }
         }

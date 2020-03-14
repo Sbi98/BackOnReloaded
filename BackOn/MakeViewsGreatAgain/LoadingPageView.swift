@@ -11,7 +11,6 @@ import GoogleSignIn
 
 struct LoadingPageView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     
     var body: some View {
         VStack {
@@ -26,12 +25,12 @@ struct LoadingPageView: View {
                 .overlay(Circle().stroke(Color.white, lineWidth: 4))
                 .shadow(radius: 10)
             Spacer()
-            ActivityIndicator(isAnimating: .constant(true), style: .large).padding(50)
+            ActivityIndicator(isAnimating: .constant(true), style: .large)
             Spacer()
         }
         .onAppear {
             self.shared.loading = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "CustomTabView"
             }
         }

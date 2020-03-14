@@ -50,7 +50,7 @@ struct TaskPreview: View {
                     .fontWeight(.regular)
                     .font(Font.custom("SF Pro Text", size: 17))
             }.offset(y: 1)
-        }.padding(12).onAppear{self.task.locate()}
+        }.padding(12)//.onAppear{self.task.locate()}
     }
 }
 

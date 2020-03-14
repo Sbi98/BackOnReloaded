@@ -17,10 +17,6 @@ class MapController {
         }
     }
     
-    static func updateLocation(lastLocation: CLLocation) {
-        self.lastLocation = lastLocation
-    }
-    
     static func getSnapshot(location: CLLocationCoordinate2D, width: CGFloat = 320, height: CGFloat = 350, completion: @escaping (MKMapSnapshotter.Snapshot?, String?)-> Void) { //(snapshot, error) -> Void
         let mapSnapshotOptions = MKMapSnapshotter.Options()
         let mapSpan = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
@@ -55,6 +51,26 @@ class MapController {
         }
     }
     
+    static func openInMaps(commitment: Task) {
+        let request = MKDirections.Request()
+        if lastLocation != nil {
+            request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
+        }
+        let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
+        destination.name = "\(commitment.neederUser.name)'s request: \(commitment.title)"
+        request.destination = destination
+        request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
+    }
+    
+    static private func updateLocation(lastLocation: CLLocation) {
+        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+        self.lastLocation = lastLocation
+        if lastLocation.horizontalAccuracy < 35.0 {
+            locationManager.stopUpdatingLocation()
+            shared.requestETA()
+        }
+    }
+    
     static private func extractAddress(_ p: CLPlacemark) -> String {
         var address = ""
         if let streetInfo1 = p.thoroughfare {
@@ -74,18 +90,6 @@ class MapController {
         }
         return address
     }
-    
-    static func openInMaps(commitment: Task){
-        let request = MKDirections.Request()
-        if lastLocation != nil {
-            request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
-        }
-        let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
-        destination.name = "\(commitment.neederUser.name)'s request: \(commitment.title)"
-        request.destination = destination
-        request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
-    }
-
 }
 
 class LocationManagerDelegate: NSObject, CLLocationManagerDelegate {

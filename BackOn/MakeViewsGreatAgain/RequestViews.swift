@@ -99,7 +99,6 @@ struct RequestsListView: View {
             }
             Spacer()
         }
-//        .padding(.top, 40)
     }
 }
 
