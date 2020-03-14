@@ -113,6 +113,7 @@ struct MapView: UIViewRepresentable {
             }
             (UIApplication.shared.delegate as! AppDelegate).discoverTabController.baseMKMap = mapView
             return mapView
+            
         }
         
     }
