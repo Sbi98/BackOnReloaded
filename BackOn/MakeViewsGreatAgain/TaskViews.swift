@@ -153,10 +153,10 @@ struct TaskRow: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
                     ForEach(shared.tasksArray(), id: \.ID) { currentTask in
-                        ZStack{
-                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
+//                        ZStack{
+//                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
                             TaskView(task: currentTask)
-                        }
+//                        }
                     }
                 }
                 .padding(20)
@@ -173,15 +173,14 @@ struct TasksListView: View {
     var body: some View {
         VStack (alignment: .leading, spacing: 10){
             Button(action: {withAnimation{HomeView.show()}}) {
-                    HStack {
+                HStack(spacing: 15) {
                         Image(systemName: "chevron.left")
-                            .font(.headline).foregroundColor(Color(UIColor.systemBlue))
+                            .font(.headline).foregroundColor(Color(.systemOrange))
                         Text("Your tasks")
                             .fontWeight(.bold)
                             .font(.title)
-                            .padding(.leading, 5)
                         Spacer()
-                    }.padding([.top,.horizontal])
+                }.padding([.top,.horizontal])
             }.buttonStyle(PlainButtonStyle())
             RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
                 ListView(mode: .TaskViews)

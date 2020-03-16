@@ -21,8 +21,7 @@ struct CustomTabView: View {
                     TasksListView()
                 } else if RequestsListView.isActive() {
                     RequestsListView()
-                }
-                else {
+                } else {
                     Text("Something's wrong in CustomTab, I can feel it.")
                         .font(.title)
                         .fontWeight(.regular)
@@ -37,7 +36,7 @@ struct CustomTabView: View {
             FullDiscoverView()
                 .accentColor(Color(.systemBlue))
                 .tabItem {
-                    Image("DiscoverTabButton")
+                    Image("DiscoverSymbol").font(.largeTitle)
                     Text("Discover").font(.largeTitle)
                 }.tag(1)
         }

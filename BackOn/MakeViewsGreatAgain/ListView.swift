@@ -16,14 +16,8 @@ struct ListView: View {
     @State var showModal = false
     
     var body: some View {
-        ScrollView(Axis.Set.vertical, showsIndicators: true){
-            VStack (alignment: .leading){
-//                if (mode == RequiredBy.DiscoverTab) {
-//                    Text("Around you")
-//                        .fontWeight(.bold)
-//                        .font(.title)
-//                        .padding(.leading, 15)
-//                }
+        ScrollView(.vertical) {
+            VStack(alignment: .leading) {
                 ForEach(shared.arrayFromSet(mode: mode), id: \.ID) { current in
                     Button(action: {
                         self.selectedTask = current
@@ -38,7 +32,7 @@ struct ListView: View {
             .padding(10)
             .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: self.mode, selectedTask: self.selectedTask!)}
         }
-    } //Body
+    }
 }
 
 //RoundedRectangle(cornerRadius: 15, style: .continuous)

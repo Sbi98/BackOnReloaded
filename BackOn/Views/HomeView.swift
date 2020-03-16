@@ -16,18 +16,17 @@ struct HomeView: View {
     
     var body: some View {
         RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
-            VStack {
-                HStack (spacing: 0) {
+            VStack (alignment: .leading, spacing: 10) {
+                HStack (alignment: .center, spacing: 10) {
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
                         .font(.largeTitle)
-                        .bold()
-                        .fontWeight(.heavy)
+                        .fontWeight(.bold)
                     Spacer()
                     ProfileButton()
                     AddNeedButton()
                 }.padding(.horizontal).padding(.top, 10)
-                TaskRow().offset(y: -20)
-                RequestRow().offset(y: -35)
+                TaskRow()
+                RequestRow()
                 Button(action: {
                     print("Logout!")
                     GIDSignIn.sharedInstance()?.disconnect()
@@ -47,7 +46,6 @@ struct HomeView: View {
                 }
             }
         }
-        //.padding(.top, 40)
     }
     
 }

@@ -126,7 +126,7 @@ struct AddNeedButton: View {
     @State var showModal = false
     var body: some View {
         Button(action: {self.showModal.toggle()}) {
-            Image("AddNeedButton").foregroundColor(Color(UIColor.systemOrange)).scaleEffect(0.73)
+            Image("AddNeedSymbol").foregroundColor(Color(.systemOrange)).imageScale(.large).font(.largeTitle)
         }.sheet(isPresented: $showModal, content: {AddNeedView()})
     }
 }
@@ -135,7 +135,7 @@ struct ProfileButton: View {
     @State var showModal = false
     var body: some View {
         Button(action: {self.showModal.toggle()}) {
-            Image(systemName: "person.crop.circle").foregroundColor(Color(UIColor.systemOrange)).font(.largeTitle)
+            Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
         }.sheet(isPresented: $showModal, content: {HomeView()})
     }
 }

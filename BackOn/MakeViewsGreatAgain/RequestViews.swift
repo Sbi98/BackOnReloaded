@@ -22,16 +22,13 @@ struct RequestRow: View{
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.headline)
-                        .foregroundColor(Color(UIColor.systemOrange))
+                        .foregroundColor(Color(.systemOrange))
                 }.padding(.horizontal, 20)
             }.buttonStyle(PlainButtonStyle())
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal) {
                 HStack(spacing: 20) {
                     ForEach(shared.requestsArray(), id: \.ID) { currentRequest in
-//                        ZStack{
-//                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.9999)
-                            RequestView(request: currentRequest)
-//                        }
+                        RequestView(request: currentRequest)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -84,15 +81,14 @@ struct RequestsListView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Button(action: {withAnimation{HomeView.show()}}) {
-                    HStack {
+                HStack(spacing: 15) {
                         Image(systemName: "chevron.left")
-                            .font(.headline).foregroundColor(Color(UIColor.systemBlue))
+                            .font(.headline).foregroundColor(Color(.systemOrange))
                         Text("Your requests")
                             .fontWeight(.bold)
                             .font(.title)
-                            .padding(.leading, 5)
                         Spacer()
-                    }.padding([.top,.horizontal])
+                    }
             }.buttonStyle(PlainButtonStyle())
             RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
                 ListView(mode: .RequestViews)

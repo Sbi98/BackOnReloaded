@@ -28,21 +28,19 @@ struct RefreshableScrollView<Content: View>: View {
     }
     
     var body: some View {
-//        return VStack {
-            ScrollView {
-                ZStack(alignment: .top) {
-                    MovingView()
-                    
-                    VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                    
-                    SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation)
-                }
+        ScrollView {
+            ZStack(alignment: .top) {
+                MovingView()
+                
+                VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                
+                SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation)
             }
-            .background(FixedView())
-            .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-                self.refreshLogic(values: values)
-            }
-//        }
+        }
+        .background(FixedView())
+        .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+            self.refreshLogic(values: values)
+        }
     }
     
     func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
