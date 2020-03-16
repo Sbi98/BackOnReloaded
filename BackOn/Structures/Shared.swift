@@ -70,13 +70,13 @@ class Shared: ObservableObject {
                 if task.neederUser.email == CoreDataController.loggedUser!.email {
                     myRequests[task.ID] = task
                 } else {
-                    print("loadFromCoreData: inconsistent state for task: \(task)\nIt seems that you are trying to add a discoverable!")
+                    print("loadFromCoreData: inconsistent state for task: \(task)\nMaybe you are trying to add a discoverable!")
                 }
             } else {
                 if task.helperUser!.email == CoreDataController.loggedUser!.email {
                     myTasks[task.ID] = task
                 } else {
-                    print("loadFromCoreData: inconsistent state for task: \(task)\nIt seems that you are trying to add a task with an helperUser that isn't you!")
+                    print("loadFromCoreData: inconsistent state for task: \(task)\nMaybe you are adding a task with a helperUser that isn't you!")
                 }
             }
         }

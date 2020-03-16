@@ -10,29 +10,40 @@ import Foundation
 import SwiftUI
 
 struct RequestRow: View{
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack {
-            Button(action: {withAnimation{RequestsListView.show()}}) {
-                HStack {
-                    Text("Your requests")
-                        .fontWeight(.bold)
-                        .font(.title)
+            if shared.myRequests.isEmpty {
+                Divider().hidden()
+                HStack(spacing: 7) {
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.headline)
-                        .foregroundColor(Color(.systemOrange))
-                }.padding(.horizontal, 20)
-            }.buttonStyle(PlainButtonStyle())
-            ScrollView(.horizontal) {
-                HStack(spacing: 20) {
-                    ForEach(shared.requestsArray(), id: \.ID) { currentRequest in
-                        RequestView(request: currentRequest)
+                    Text("Tap on")
+                    Image("AddNeedSymbol").font(.title)
+                    Text("to add a request")
+                    Spacer()
+                }.font(.body).foregroundColor(Color(.systemGray))
+            } else {
+                Button(action: {withAnimation{RequestsListView.show()}}) {
+                    HStack {
+                        Text("Your requests")
+                            .fontWeight(.bold)
+                            .font(.title)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                            .foregroundColor(Color(.systemOrange))
+                    }.padding(.horizontal, 20)
+                }.buttonStyle(PlainButtonStyle())
+                ScrollView(.horizontal) {
+                    HStack(spacing: 20) {
+                        ForEach(shared.requestsArray(), id: \.ID) { currentRequest in
+                            RequestView(request: currentRequest)
+                        }
                     }
-                }
-                .padding(.horizontal, 20)
-            }.offset(y:-10)
+                    .padding(.horizontal, 20)
+                }.offset(y: -10)
+            }
         }
     }
 }

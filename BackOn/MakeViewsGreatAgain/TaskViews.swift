@@ -134,33 +134,53 @@ struct TaskView: View {
 }
 
 struct TaskRow: View {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack {
-            Button(action: {withAnimation{TasksListView.show()}}) {
-                HStack {
-                    Text("Your tasks")
-                        .fontWeight(.bold)
-                        .font(.title)
+            if shared.myTasks.isEmpty {
+                Spacer()
+                Image(systemName: "zzz")
+                    .resizable()
+                    .frame(width: 140, height: 170)
+                    .imageScale(.large)
+                    .font(.largeTitle)
+                    .foregroundColor(Color(.systemGray))
+                Rectangle().hidden().frame(height: 50)
+                Text("It seems that you don't have anyone to help").foregroundColor(Color(.systemGray))
+                Divider().hidden()
+                HStack(spacing: 7) {
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.headline)
-                        .foregroundColor(Color(UIColor.systemOrange))
-                }.padding(.horizontal, 20)
-            }.buttonStyle(PlainButtonStyle())
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
-                    ForEach(shared.tasksArray(), id: \.ID) { currentTask in
-//                        ZStack{
-//                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
-                            TaskView(task: currentTask)
-//                        }
+                    Text("Tap on")
+                    Image("DiscoverSymbol").imageScale(.large).font(.title)
+                    Text("to find who needs you")
+                    Spacer()
+                }.font(.body).foregroundColor(Color(.systemGray))
+            } else {
+                Button(action: {withAnimation{TasksListView.show()}}) {
+                    HStack {
+                        Text("Your tasks")
+                            .fontWeight(.bold)
+                            .font(.title)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                            .foregroundColor(Color(UIColor.systemOrange))
+                    }.padding(.horizontal, 20)
+                }.buttonStyle(PlainButtonStyle())
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(shared.tasksArray(), id: \.ID) { currentTask in
+    //                        ZStack{
+    //                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
+                                TaskView(task: currentTask)
+    //                        }
+                        }
                     }
-                }
-                .padding(20)
-            }.offset(x: 0, y: -20)
+                    .padding(20)
+                }.offset(x: 0, y: -20)
+            }
         }
     }
 }
