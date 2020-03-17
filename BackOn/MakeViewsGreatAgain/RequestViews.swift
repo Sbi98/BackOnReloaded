@@ -59,24 +59,23 @@ struct RequestView: View {
                     VStack(spacing: 3){
                         Text((request.helperUser ?? noUser).identity)
                             .fontWeight(.semibold)
-                            .font(Font.custom("SF Pro Text", size: 23))
+                            .font(.system(size: 23))
                             .foregroundColor(.white)
                         Text(request.title)
-                            .fontWeight(.regular)
-                            .font(Font.custom("SF Pro Text", size: 17))
+                            .font(.body)
                             .foregroundColor(.white)
                         Text("\(request.date, formatter: customDateFormat)")
                             .foregroundColor(Color.secondary)
                             .padding(.horizontal, 10)
                             .frame(width: 320, alignment: .trailing)
                     }.offset(y: 10)
-                        .frame(width: 320, height: 100)
+                        .frame(width: 320, height: 110)
                         .background(Color(UIColor(#colorLiteral(red: 0.8, green: 0.5509817446, blue: 0.136245412, alpha: 1))))
                         .cornerRadius(10)
                         .shadow(radius: 5) ///LA METTIAMO?
-                    Avatar(image: (request.helperUser ?? noUser).profilePic).scaleEffect(1.5).offset(y: -70).shadow(radius: 5)
+                    Avatar(image: request.helperUser?.profilePic, size: 75).offset(y: -70).shadow(radius: 5)
                 }
-            }.frame(height: 180).offset(y:30)
+            }.frame(height: 180).offset(y: 30)
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: .RequestViews, selectedTask: self.request)}

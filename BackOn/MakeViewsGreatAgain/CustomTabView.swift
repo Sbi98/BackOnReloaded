@@ -24,7 +24,6 @@ struct CustomTabView: View {
                 } else {
                     Text("Something's wrong in CustomTab, I can feel it.")
                         .font(.title)
-                        .fontWeight(.regular)
                         .foregroundColor(.primary)
                 }
             }

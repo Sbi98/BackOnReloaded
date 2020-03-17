@@ -15,78 +15,69 @@ struct DetailedView: View {
     @ObservedObject var selectedTask: Task
     var body: some View {
         VStack(alignment: .leading){
-            HStack{
-                Avatar(image: selectedTask.neederUser.profilePic)
+            HStack {
+                Avatar(image: selectedTask.helperUser?.profilePic)
                 VStack(alignment: .leading){
-                    Text(selectedTask.neederUser.identity)
-                        .fontWeight(.bold)
-                        .font(Font.custom("SF Pro Text", size: 23))
-                        .foregroundColor(.black)
+                    Text(selectedTask.helperUser?.identity ?? "Nobody accepted")
+                        .fontWeight(.medium)
+                        .font(.title)
                         .animation(.easeOut(duration: 0))
                     Text(selectedTask.title)
-                        .fontWeight(.regular)
-                        .font(Font.custom("SF Pro Text", size: 17))
-                        .foregroundColor(.black)
+                        .font(.body)
                         .animation(.easeOut(duration: 0))
                 }.padding(.horizontal)
                 Spacer()
                 CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
             }
-            .frame(height: 54).padding().background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
+            .frame(height: 54)
+            .padding()
+            .background(Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
             if requiredBy != .AroundYouMap {
-                MapView(mode: requiredBy, selectedTask: selectedTask).offset(y:-10)
+                MapView(mode: requiredBy, selectedTask: selectedTask).offset(y: -10)
             }
             
-            if selectedTask.descr != nil {
-                Text(selectedTask.descr!)
-                    .fontWeight(.regular)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .font(Font.custom("SF Pro Text", size: 19))
-                    .padding(.horizontal, 25).padding(.top, 5).padding(.bottom, 10)
-                    .animation(.easeOut(duration: 0))
-            }
-            
-            HStack {
-                Spacer()
-                DirectionsButton(selectedTask: selectedTask).padding(.horizontal)
-                if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
-                    DoItButton(task: selectedTask).padding(.horizontal)
-                } else {
-                    CantDoItButton().padding(.horizontal)
+            VStack(alignment: .leading, spacing: 20) {
+                if selectedTask.descr != nil {
+                    Text(selectedTask.descr!)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .font(.system(size: 19))
+                        .animation(.easeOut(duration: 0))
                 }
-                Spacer()
-            }.padding(.vertical, 5)
-
-            Text("Address")
-                .foregroundColor(.secondary)
-                .fontWeight(.regular)
-                .font(Font.custom("SF Pro Text", size: 17))
-                .padding(.top, 10).padding(.horizontal, 25)
-                .animation(.easeOut(duration: 0))
-
-            Divider().padding(.horizontal, 25).padding(.top, -5)
-            Text(selectedTask.address)
-                .padding(.horizontal, 25).padding(.top, -5)
-                .animation(.easeOut(duration: 0))
-
-            Text("Scheduled Date")
-                .foregroundColor(.secondary)
-                .fontWeight(.regular)
-                .font(Font.custom("SF Pro Text", size: 17))
-                .padding(.top, 10).padding(.horizontal, 25)
-                .animation(.easeOut(duration: 0))
-
-            Divider().padding(.horizontal, 25).padding(.top, -5)
-            Text("\(self.selectedTask.date, formatter: customDateFormat)")
-                .padding(.horizontal, 25).padding(.top, -5)
-                .animation(.easeOut(duration: 0))
+                
+                HStack {
+                    Spacer()
+                    if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
+                        DirectionsButton(selectedTask: selectedTask)
+                        DoItButton(task: selectedTask)
+                    } else if requiredBy == .RequestViews {
+                        DontNeedAnymoreButton()
+                    } else {
+                        DirectionsButton(selectedTask: selectedTask)
+                        CantDoItButton()
+                    }
+                    Spacer()
+                }.padding(.horizontal)
+                
+                VStack(alignment: .leading, spacing: 5) { //Address section
+                    Text("Address")
+                        .foregroundColor(.secondary)
+                        .font(.body)
+                        .animation(.easeOut(duration: 0))
+                    Divider()
+                    Text(selectedTask.address)
+                        .animation(.easeOut(duration: 0))
+                }
+                
+                VStack(alignment: .leading, spacing: 5) { //Scheduled date section
+                    Text("Scheduled Date")
+                        .foregroundColor(.secondary)
+                        .font(.body)
+                        .animation(.easeOut(duration: 0))
+                    Divider()
+                    Text("\(self.selectedTask.date, formatter: customDateFormat)")
+                        .animation(.easeOut(duration: 0))
+                }
+            }.padding(.horizontal, 20)
         }
-//        .onAppear {
-//            if MapController.lastLocation != nil {
-//                self.selectedTask.requestETA(source: MapController.lastLocation!)
-//                self.selectedTask.locate()
-//            }
-//        }
-        
     }
 }

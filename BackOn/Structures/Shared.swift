@@ -35,6 +35,9 @@ class Shared: ObservableObject {
             task.locate()
             task.requestETA(source: MapController.lastLocation!)
         }
+        for task in myRequests.values {
+            task.locate()
+        }
         for task in myDiscoverables.values {
             task.locate()
             task.requestETA(source: MapController.lastLocation!)

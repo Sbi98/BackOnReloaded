@@ -55,7 +55,6 @@ struct MainView: View {
             } else {
                 Text("Something's wrong, I can feel it")
                     .font(.title)
-                    .fontWeight(.regular)
                     .foregroundColor(.primary)
             }
         }

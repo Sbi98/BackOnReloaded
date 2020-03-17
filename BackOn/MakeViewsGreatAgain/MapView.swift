@@ -85,9 +85,7 @@ struct MapView: UIViewRepresentable {
         
         func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
             guard let location = userLocation.location else { return }
-            print(location.horizontalAccuracy)
             if location.horizontalAccuracy < 35.0 {
-                print("Fermo la locating nelle mappe")
                 let myLocation = MKPointAnnotation()
                 myLocation.coordinate = location.coordinate
                 myLocation.title = "You"

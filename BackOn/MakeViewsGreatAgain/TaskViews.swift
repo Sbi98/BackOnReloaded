@@ -39,13 +39,11 @@ struct TaskPreview: View {
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
                         Text(task.helperUser != nil ? task.helperUser!.identity : "Still nobody")
-                            .font(Font.custom("SF Pro Text", size: 26))
-                            .fontWeight(.regular)
+                            .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     } else {
                         Text(task.neederUser.identity)
-                            .font(Font.custom("SF Pro Text", size: 26))
-                            .fontWeight(.regular)
+                            .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     }
                     Text(task.title)
@@ -58,13 +56,11 @@ struct TaskPreview: View {
             HStack {
                 Text(task.city)
                     .foregroundColor(.secondary)
-                    .fontWeight(.regular)
-                    .font(Font.custom("SF Pro Text", size: 17))
+                    .font(.body)
                 Spacer()
                 Text("\(task.date, formatter: customDateFormat)")
                     .foregroundColor(.secondary)
-                    .fontWeight(.regular)
-                    .font(Font.custom("SF Pro Text", size: 17))
+                    .font(.body)
             }.offset(y: 1)
         }.padding(12)//.onAppear{self.task.locate()}
     }
@@ -87,7 +83,7 @@ struct TaskView: View {
                 VStack (spacing: 0){
                     ZStack {
                         Image("cAnnotation")
-                            .foregroundColor(Color(UIColor.systemOrange))
+                            .foregroundColor(Color(.systemOrange))
                             .offset(y: -5)
                             .scaleEffect(0.97)
                         Avatar(image: task.neederUser.profilePic)
@@ -96,20 +92,16 @@ struct TaskView: View {
                     Text(task.neederUser.name)
                         .fontWeight(.black)
                         .foregroundColor(.white)
-                        .font(Font.custom("SF Pro Text", size: 20))
-                        .background(Rectangle()
-                        .cornerRadius(20)
-                        .scaleEffect(1.1)
-                        .foregroundColor(Color(UIColor.systemOrange)))
+                        .font(.system(size: 20))
+                        .background(Rectangle().cornerRadius(20).scaleEffect(1.1).foregroundColor(Color(.systemOrange)))
                 }
                 .offset(y: -160)
                 VStack (spacing: 5){
                     Text(self.task.title)
                         .font(.title)
-                        .fontWeight(.regular)
-                        .foregroundColor(Color.white)
+                        .foregroundColor(.white)
                     Text("\(self.task.date, formatter: customDateFormat)")
-                        .foregroundColor(Color.secondary)
+                        .foregroundColor(.secondary)
                         .padding(.horizontal, 10)
                         .frame(width: 320, alignment: .trailing)
                         .offset(y: 1)

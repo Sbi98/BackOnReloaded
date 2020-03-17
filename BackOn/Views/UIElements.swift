@@ -51,7 +51,6 @@ struct ConfirmAddNeedButton: View {
         Button(action: action) {
             HStack{
                 Text("Confirm ")
-                    .fontWeight(.regular)
                 Image(systemName: "hand.thumbsup")
             }
             .font(.title)
@@ -70,9 +69,7 @@ struct DoItButton: View {
     var body: some View {
         GenericButton(
             isFilled: true,
-            color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: "I'll do it",
-            bottomText: nil
+            topText: "I'll do it"
         ) {
             (UIApplication.shared.delegate as! AppDelegate).dbController.insertCommitment(userEmail: CoreDataController.loggedUser!.email, commitId: self.task.ID)
         }
@@ -80,13 +77,10 @@ struct DoItButton: View {
 }
 
 struct CantDoItButton: View {
-    
     var body: some View {
         GenericButton(
             isFilled: false,
-            color: #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1),
-            topText: "Can't do it",
-            bottomText: nil
+            topText: "Can't do it"
         ) {
             print("Can't do it anymore!\nIMPLEMENTALO!")
         }
@@ -94,29 +88,13 @@ struct CantDoItButton: View {
 }
 
 struct DontNeedAnymoreButton: View {
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
     var body: some View {
-        HStack{
-            Spacer()
-            Button(action: {
-                print("Don't Need Anymore")
-                //NeederHomeView.show()
-            }) {
-                HStack{
-                    Text("Don't need anymore ")
-                        .fontWeight(.regular)
-                        .font(.title)
-                    Image(systemName: "hand.thumbsup")
-                        .font(.title)
-                }
-                .padding(20)
-                .background(Color(.systemRed))
-                .cornerRadius(40)
-                .foregroundColor(.white)
-                .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color(.systemRed), lineWidth: 0).foregroundColor(Color(.systemRed)))
-            }.buttonStyle(PlainButtonStyle())
-            Spacer()
+        GenericButton(
+            isFilled: true,
+            isLarge: true,
+            topText: "Don't need anymore"
+        ) {
+            print("Don't need anymore!\nIMPLEMENTALO!")
         }
     }
 }
@@ -180,12 +158,11 @@ struct DirectionsButton: View {
             VStack{
                 Text("Directions")
                     .fontWeight(.semibold)
-                    .font(Font.custom("SF Pro Text", size: 17))
+                    .font(.body)
                     .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 if selectedTask.etaText != "Calculating..." {
                     Text("\(selectedTask.etaText)")
-                        .fontWeight(.regular)
-                        .font(Font.custom("SF Pro Text", size: 15))
+                        .font(.subheadline)
                         .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
             }
@@ -201,9 +178,10 @@ struct DirectionsButton: View {
 struct GenericButton: View {
     var dimensions: (width: CGFloat, height: CGFloat) = defaultButtonDimensions
     var isFilled: Bool
+    var isLarge: Bool = false
     var color: UIColor = #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)
     var topText: String
-    var bottomText: String?
+    var bottomText: String? = nil
     var action: () -> Void
     
     var body: some View {
@@ -211,17 +189,16 @@ struct GenericButton: View {
             VStack {
                 Text(topText)
                     .fontWeight(.semibold)
-                    .font(Font.custom("SF Pro Text", size: 17))
+                    .font(.body)
                     .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 if bottomText != nil {
                     Text(bottomText!)
-                        .fontWeight(.regular)
-                        .font(Font.custom("SF Pro Text", size: 15))
+                        .font(.subheadline)
                         .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
             }
             .padding()
-            .frame(width: dimensions.width, height: dimensions.height)
+            .frame(width: isLarge ? dimensions.width*2 : dimensions.width, height: dimensions.height)
             .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())

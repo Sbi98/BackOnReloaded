@@ -10,10 +10,11 @@ import SwiftUI
 
 struct Avatar: View {
     let image: Image
-    let size: CGFloat = 50
+    let size: CGFloat
     
-    init(image: Image?) {
+    init(image: Image?, size: CGFloat = 50) {
         self.image = image == nil ? Image(systemName: "questionmark.circle.fill") : image!
+        self.size = size
     }
 
     var body: some View {
