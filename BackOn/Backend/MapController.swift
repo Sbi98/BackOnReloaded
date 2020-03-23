@@ -57,7 +57,7 @@ class MapController {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
         }
         let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
-        destination.name = "\(commitment.neederUser.name)'s request: \(commitment.title)"
+        destination.name = "\(users[commitment.neederID]!.name)'s request: \(commitment.title)"
         request.destination = destination
         request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
     }

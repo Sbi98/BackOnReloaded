@@ -11,7 +11,6 @@ import GoogleSignIn
 
 struct HomeView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
     @State var isLoading: Bool = true
     
     var body: some View {

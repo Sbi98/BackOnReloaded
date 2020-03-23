@@ -17,7 +17,17 @@ class User {
     }
     var email: String
     var profilePic: Image?
-    var isHelper: Int?
+    private var id: String?
+    var ID: String? {
+        get{
+            return id == nil ? id : id!
+        }
+        set{
+            if id == nil && newValue != nil{
+                id = newValue
+            }
+        }
+    }
 
     
 //    Costruttore aggiuntivo utilizzato al momento dell'accesso con Google
@@ -28,16 +38,15 @@ class User {
         self.photoURL = photoURL
     }
 
-    init(name: String, surname: String, email: String, photoURL: URL, isHelper: Int) {
+    init(name: String, surname: String, email: String, photoURL: URL) {
         self.name = name
         self.surname = surname
         self.email = email
         self.photoURL = photoURL
-        self.isHelper = isHelper
         do {
             profilePic = try Image(uiImage: UIImage(data: Data(contentsOf: photoURL))!)
         } catch {}
     }
 }
 
-let noUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "noUser")!, isHelper: 1)
+let noUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "noUser")!)

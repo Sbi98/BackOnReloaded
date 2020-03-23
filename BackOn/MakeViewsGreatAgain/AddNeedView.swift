@@ -2,8 +2,7 @@ import SwiftUI
 
 struct AddNeedView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let dbController = (UIApplication.shared.delegate as! AppDelegate).dbController
-    
+
     var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
     @State var showTitlePicker = false
     @State var selectedTitle = "Click to select your need"
@@ -74,8 +73,7 @@ struct AddNeedView: View {
                     ConfirmAddNeedButton(){
                         MapController.addressToCoordinates(self.address) { result, error in
                             guard error == nil, let result = result else {return}
-                            self.dbController.insertCommit(title: self.selectedTitle, description: self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude)
-                            self.dbController.getCommitByUser()
+                            DatabaseController.addRequest(newRequest: Task(neederID: CoreDataController.loggedUser!.ID!, title: self.selectedTitle, descr: self.needDescription == "" ? "nil" : self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude))
                         }
                     }
                     Spacer()

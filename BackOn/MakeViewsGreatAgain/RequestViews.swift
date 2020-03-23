@@ -57,7 +57,7 @@ struct RequestView: View {
             VStack {
                 ZStack {
                     VStack(spacing: 3){
-                        Text((request.helperUser ?? noUser).identity)
+                        Text((request.helperID == nil ? noUser : users[request.helperID!])!.identity)
                             .fontWeight(.semibold)
                             .font(.system(size: 23))
                             .foregroundColor(.white)
@@ -73,7 +73,7 @@ struct RequestView: View {
                         .background(Color(UIColor(#colorLiteral(red: 0.8, green: 0.5509817446, blue: 0.136245412, alpha: 1))))
                         .cornerRadius(10)
                         .shadow(radius: 5) ///LA METTIAMO?
-                    Avatar(image: request.helperUser?.profilePic, size: 75).offset(y: -70).shadow(radius: 5)
+                    Avatar(image: (request.helperID == nil ? nil : users[request.helperID!]?.profilePic), size: 75).offset(y: -70).shadow(radius: 5)
                 }
             }.frame(height: 180).offset(y: 30)
         }
@@ -108,8 +108,8 @@ struct RequestsListView: View {
     }
 }
 
-struct RequestView_Previews: PreviewProvider {
-    static var previews: some View {
-        RequestView(request: Task(neederUser: User(name: "Gio", surname: "Fal", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Prova", descr: "Prova", date: Date(), latitude: 41, longitude: 15, ID: 2))
-    }
-}
+//struct RequestView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        RequestView(request: Task(neederUser: User(name: "Gio", surname: "Fal", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Prova", descr: "Prova", date: Date(), latitude: 41, longitude: 15, ID: 2))
+//    }
+//}

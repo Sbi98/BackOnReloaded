@@ -32,17 +32,22 @@ struct TaskPreview: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 if mode == .RequestViews {
-                    Avatar(image: task.helperUser != nil ? task.helperUser!.profilePic : nil)
+                    Avatar(image:
+                    //                    nil
+                                      (((task.helperID == nil ? nil : users[task.helperID!]) ?? noUser).profilePic))
                 } else {
-                    Avatar(image: task.neederUser.profilePic)
+                    Avatar(image: users[task.neederID]!.profilePic)
                 }
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
-                        Text(task.helperUser != nil ? task.helperUser!.identity : "Still nobody")
+                        Text(
+                        //                        "PROVA"
+                                                ((task.helperID == nil ? nil : users[task.helperID!]!) ?? noUser).identity
+                                            )
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     } else {
-                        Text(task.neederUser.identity)
+                        Text(users[task.neederID]!.identity)
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     }
@@ -86,10 +91,10 @@ struct TaskView: View {
                             .foregroundColor(Color(.systemOrange))
                             .offset(y: -5)
                             .scaleEffect(0.97)
-                        Avatar(image: task.neederUser.profilePic)
+                        Avatar(image: users[task.neederID]!.profilePic)
                             .offset(y: -9.65)
                     }.scaleEffect(1.2)
-                    Text(task.neederUser.name)
+                    Text(users[task.neederID]!.name)
                         .fontWeight(.black)
                         .foregroundColor(.white)
                         .font(.system(size: 20))

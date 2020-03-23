@@ -16,9 +16,14 @@ struct DetailedView: View {
     var body: some View {
         VStack(alignment: .leading){
             HStack {
-                Avatar(image: selectedTask.helperUser?.profilePic)
+                Avatar(image:
+//                    nil
+                  (((selectedTask.helperID == nil ? nil : users[selectedTask.helperID!]) ?? noUser).profilePic))
                 VStack(alignment: .leading){
-                    Text(selectedTask.helperUser?.identity ?? "Nobody accepted")
+                    Text(
+//                        "PROVA"
+                        ((selectedTask.helperID == nil ? nil : users[selectedTask.helperID!]) ?? noUser).identity
+                    )
                         .fontWeight(.medium)
                         .font(.title)
                         .animation(.easeOut(duration: 0))
@@ -50,10 +55,10 @@ struct DetailedView: View {
                         DirectionsButton(selectedTask: selectedTask)
                         DoItButton(task: selectedTask)
                     } else if requiredBy == .RequestViews {
-                        DontNeedAnymoreButton()
+                        DontNeedAnymoreButton(requestID: selectedTask.ID!)
                     } else {
                         DirectionsButton(selectedTask: selectedTask)
-                        CantDoItButton()
+                        CantDoItButton(taskID: selectedTask.ID!)
                     }
                     Spacer()
                 }.padding(.horizontal)

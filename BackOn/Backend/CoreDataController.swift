@@ -72,27 +72,21 @@ class CoreDataController {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: "PTask", in: context)
         let newTask = PTask(entity: entity!, insertInto: context)
-        newTask.id = Int64(clamping: task.ID)
+        newTask.id = task.ID
         newTask.title = task.title
         newTask.descr = task.descr
         newTask.date = task.date
         newTask.address = task.address
         newTask.latitude = task.position.coordinate.latitude
         newTask.longitude = task.position.coordinate.longitude
-        newTask.helperEmail = task.helperUser?.email
-        newTask.helperName = task.helperUser?.name
-        newTask.helperSurname = task.helperUser?.surname
-        newTask.helperPhotoURL = task.helperUser?.photoURL
-        newTask.neederEmail = task.neederUser.email
-        newTask.neederName = task.neederUser.name
-        newTask.neederSurname = task.neederUser.surname
-        newTask.neederPhotoURL = task.neederUser.photoURL
+        newTask.helperID = task.helperID
+        newTask.neederID = task.neederID
         newTask.mapSnap = task.mapSnap?.pngData()
         
         do {
             try context.save()
         } catch {
-            print("Error while saving task with ID \(newTask.id) in memory! The error is:\n\(error)\n")
+            print("Error while saving task with ID \(newTask.id ?? "NIL") in memory! The error is:\n\(error)\n")
             return
         }
         print("Task \(newTask) saved in memory")
@@ -111,11 +105,10 @@ class CoreDataController {
         do {
             let array = try context.fetch(fetchRequest)
             for task in array {
-                let neederUser = User(name: task.neederName!, surname: task.neederSurname, email: task.neederEmail!, photoURL: task.neederPhotoURL!)
-                let myTask = Task(neederUser: neederUser, title: task.title!, descr: task.descr!, date: task.date!, latitude: task.latitude, longitude: task.longitude, ID: Int(clamping: task.id))
-                if task.helperEmail != nil {
-                    myTask.helperUser = User(name: task.helperName!, surname: task.helperSurname, email: task.helperEmail!, photoURL: task.helperPhotoURL!)
-                }
+                
+                let myTask = Task(neederID: task.neederID!, title: task.title!, descr: task.descr, date: task.date!, latitude: task.latitude, longitude: task.longitude, ID: task.id!)
+                if let helperID = task.helperID {myTask.helperID = helperID}
+               
                 if let mapSnap = task.mapSnap {
                     myTask.mapSnap = UIImage(data: mapSnap)
                 }

@@ -8,38 +8,68 @@
 
 import CoreLocation
 import MapKit
-import SwiftUI
 
 class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
-    let neederUser: User
+    let neederID: String
     let title: String
     let descr: String?
     let date: Date
     let position: CLLocation
-    let ID: Int
-    var helperUser: User?
+    private var id: String?
+    var ID: String? {
+        get{
+            return id == nil ? id : id!
+        }
+        set{
+            if id == nil && newValue != nil{
+                id = newValue
+            }
+        }
+    }
+    
+    var helperID: String?
     @Published var mapSnap: UIImage?
     @Published var etaText = "Calculating..."
     @Published var address = "Locating..."
     @Published var city = "Locating..."
     
     
-    init(neederUser: User, title: String, descr: String, date: Date, latitude: Double, longitude: Double, ID: Int, mapSnap: UIImage? = nil) {
-        self.neederUser = neederUser
+    init(neederID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, ID: String) {
+        self.neederID = neederID
         self.title = title
         self.descr = descr
         self.date = date
-        self.ID = ID
+        self.id = ID
         self.position = CLLocation(latitude: latitude, longitude: longitude)
-        self.mapSnap = mapSnap
     }
     
-    func getMapSnap() {
-        MapController.getSnapshot(location: position.coordinate) { snapshot, error in
-           guard error == nil, let snapshot = snapshot else {return}
-           self.mapSnap = snapshot.image
-       }
+    init(neederID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double) {
+        self.neederID = neederID
+        self.title = title
+        self.descr = descr
+        self.date = date
+        self.position = CLLocation(latitude: latitude, longitude: longitude)
     }
+    
+//    init(neederID: String, helperID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, ID: String) {
+//        self.neederID = neederID
+//        self.helperID = helperID
+//        self.title = title
+//        self.descr = descr
+//        self.date = date
+//        self.id = ID
+//        self.position = CLLocation(latitude: latitude, longitude: longitude)
+//    }
+//    
+//    init(neederID: String, helperID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double) {
+//        self.neederID = neederID
+//        self.helperID = helperID
+//        self.title = title
+//        self.descr = descr
+//        self.date = date
+//        self.position = CLLocation(latitude: latitude, longitude: longitude)
+//    }
+    
     
     func timeRemaining() -> TimeInterval {
         return date.timeIntervalSinceNow
@@ -68,7 +98,7 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
         MapController.coordinatesToAddress(self.position) { result, error in
             guard error == nil, let result = result else {return}
             self.address = result
-            self.city = "\(result.split(separator: ",")[2])" 
+            self.city = "\(result.split(separator: ",")[2])"
         }
     }
 }
@@ -78,15 +108,15 @@ func getNextCommitment(dataDictionary: [Int:Task]) -> Task? {
     if(dataDictionary.count == 0){
         return nil
     }
-     let data = Array(dataDictionary.values)
-     var toReturn = data[0]
-     for c in data {
-         if toReturn.date.compare(c.date) == ComparisonResult.orderedDescending {
+    let data = Array(dataDictionary.values)
+    var toReturn = data[0]
+    for c in data {
+        if toReturn.date.compare(c.date) == ComparisonResult.orderedDescending {
             toReturn = c
-         }
-     }
-     return toReturn
- }
+        }
+    }
+    return toReturn
+}
 
 func getNextNotificableCommitment(dataDictionary: [Int:Task]) -> Task? {
     if(dataDictionary.count == 0){
@@ -104,26 +134,26 @@ func getNextNotificableCommitment(dataDictionary: [Int:Task]) -> Task? {
         }} while data.count>0
     return toReturn
 }
- 
-func getNextFive(dataDictionary: [Int: Task]) -> [Task]{
-      let data = Array(dataDictionary.values)
-      var toReturn: [Task] = [data[0]]
- //   Mi serve a sapere se non ho ancora inserito i primi 5 elementi ordinatamente
-      var last = 0
 
-      for i in 1...data.count {
-          for j in stride(from: last < 5 ? last : 4, through: 0, by: -1) {
-              if toReturn[j].date.compare(data[i].date) == ComparisonResult.orderedDescending{
-                  let toShift = toReturn[j]
-                  toReturn[j] = data[i]
-                  toReturn[j + 1] = toShift
-              } else {
-                  if last < 5 {
-                     toReturn[last + 1] = data[i]
-                  }
-              }
-              last += 1
-          }
-      }
-      return toReturn
+func getNextFive(dataDictionary: [Int: Task]) -> [Task]{
+    let data = Array(dataDictionary.values)
+    var toReturn: [Task] = [data[0]]
+    //   Mi serve a sapere se non ho ancora inserito i primi 5 elementi ordinatamente
+    var last = 0
+    
+    for i in 1...data.count {
+        for j in stride(from: last < 5 ? last : 4, through: 0, by: -1) {
+            if toReturn[j].date.compare(data[i].date) == ComparisonResult.orderedDescending{
+                let toShift = toReturn[j]
+                toReturn[j] = data[i]
+                toReturn[j + 1] = toShift
+            } else {
+                if last < 5 {
+                    toReturn[last + 1] = data[i]
+                }
+            }
+            last += 1
+        }
+    }
+    return toReturn
 }

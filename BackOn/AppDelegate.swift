@@ -15,12 +15,10 @@ import GoogleSignIn
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     let shared: Shared
-    let dbController: DatabaseController
     let discoverTabController: DiscoverTabController
     
     override init() {
         shared = Shared()
-        dbController = DatabaseController(shared: shared)
         discoverTabController = DiscoverTabController()
         super.init()
     }
@@ -40,10 +38,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         //let idToken = user.authentication.idToken // Safe to send to the server
         let myUser = User(name: user.profile.givenName!, surname: user.profile.familyName, email: user.profile.email!, photoURL: user.profile.imageURL(withDimension: 100)!)
         
-//        LO AGGIUNGO A CORE DATA
-        CoreDataController.addUser(user: myUser)
-//        REGISTRA L'UTENTE NEL DATABASE LOCALE
-        dbController.registerUser(user: myUser)
+//      Aggiungo al DB e a Coredata
+        DatabaseController.signUp(newUser: myUser){
+            DispatchQueue.main.async {
+                CoreDataController.addUser(user: myUser)
+                DatabaseController.getRequests()
+                DatabaseController.getTasks()
+                DatabaseController.discover()
+            }
+        }
+        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
         shared.mainWindow = "LoadingPageView"
     }
     

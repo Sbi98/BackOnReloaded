@@ -65,36 +65,37 @@ struct ConfirmAddNeedButton: View {
 
 struct DoItButton: View {
     let task: Task
-    
     var body: some View {
         GenericButton(
             isFilled: true,
             topText: "I'll do it"
         ) {
-            (UIApplication.shared.delegate as! AppDelegate).dbController.insertCommitment(userEmail: CoreDataController.loggedUser!.email, commitId: self.task.ID)
+            DatabaseController.addTask(newTask: self.task)
         }
     }
 }
 
 struct CantDoItButton: View {
+    let taskID: String
     var body: some View {
         GenericButton(
             isFilled: false,
             topText: "Can't do it"
         ) {
-            print("Can't do it anymore!\nIMPLEMENTALO!")
+            DatabaseController.removeTask(taskID: self.taskID)
         }
     }
 }
 
 struct DontNeedAnymoreButton: View {
+    let requestID: String
     var body: some View {
         GenericButton(
             isFilled: true,
             isLarge: true,
             topText: "Don't need anymore"
         ) {
-            print("Don't need anymore!\nIMPLEMENTALO!")
+            DatabaseController.removeRequest(requestID: self.requestID)
         }
     }
 }
