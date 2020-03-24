@@ -90,7 +90,7 @@ struct DatabaseController {
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
                 if let jsonResponse = try? JSON(data: data){
-                    let userID = jsonResponse["id"].stringValue
+                    let userID = jsonResponse["_id"].stringValue
                     print("new user.id = \(newUser.ID ?? "nil")\n user id ottenuto: \(userID)")
                     if newUser.ID == nil || newUser.ID == userID {
                         newUser.ID = userID
@@ -325,7 +325,7 @@ struct DatabaseController {
         
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
         let parameters: [String: String] = ["_id": newTask.ID!, "helperID": CoreDataController.loggedUser!.ID!]
-        
+        print(parameters)
         //now create the URLRequest object using the url object
         var request = URLRequest(url: URL(string: ServerRoutes.addTask())!)
         request.httpMethod = "PUT" //set http method as POST
@@ -343,7 +343,16 @@ struct DatabaseController {
         
         //Next method is to get rerver response
         URLSession.shared.dataTask(with: request) { data, response, error in
+            print(data)
+            print(request)
+            print(error)
             guard error == nil else {return}
+            if let responseCode = (response as? HTTPURLResponse)?.statusCode {
+            guard responseCode == 200 else {
+                print("Invalid response code: \(responseCode)")
+                return
+            }
+            }
             print("CI SONOOOO")
             shared.myTasks[newTask.ID!] = newTask
 //            if let data = data {
@@ -376,7 +385,7 @@ struct DatabaseController {
     private static func removeBond(idToRemove: String, isRequest: Bool){
         print("removeBond")
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
-        let parameters: [String: String] = ["id": idToRemove]
+        let parameters: [String: String] = ["_id": idToRemove]
         //now create the URLRequest object using the url object
         var request = URLRequest(url: URL(string: isRequest ? ServerRoutes.removeRequest(id: idToRemove) : ServerRoutes.removeTasks(id: idToRemove))!)
         request.httpMethod = isRequest ? "DELETE" : "PUT" //set http method as POST

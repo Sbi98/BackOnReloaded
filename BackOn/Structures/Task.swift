@@ -70,6 +70,9 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
 //        self.position = CLLocation(latitude: latitude, longitude: longitude)
 //    }
     
+    func isExpired() -> Bool {
+        return date < Date()
+    }
     
     func timeRemaining() -> TimeInterval {
         return date.timeIntervalSinceNow
