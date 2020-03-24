@@ -168,7 +168,7 @@ struct TaskRow: View {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        ForEach(shared.tasksArray(), id: \.ID) { currentTask in
+                        ForEach(shared.tasksArray(), id: \._id) { currentTask in
     //                        ZStack{
     //                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
                                 TaskView(task: currentTask)

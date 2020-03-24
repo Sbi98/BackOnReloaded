@@ -37,7 +37,7 @@ struct RequestRow: View{
                 }.buttonStyle(PlainButtonStyle())
                 ScrollView(.horizontal) {
                     HStack(spacing: 20) {
-                        ForEach(shared.requestsArray(), id: \.ID) { currentRequest in
+                        ForEach(shared.requestsArray(), id: \._id) { currentRequest in
                             RequestView(request: currentRequest)
                         }
                     }
@@ -110,6 +110,6 @@ struct RequestsListView: View {
 
 //struct RequestView_Previews: PreviewProvider {
 //    static var previews: some View {
-//        RequestView(request: Task(neederUser: User(name: "Gio", surname: "Fal", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Prova", descr: "Prova", date: Date(), latitude: 41, longitude: 15, ID: 2))
+//        RequestView(request: Task(neederUser: User(name: "Gio", surname: "Fal", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Prova", descr: "Prova", date: Date(), latitude: 41, longitude: 15, id: 2))
 //    }
 //}

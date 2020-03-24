@@ -11,6 +11,7 @@ import SwiftUI
 import CoreData
 import GoogleSignIn
 
+typealias ErrorString = String
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
@@ -34,18 +35,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         guard error == nil else {print("Sign error"); return}
         // Perform any operations on signed in user here.
-        //let userId = user.userID                  // For client-side use only!
-        //let idToken = user.authentication.idToken // Safe to send to the server
-        let myUser = User(name: user.profile.givenName!, surname: user.profile.familyName, email: user.profile.email!, photoURL: user.profile.imageURL(withDimension: 100)!)
+        //let userid = user.userid                  // For client-side use only!
+        //let idToken = user.authentication._idToken // Safe to send to the server
         
 //      Aggiungo al DB e a Coredata
-        DatabaseController.signUp(newUser: myUser){
+        DatabaseController.signUp(name: user.profile.givenName!, surname: user.profile.familyName, email: user.profile.email!, photoURL: user.profile.imageURL(withDimension: 100)!){ loggedUser, error in
+            guard error == nil  && loggedUser != nil else {return} //FAI L'ALERT!
             DispatchQueue.main.async {
-                CoreDataController.addUser(user: myUser)
-                DatabaseController.getRequests()
-                DatabaseController.getTasks()
-                DatabaseController.discover()
+                CoreDataController.signup(user: loggedUser!)
             }
+        }
+        DatabaseController.getMyTasks(){ tasks, users, error in
+            guard error == nil  && tasks != nil && users != nil else {return} //FAI L'ALERT!
+            DispatchQueue.main.async {
+                for task in tasks!{
+                    CoreDataController.addTask(task: task)
+                }
+                for user in users!{
+                    CoreDataController.addUser(user: user)
+            }
+        }
+        }
+        DatabaseController.getMyRequests(){ requests, users, error in
+            guard error == nil  && requests != nil && users != nil else {return} //FAI L'ALERT!
+            DispatchQueue.main.async {
+                for request in requests!{
+                    CoreDataController.addTask(task: request)
+                }
+                for user in users!{
+                    CoreDataController.addUser(user: user)
+            }
+        }
+            
+        
         }
 //        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
         shared.mainWindow = "LoadingPageView"
@@ -74,7 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         // Initialize sign-in
-        GIDSignIn.sharedInstance().clientID = "445586099169-q07rg5bbaa4p5ajhe3gfitikj35ige1h.apps.googleusercontent.com"
+        GIDSignIn.sharedInstance()?.clientID = "445586099169-q07rg5bbaa4p5ajhe3gfitikj35ige1h.apps.googleusercontent.com"
         GIDSignIn.sharedInstance().delegate = self
         return true
     }

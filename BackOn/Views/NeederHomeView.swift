@@ -22,7 +22,7 @@
 //                    .padding(20)
 //                Button(action: {
 //                    print("Logout!")
-//                    GIDSignIn.sharedInstance()?.disconnect()
+//                    GidSignIn.sharedInstance()?.disconnect()
 //                }) {
 //                    Text("Logout")
 //                        .bold()

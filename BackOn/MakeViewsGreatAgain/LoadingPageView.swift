@@ -56,16 +56,16 @@ struct ActivityIndicator: UIViewRepresentable {
 }
 
 
-//struct MyAppleIDButton: UIViewRepresentable {
+//struct MyAppleidButton: UIViewRepresentable {
 //
-//    func makeUIView(context: UIViewRepresentableContext<MyAppleIDButton>) -> ASAuthorizationAppleIDButton {
-//        let appleButton = ASAuthorizationAppleIDButton()
+//    func makeUIView(context: UIViewRepresentableContext<MyAppleidButton>) -> ASAuthorizationAppleidButton {
+//        let appleButton = ASAuthorizationAppleidButton()
 //        appleButton.translatesAutoresizingMaskIntoConstraints = false
 //
 //        return appleButton
 //    }
 //
-//    func updateUIView(_ uiView: MyAppleIDButton.UIViewType, context: UIViewRepresentableContext<MyAppleIDButton>) {
+//    func updateUIView(_ uiView: MyAppleidButton.UIViewType, context: UIViewRepresentableContext<MyAppleidButton>) {
 //
 //    }
 //}

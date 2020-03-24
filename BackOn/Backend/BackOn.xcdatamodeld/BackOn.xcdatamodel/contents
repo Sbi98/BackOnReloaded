@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15702" systemVersion="19D76" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="PTask" representedClassName="PTask" syncable="YES" codeGenerationType="class">
+    <entity name="PLoggedUser" representedClassName="PLoggedUser" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="photoURL" optional="YES" attributeType="URI"/>
+        <attribute name="surname" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Tasks" representedClassName="Tasks" syncable="YES" codeGenerationType="class">
         <attribute name="address" optional="YES" attributeType="String"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descr" optional="YES" attributeType="String"/>
         <attribute name="helperID" optional="YES" attributeType="String"/>
-        <attribute name="id" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="mapSnap" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="neederID" optional="YES" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
     </entity>
-    <entity name="PUser" representedClassName="PUser" syncable="YES" codeGenerationType="class">
+    <entity name="Users" representedClassName="Users" syncable="YES" codeGenerationType="class">
         <attribute name="email" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
@@ -20,7 +27,8 @@
         <attribute name="surname" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="PTask" positionX="-45" positionY="-36" width="128" height="193"/>
-        <element name="PUser" positionX="-45" positionY="0" width="128" height="118"/>
+        <element name="Tasks" positionX="-45" positionY="-36" width="128" height="193"/>
+        <element name="Users" positionX="-45" positionY="0" width="128" height="118"/>
+        <element name="PLoggedUser" positionX="-45" positionY="36" width="128" height="118"/>
     </elements>
 </model>

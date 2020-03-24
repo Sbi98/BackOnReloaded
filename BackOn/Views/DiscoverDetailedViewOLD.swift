@@ -69,7 +69,7 @@
 //
 //struct DiscoverDetailedView_Previews: PreviewProvider {
 //    static var previews: some View {
-//        DiscoverDetailedView(selectedCommitment: Commitment(userInfo: UserInfo(name: "Giancarlo", surname: "Sorrentino", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Ho mal di testa", descr: "Ho bevuto troppo e sono in hangover, che posso farci? Devo andare in farmacia a prendere una moment ma non ho le forze.", date: Date(), position: CLLocation(latitude: 41, longitude: 15), ID: 2))
+//        DiscoverDetailedView(selectedCommitment: Commitment(userInfo: UserInfo(name: "Giancarlo", surname: "Sorrentino", email: "giancarlosorrentino99@gmail.com", photoURL: URL(string: "https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3400&q=80")!, isHelper: 0), title: "Ho mal di testa", descr: "Ho bevuto troppo e sono in hangover, che posso farci? Devo andare in farmacia a prendere una moment ma non ho le forze.", date: Date(), position: CLLocation(latitude: 41, longitude: 15), id: 2))
 //    }
 //}
 

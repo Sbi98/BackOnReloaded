@@ -17,28 +17,12 @@ class User {
     }
     var email: String
     var profilePic: Image?
-    private var id: String?
-    var ID: String? {
-        get{
-            return id
-        }
-        set{
-            if id == nil && newValue != nil{
-                id = newValue
-            }
-        }
-    }
+    let _id: String
 
     
 //    Costruttore aggiuntivo utilizzato al momento dell'accesso con Google
-    init(name: String, surname: String?, email: String, photoURL: URL) {
-        self.name = name
-        self.surname = surname
-        self.email = email
-        self.photoURL = photoURL
-    }
-
-    init(name: String, surname: String, email: String, photoURL: URL) {
+    init(name: String, surname: String?, email: String, photoURL: URL, _id: String) {
+        self._id = _id
         self.name = name
         self.surname = surname
         self.email = email
@@ -49,4 +33,4 @@ class User {
     }
 }
 
-let noUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "noUser")!)
+let noUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "noUser")!, _id: "")

@@ -18,7 +18,7 @@ struct ListView: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading) {
-                ForEach(shared.arrayFromSet(mode: mode), id: \.ID) { current in
+                ForEach(shared.arrayFromSet(mode: mode), id: \._id) { current in
                     Button(action: {
                         self.selectedTask = current
                         self.showModal = true

@@ -55,10 +55,10 @@ struct DetailedView: View {
                         DirectionsButton(selectedTask: selectedTask)
                         DoItButton(task: selectedTask)
                     } else if requiredBy == .RequestViews {
-                        DontNeedAnymoreButton(requestID: selectedTask.ID!)
+                        DontNeedAnymoreButton(requestid: selectedTask._id)
                     } else {
                         DirectionsButton(selectedTask: selectedTask)
-                        CantDoItButton(taskID: selectedTask.ID!)
+                        CantDoItButton(taskid: selectedTask._id)
                     }
                     Spacer()
                 }.padding(.horizontal)

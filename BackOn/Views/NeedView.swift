@@ -73,7 +73,7 @@
 //            } else {
 //                ScrollView(.horizontal, showsIndicators: false) {
 //                    HStack(spacing: 20) {
-//                        ForEach(shared.needArray(), id: \.ID) { currentDiscover in
+//                        ForEach(shared.needArray(), id: \._id) { currentDiscover in
 //                            NeedView(need: currentDiscover).frame(width: 330, height: 230)
 //                        }
 //                    }.padding(20)
@@ -102,7 +102,7 @@
 //            
 //            RefreshableScrollView(height: 80, refreshing: self.$shared.loading) {
 //                VStack (alignment: .center, spacing: 25){
-//                    ForEach(shared.needArray(), id: \.ID) { currentCommitment in
+//                    ForEach(shared.needArray(), id: \._id) { currentCommitment in
 //                        Button(action: {withAnimation{
 //                            self.shared.selectedCommitment = currentCommitment
 //                            NeedDetailedView.show()

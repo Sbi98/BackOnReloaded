@@ -20,23 +20,42 @@ class CoreDataController {
         }
     }
     
-    static func addUser(user: User) { // save to CoreData
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let entity = NSEntityDescription.entity(forEntityName: "PUser", in: context)
-        let newUser = PUser(entity: entity!, insertInto: context)
-        newUser.name = user.name
-        newUser.surname = user.surname
-        newUser.email = user.email
-        newUser.photoURL = user.photoURL
-        do {
-            try context.save()
-        } catch {
-            print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n")
-            return
-        }
-        print("\(user.name) saved in memory")
-        loggedUser = user
-    }
+ static func signup(user: User) { // save to CoreData
+     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+     let entity = NSEntityDescription.entity(forEntityName: "PLoggedUser", in: context)
+     let newUser = PLoggedUser(entity: entity!, insertInto: context)
+     newUser.name = user.name
+     newUser.surname = user.surname
+     newUser.email = user.email
+     newUser.photoURL = user.photoURL
+     newUser.id = user._id
+     do {
+         try context.save()
+     } catch {
+         print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n")
+         return
+     }
+     print("\(user.name) saved in memory")
+     loggedUser = user
+ }
+ 
+ static func addUser(user: User) { // save to CoreData
+     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+     let entity = NSEntityDescription.entity(forEntityName: "PUser", in: context)
+     let newUser = PUser(entity: entity!, insertInto: context)
+     newUser.name = user.name
+     newUser.surname = user.surname
+     newUser.email = user.email
+     newUser.photoURL = user.photoURL
+     newUser.id = user._id
+     do {
+         try context.save()
+     } catch {
+         print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n")
+         return
+     }
+     print("\(user.name) saved in memory")
+ }
     
     static func getLoggedUser() -> User? {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -44,7 +63,7 @@ class CoreDataController {
         do {
             let array = try context.fetch(fetchRequest)
             guard !array.isEmpty else {print("User not logged yet"); return nil}
-            return User(name: array[0].name!, surname: array[0].surname, email: array[0].email!, photoURL: array[0].photoURL!)
+            return User(name: array[0].name!, surname: array[0].surname, email: array[0].email!, photoURL: array[0].photoURL!, _id: array[0].id!)
         } catch let error {
             print("Error while getting logged user: \(error.localizedDescription)")
             return nil
@@ -72,7 +91,7 @@ class CoreDataController {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: "PTask", in: context)
         let newTask = PTask(entity: entity!, insertInto: context)
-        newTask.id = task.ID
+        newTask.id = task._id
         newTask.title = task.title
         newTask.descr = task.descr
         newTask.date = task.date
@@ -86,7 +105,7 @@ class CoreDataController {
         do {
             try context.save()
         } catch {
-            print("Error while saving task with ID \(newTask.id ?? "NIL") in memory! The error is:\n\(error)\n")
+            print("Error while saving task with id \(newTask.id ?? "NIL") in memory! The error is:\n\(error)\n")
             return
         }
         print("Task \(newTask) saved in memory")
@@ -106,7 +125,7 @@ class CoreDataController {
             let array = try context.fetch(fetchRequest)
             for task in array {
                 
-                let myTask = Task(neederID: task.neederID!, title: task.title!, descr: task.descr, date: task.date!, latitude: task.latitude, longitude: task.longitude, ID: task.id!)
+                let myTask = Task(neederID: task.neederID!, title: task.title!, descr: task.descr, date: task.date!, latitude: task.latitude, longitude: task.longitude, _id: task.id!)
                 if let helperID = task.helperID {myTask.helperID = helperID}
                
                 if let mapSnap = task.mapSnap {

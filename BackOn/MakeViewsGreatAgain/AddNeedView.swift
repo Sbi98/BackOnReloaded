@@ -73,7 +73,10 @@ struct AddNeedView: View {
                     ConfirmAddNeedButton(){
                         MapController.addressToCoordinates(self.address) { result, error in
                             guard error == nil, let result = result else {return}
-                            DatabaseController.addRequest(newRequest: Task(neederID: CoreDataController.loggedUser!.ID!, title: self.selectedTitle, descr: self.needDescription == "" ? "nil" : self.needDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude))
+                            DatabaseController.addRequest(title: self.selectedTitle, description: self.needDescription == "" ? nil : self.needDescription, date: self.selectedDate, coordinates: result) { newRequest, error in
+                                guard error == nil else {print(error!); return}
+                                self.shared.myRequests[newRequest!._id] = newRequest!
+                            }
                         }
                     }
                     Spacer()

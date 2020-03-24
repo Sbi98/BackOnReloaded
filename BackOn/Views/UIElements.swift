@@ -70,32 +70,50 @@ struct DoItButton: View {
             isFilled: true,
             topText: "I'll do it"
         ) {
-            DatabaseController.addTask(newTask: self.task)
+            DatabaseController.addTask(toAccept: self.task){ error in
+                guard error == nil else {print(error!); return}
+                self.task.helperID = CoreDataController.loggedUser!._id
+                DispatchQueue.main.async {
+                    
+                }
+            }
         }
     }
 }
 
 struct CantDoItButton: View {
-    let taskID: String
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let taskid: String
     var body: some View {
         GenericButton(
             isFilled: false,
             topText: "Can't do it"
         ) {
-            DatabaseController.removeTask(taskID: self.taskID)
+            DatabaseController.removeTask(taskid: self.taskid){ error in
+                guard error == nil else {print(error!); return}
+                DispatchQueue.main.async {
+                    self.shared.myTasks[self.taskid] = nil
+                }
+            }
         }
     }
 }
 
 struct DontNeedAnymoreButton: View {
-    let requestID: String
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    let requestid: String
     var body: some View {
         GenericButton(
             isFilled: true,
             isLarge: true,
             topText: "Don't need anymore"
         ) {
-            DatabaseController.removeRequest(requestID: self.requestID)
+            DatabaseController.removeRequest(requestid: self.requestid){ error in
+                guard error == nil else {print(error!); return}
+                DispatchQueue.main.async {
+                    self.shared.myRequests[self.requestid] = nil
+                }
+            }
         }
     }
 }

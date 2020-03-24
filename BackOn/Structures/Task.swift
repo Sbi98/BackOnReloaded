@@ -15,18 +15,7 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
     let descr: String?
     let date: Date
     let position: CLLocation
-    private var id: String?
-    var ID: String? {
-        get{
-            return id == nil ? id : id!
-        }
-        set{
-            if id == nil && newValue != nil{
-                id = newValue
-            }
-        }
-    }
-    
+    let _id: String
     var helperID: String?
     @Published var mapSnap: UIImage?
     @Published var etaText = "Calculating..."
@@ -34,41 +23,24 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
     @Published var city = "Locating..."
     
     
-    init(neederID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, ID: String) {
+    init(neederID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, _id: String) {
         self.neederID = neederID
         self.title = title
         self.descr = descr
         self.date = date
-        self.id = ID
+        self._id = _id
         self.position = CLLocation(latitude: latitude, longitude: longitude)
     }
     
-    init(neederID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double) {
+    init(neederID: String, helperID: String?, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, _id: String) {
         self.neederID = neederID
+        self.helperID = helperID
         self.title = title
         self.descr = descr
         self.date = date
+        self._id = _id
         self.position = CLLocation(latitude: latitude, longitude: longitude)
     }
-    
-//    init(neederID: String, helperID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, ID: String) {
-//        self.neederID = neederID
-//        self.helperID = helperID
-//        self.title = title
-//        self.descr = descr
-//        self.date = date
-//        self.id = ID
-//        self.position = CLLocation(latitude: latitude, longitude: longitude)
-//    }
-//    
-//    init(neederID: String, helperID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double) {
-//        self.neederID = neederID
-//        self.helperID = helperID
-//        self.title = title
-//        self.descr = descr
-//        self.date = date
-//        self.position = CLLocation(latitude: latitude, longitude: longitude)
-//    }
     
     func isExpired() -> Bool {
         return date < Date()

@@ -81,7 +81,7 @@
 //                
 //                ScrollView(.horizontal, showsIndicators: false) {
 //                    HStack(spacing: 20) {
-//                        ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
+//                        ForEach(shared.discoverArray(), id: \._id) { currentDiscover in
 //                            DiscoverView(commitment: currentDiscover).frame(width: 320, height: 230)
 //                        }
 //                    }.padding(20)
@@ -116,7 +116,7 @@
 //            }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal)
 //            if shared.fullDiscoverViewMode == 1 {
 //                VStack (alignment: .center, spacing: 25){
-//                    ForEach(shared.discoverArray(), id: \.ID) { currentDiscover in
+//                    ForEach(shared.discoverArray(), id: \._id) { currentDiscover in
 //                        Button(action: {
 //                            self.shared.selectedCommitment = currentDiscover
 //                            DiscoverDetailedView.show()

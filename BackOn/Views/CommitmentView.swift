@@ -74,7 +74,7 @@
 //            
 //            ScrollView(.horizontal, showsIndicators: false) {
 //                HStack(spacing: 20) {
-//                    ForEach(shared.commitmentArray(), id: \.ID) { currentCommitment in
+//                    ForEach(shared.commitmentArray(), id: \._id) { currentCommitment in
 //                        CommitmentView(commitment: currentCommitment)
 //                    }
 //                }
@@ -106,7 +106,7 @@
 //            }.buttonStyle(PlainButtonStyle())
 //            RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
 //                VStack (alignment: .center, spacing: 25){
-//                    ForEach(shared.commitmentArray(), id: \.ID) { currentCommitment in
+//                    ForEach(shared.commitmentArray(), id: \._id) { currentCommitment in
 //                        Button(action: {withAnimation{
 //                            self.shared.selectedTask = currentCommitment
 //                            CommitmentDetailedView.show()
