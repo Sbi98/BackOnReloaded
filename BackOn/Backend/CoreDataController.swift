@@ -10,6 +10,7 @@ import Foundation
 import CoreData
 import SwiftUI
 
+
 class CoreDataController {
     static var loggedUser: User?
     
@@ -41,8 +42,8 @@ class CoreDataController {
  
  static func addUser(user: User) { // save to CoreData
      let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-     let entity = NSEntityDescription.entity(forEntityName: "PUser", in: context)
-     let newUser = PUser(entity: entity!, insertInto: context)
+     let entity = NSEntityDescription.entity(forEntityName: "PUsers", in: context)
+     let newUser = PUsers(entity: entity!, insertInto: context)
      newUser.name = user.name
      newUser.surname = user.surname
      newUser.email = user.email
@@ -59,7 +60,7 @@ class CoreDataController {
     
     static func getLoggedUser() -> User? {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<PUser> = PUser.fetchRequest()
+        let fetchRequest: NSFetchRequest<PUsers> = PUsers.fetchRequest()
         do {
             let array = try context.fetch(fetchRequest)
             guard !array.isEmpty else {print("User not logged yet"); return nil}
@@ -72,7 +73,7 @@ class CoreDataController {
     
     static func deleteUser(user: User) {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<PUser> = PUser.fetchRequest()
+        let fetchRequest: NSFetchRequest<PUsers> = PUsers.fetchRequest()
         do {
             let array = try context.fetch(fetchRequest)
             for loggedUser in array {
@@ -89,8 +90,8 @@ class CoreDataController {
     
     static func addTask(task: Task) {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let entity = NSEntityDescription.entity(forEntityName: "PTask", in: context)
-        let newTask = PTask(entity: entity!, insertInto: context)
+        let entity = NSEntityDescription.entity(forEntityName: "PTasks", in: context)
+        let newTask = PTasks(entity: entity!, insertInto: context)
         newTask.id = task._id
         newTask.title = task.title
         newTask.descr = task.descr
@@ -120,7 +121,7 @@ class CoreDataController {
     static func getCachedTasks() -> [Task] {
         var cachedTasks: [Task] = []
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<PTask> = PTask.fetchRequest()
+        let fetchRequest: NSFetchRequest<PTasks> = PTasks.fetchRequest()
         do {
             let array = try context.fetch(fetchRequest)
             for task in array {
@@ -143,12 +144,12 @@ class CoreDataController {
 
 //static func userIsLogged() -> Bool {
 //    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-//    let fetchRequest: NSFetchRequest<PUser> = PUser.fetchRequest()
+//    let fetchRequest: NSFetchRequest<PUsers> = PUsers.fetchRequest()
 //    do {
 //        let array = try context.fetch(fetchRequest)
 //        return !array.isEmpty
 //    } catch let error {
-//        print("PUser fetchRequest error: \(error.localizedDescription)")
+//        print("PUsers fetchRequest error: \(error.localizedDescription)")
 //        return false
 //    }
 //}

@@ -7,7 +7,7 @@
         <attribute name="photoURL" optional="YES" attributeType="URI"/>
         <attribute name="surname" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="Tasks" representedClassName="Tasks" syncable="YES" codeGenerationType="class">
+    <entity name="PTasks" representedClassName="PTasks" syncable="YES" codeGenerationType="class">
         <attribute name="address" optional="YES" attributeType="String"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descr" optional="YES" attributeType="String"/>
@@ -19,7 +19,7 @@
         <attribute name="neederID" optional="YES" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
     </entity>
-    <entity name="Users" representedClassName="Users" syncable="YES" codeGenerationType="class">
+    <entity name="PUsers" representedClassName="PUsers" syncable="YES" codeGenerationType="class">
         <attribute name="email" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
@@ -27,8 +27,8 @@
         <attribute name="surname" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Tasks" positionX="-45" positionY="-36" width="128" height="193"/>
-        <element name="Users" positionX="-45" positionY="0" width="128" height="118"/>
         <element name="PLoggedUser" positionX="-45" positionY="36" width="128" height="118"/>
+        <element name="PTasks" positionX="-45" positionY="-36" width="128" height="193"/>
+        <element name="PUsers" positionX="-45" positionY="0" width="128" height="118"/>
     </elements>
 </model>
