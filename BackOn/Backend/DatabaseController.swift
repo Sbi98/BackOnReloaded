@@ -28,9 +28,9 @@ struct ServerRoutes {
     static func getUserByID () -> String{
         return mainRoute + getUserByIdRoute
     }
-    static func getBondByID(id: String) -> String{
+    static func getBondByID() -> String{
 //        print("\n\n\n" + id)
-        return mainRoute + getBondByIdRoute + "/" + id
+        return mainRoute + getBondByIdRoute
     }
     static func getBonds () -> String{
         return mainRoute + getBondsRoute
@@ -61,7 +61,6 @@ let serverDateFormatter: DateFormatter = {
 }()
 
 struct DatabaseController {
-    static let serverIPandPort = "backon.serverless.social/api/auth"
     static let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     //    MARK: SignUp
@@ -84,8 +83,6 @@ struct DatabaseController {
         } catch let error {
             print("Client error: " + error.localizedDescription)
         }
-        let start = DispatchTime.now() // <<<<<<<<<< Start time
-        
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
@@ -155,22 +152,29 @@ struct DatabaseController {
     static func getBondByID(id: String){
         print("getBondByID")
         
-        //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
+        let parameters: [String: String] = ["_id": id]
+        print(parameters)
         //now create the URLRequest object using the url object
-        var request = URLRequest(url: URL(string: ServerRoutes.getBondByID(id: id))!)
-        request.httpMethod = "GET" //set http method as POST
-        
+        var request = URLRequest(url: URL(string: ServerRoutes.getBondByID())!)
+        request.httpMethod = "POST" //set http method as POST
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) // pass dictionary to nsdata object and set it as request body
+        } catch let error {
+            print(error.localizedDescription)
+        }
         
-        //create dataTask using the session object to send data to the server
-        
-        //Next method is to get rerver response
         URLSession.shared.dataTask(with: request) { data, response, error in
+            print(data ?? "O-OH!")
+            print("Faccio l'if!")
             if let data = data {
+                print("Hey,sono qui!")
                 if let jsonResponse = try? JSON(data: data){
                     print("Ci entro!")
+                    
                     let neederID = jsonResponse["neederID"].stringValue
+                    print(neederID)
                     let title = jsonResponse["title"].stringValue
                     let descr = jsonResponse["description"].stringValue
 //                    let date = serverDateFormatter.date(from: jsonResponse["date"].stringValue)!
@@ -185,7 +189,7 @@ struct DatabaseController {
                     if neederID == CoreDataController.loggedUser!.ID! {shared.myRequests[ID] = newBond; if newBond.helperID != nil && users[newBond.helperID!] == nil {getUserByID(id: newBond.helperID!)}}
                     else if helperID == CoreDataController.loggedUser!.ID!{shared.myTasks[ID] = newBond; if users[newBond.neederID] == nil {getUserByID(id: newBond.neederID)}}
                     print("\n\nBOND SCARICATO:")
-                    print(newBond)
+                    print(newBond.ID)
                 }
             }
         }.resume()
@@ -198,7 +202,7 @@ struct DatabaseController {
         
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
         let parameters: [String: String] = ["helperID": CoreDataController.loggedUser!.ID!]
-        
+        print(parameters)
         //now create the URLRequest object using the url object
         var request = URLRequest(url: URL(string: ServerRoutes.getBonds())!)
         request.httpMethod = "POST" //set http method as POST
@@ -222,6 +226,7 @@ struct DatabaseController {
                     var idSet: Set<String> = []
                     for (_,task):(String, JSON) in jsonArray {
                         let taskID = task["_id"].stringValue
+                        print("Id arrivato nella getTasks: \(taskID)")
                         idSet.insert(taskID)
                         if shared.myTasks[taskID] == nil {getBondByID(id: taskID)}
                     }
@@ -264,6 +269,7 @@ struct DatabaseController {
                     var idSet: Set<String> = []
                     for (_,request):(String, JSON) in jsonArray {
                         let requestID = request["_id"].stringValue
+                        print("Id arrivato nella getRequests: \(requestID)")
                         idSet.insert(requestID)
                         print("\n\nrequest id ottenuto nella get requests: " + requestID)
                         if shared.myRequests[requestID] == nil {getBondByID(id: requestID)}
@@ -346,15 +352,16 @@ struct DatabaseController {
             print(data)
             print(request)
             print(error)
-            guard error == nil else {return}
+            guard error == nil else {print ("ERRORE!") ; return}
             if let responseCode = (response as? HTTPURLResponse)?.statusCode {
             guard responseCode == 200 else {
                 print("Invalid response code: \(responseCode)")
                 return
             }
+                print("Aggiungo!")
+                shared.myTasks[newTask.ID!] = newTask
             }
-            print("CI SONOOOO")
-            shared.myTasks[newTask.ID!] = newTask
+            
 //            if let data = data {
 //                if let jsonResponse = try? JSON(data: data){
 //                    print(jsonResponse)
@@ -403,13 +410,15 @@ struct DatabaseController {
         
         //Next method is to get rerver response
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {return}
-            if let data = data {
-                if (try? JSON(data: data)) != nil{
-                    isRequest ? (shared.myRequests[idToRemove] = nil) : (shared.myTasks[idToRemove] = nil)
-                }
+            guard error == nil else {print ("ERRORE in removeBond!") ; return}
+            if let responseCode = (response as? HTTPURLResponse)?.statusCode {
+            guard responseCode == 200 else {
+                print("Invalid response code: \(responseCode)")
+                return
             }
-            
+                print("Elimino!")
+                isRequest ? (shared.myRequests[idToRemove] = nil) : (shared.myTasks[idToRemove] = nil)
+            }
         }.resume()
     }
     
@@ -465,6 +474,8 @@ struct DatabaseController {
             }
         }.resume()
     }
+    
+    
     
     
 }

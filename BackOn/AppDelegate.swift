@@ -47,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                 DatabaseController.discover()
             }
         }
-        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
+//        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
         shared.mainWindow = "LoadingPageView"
     }
     

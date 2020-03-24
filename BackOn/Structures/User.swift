@@ -20,7 +20,7 @@ class User {
     private var id: String?
     var ID: String? {
         get{
-            return id == nil ? id : id!
+            return id
         }
         set{
             if id == nil && newValue != nil{
