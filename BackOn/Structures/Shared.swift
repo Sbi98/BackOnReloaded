@@ -13,9 +13,9 @@ class Shared: ObservableObject {
         didSet {
             if oldValue == false && loading == true {
                 (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
-                myDiscoverables = [:]
-                myTasks = [:]
-                myRequests = [:]
+              //  myDiscoverables = [:]
+              //  myTasks = [:]
+            //    myRequests = [:]
 //                DatabaseController.getRequests()
 //                DatabaseController.getTasks()
 //                DatabaseController.discover()
@@ -30,6 +30,7 @@ class Shared: ObservableObject {
     @Published var myDiscoverables: [String:Task] = [:]
     @Published var myRequests: [String:Task] = [:]
     @Published var users: [String:User] = [:]
+    
 
     func requestETA() {
         for task in myTasks.values {
