@@ -43,18 +43,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
             guard error == nil  && loggedUser != nil else {return} //FAI L'ALERT!
             DispatchQueue.main.async {
                 CoreDataController.signup(user: loggedUser!)
-                print(CoreDataController.loggedUser!._id)
-                DatabaseController.getMyTasks(){ tasks, users, error in
-                    guard error == nil  && tasks != nil && users != nil else {return} //FAI L'ALERT!
-                    DispatchQueue.main.async {
-                        for task in tasks!{
-                            self.shared.myTasks[task._id] = task
-                        }
-                        for user in users!{
-                            self.shared.users[user._id] = user
-                        }
-                    }
-                }
                 DatabaseController.getMyRequests(){ requests, users, error in
                     guard error == nil  && requests != nil && users != nil else {return} //FAI L'ALERT!
                     DispatchQueue.main.async {
@@ -66,6 +54,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                         }
                     }
                 }
+                DatabaseController.getMyTasks(){ tasks, users, error in
+                    guard error == nil  && tasks != nil && users != nil else {return} //FAI L'ALERT!
+                    DispatchQueue.main.async {
+                        for task in tasks!{
+                            self.shared.myTasks[task._id] = task
+                        }
+                        for user in users!{
+                            self.shared.users[user._id] = user
+                        }
+                    }
+                }
+                DatabaseController.discover{ discTasks, discUsers, error in
+                    guard error == nil  && discTasks != nil && discUsers != nil else {return} //FAI L'ALERT!
+                    DispatchQueue.main.async {
+                        for task in discTasks!{
+                            self.shared.myDiscoverables[task._id] = task
+                        }
+                        for user in discUsers!{
+                            self.shared.users[user._id] = user
+                        }
+                        print(self.shared.myDiscoverables)
+                    }
+                }
+                
             }
             
             

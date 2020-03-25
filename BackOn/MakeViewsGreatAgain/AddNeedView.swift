@@ -75,7 +75,9 @@ struct AddNeedView: View {
                             guard error == nil, let result = result else {return}
                             DatabaseController.addRequest(title: self.selectedTitle, description: self.needDescription == "" ? nil : self.needDescription, date: self.selectedDate, coordinates: result) { newRequest, error in
                                 guard error == nil else {print(error!); return}
+                                DispatchQueue.main.async {
                                 self.shared.myRequests[newRequest!._id] = newRequest!
+                            }
                             }
                         }
                     }
