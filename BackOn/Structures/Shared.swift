@@ -29,6 +29,7 @@ class Shared: ObservableObject {
     @Published var myTasks: [String:Task] = [:]
     @Published var myDiscoverables: [String:Task] = [:]
     @Published var myRequests: [String:Task] = [:]
+    @Published var myExpiredRequests: [String:Task] = [:]
     @Published var users: [String:User] = [:]
 
     func requestETA() {
@@ -51,6 +52,10 @@ class Shared: ObservableObject {
     
     func requestsArray() -> [Task] {
         return Array(myRequests.values)
+    }
+    
+    func expiredRequestsArray() -> [Task] {
+        return Array(myExpiredRequests.values)
     }
     
     func discoverablesArray() -> [Task] {

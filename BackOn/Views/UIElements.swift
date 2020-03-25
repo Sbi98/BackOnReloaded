@@ -118,6 +118,29 @@ struct DontNeedAnymoreButton: View {
     }
 }
 
+struct ThankButton: View {
+    let task: Task
+    var body: some View {
+        GenericButton(
+            isFilled: true,
+            topText: "Thank you"
+        ) {
+//          Say thank you!
+        }
+    }
+}
+
+struct ReportButton: View {
+    let task: Task
+    var body: some View {
+        GenericButton(
+            isFilled: false,
+            topText: "Report"
+        ) {
+//
+        }
+    }
+}
 
 struct AddNeedButton: View {
     @State var showModal = false

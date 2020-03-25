@@ -28,6 +28,21 @@ struct ListView: View {
                     .buttonStyle(PlainButtonStyle())
                     .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1)))))   
                 }
+                if(mode == .RequestViews && !shared.myExpiredRequests.isEmpty){
+                    if(!shared.myRequests.isEmpty){
+                        Divider();
+                    }
+                    ForEach(shared.expiredRequestsArray(), id: \._id) { current in
+                        Button(action: {
+                            self.selectedTask = current
+                            self.showModal = true
+                        }) {
+                            TaskPreview(mode: self.mode, task: current)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)))))   
+                    }
+                }
             }
             .padding(10)
             .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: self.mode, selectedTask: self.selectedTask!)}
