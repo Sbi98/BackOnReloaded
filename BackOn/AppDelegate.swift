@@ -38,38 +38,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         //let userid = user.userid                  // For client-side use only!
         //let idToken = user.authentication._idToken // Safe to send to the server
         
-//      Aggiungo al DB e a Coredata
+        //      Aggiungo al DB e a Coredata
         DatabaseController.signUp(name: user.profile.givenName!, surname: user.profile.familyName, email: user.profile.email!, photoURL: user.profile.imageURL(withDimension: 100)!){ loggedUser, error in
             guard error == nil  && loggedUser != nil else {return} //FAI L'ALERT!
             DispatchQueue.main.async {
                 CoreDataController.signup(user: loggedUser!)
-            }
-        }
-        DatabaseController.getMyTasks(){ tasks, users, error in
-            guard error == nil  && tasks != nil && users != nil else {return} //FAI L'ALERT!
-            DispatchQueue.main.async {
-                for task in tasks!{
-                    CoreDataController.addTask(task: task)
+                print(CoreDataController.loggedUser!._id)
+                DatabaseController.getMyTasks(){ tasks, users, error in
+                    guard error == nil  && tasks != nil && users != nil else {return} //FAI L'ALERT!
+                    DispatchQueue.main.async {
+                        for task in tasks!{
+                            self.shared.myTasks[task._id] = task
+                        }
+                        for user in users!{
+                            self.shared.users[user._id] = user
+                        }
+                    }
                 }
-                for user in users!{
-                    CoreDataController.addUser(user: user)
-            }
-        }
-        }
-        DatabaseController.getMyRequests(){ requests, users, error in
-            guard error == nil  && requests != nil && users != nil else {return} //FAI L'ALERT!
-            DispatchQueue.main.async {
-                for request in requests!{
-                    CoreDataController.addTask(task: request)
+                DatabaseController.getMyRequests(){ requests, users, error in
+                    guard error == nil  && requests != nil && users != nil else {return} //FAI L'ALERT!
+                    DispatchQueue.main.async {
+                        for request in requests!{
+                            self.shared.myRequests[request._id] = request
+                        }
+                        for user in users!{
+                            self.shared.users[user._id] = user
+                        }
+                    }
                 }
-                for user in users!{
-                    CoreDataController.addUser(user: user)
             }
-        }
             
-        
+            
         }
-//        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
+        
+        
+        //        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
         shared.mainWindow = "LoadingPageView"
     }
     

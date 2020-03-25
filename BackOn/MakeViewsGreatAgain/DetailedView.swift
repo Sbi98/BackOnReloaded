@@ -11,6 +11,7 @@ import MapKit
 
 struct DetailedView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task
     var body: some View {
@@ -18,11 +19,11 @@ struct DetailedView: View {
             HStack {
                 Avatar(image:
 //                    nil
-                  (((selectedTask.helperID == nil ? nil : users[selectedTask.helperID!]) ?? noUser).profilePic))
+                    (((selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]) ?? noUser).profilePic))
                 VStack(alignment: .leading){
                     Text(
 //                        "PROVA"
-                        ((selectedTask.helperID == nil ? nil : users[selectedTask.helperID!]) ?? noUser).identity
+                        ((selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]) ?? noUser).identity
                     )
                         .fontWeight(.medium)
                         .font(.title)

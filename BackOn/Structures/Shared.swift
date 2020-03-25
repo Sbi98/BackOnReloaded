@@ -29,6 +29,7 @@ class Shared: ObservableObject {
     @Published var myTasks: [String:Task] = [:]
     @Published var myDiscoverables: [String:Task] = [:]
     @Published var myRequests: [String:Task] = [:]
+    @Published var users: [String:User] = [:]
 
     func requestETA() {
         for task in myTasks.values {

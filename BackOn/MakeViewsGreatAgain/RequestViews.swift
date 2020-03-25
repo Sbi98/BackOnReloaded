@@ -49,6 +49,7 @@ struct RequestRow: View{
 }
 
 struct RequestView: View {
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     @State var request: Task
     @State var showModal = false
     
@@ -57,7 +58,7 @@ struct RequestView: View {
             VStack {
                 ZStack {
                     VStack(spacing: 3){
-                        Text((request.helperID == nil ? noUser : users[request.helperID!])!.identity)
+                        Text((request.helperID == nil ? noUser : self.shared.users[request.helperID!])!.identity)
                             .fontWeight(.semibold)
                             .font(.system(size: 23))
                             .foregroundColor(.white)
@@ -73,7 +74,7 @@ struct RequestView: View {
                         .background(Color(UIColor(#colorLiteral(red: 0.8, green: 0.5509817446, blue: 0.136245412, alpha: 1))))
                         .cornerRadius(10)
                         .shadow(radius: 5) ///LA METTIAMO?
-                    Avatar(image: (request.helperID == nil ? nil : users[request.helperID!]?.profilePic), size: 75).offset(y: -70).shadow(radius: 5)
+                    Avatar(image: (request.helperID == nil ? nil : self.shared.users[request.helperID!]?.profilePic), size: 75).offset(y: -70).shadow(radius: 5)
                 }
             }.frame(height: 180).offset(y: 30)
         }

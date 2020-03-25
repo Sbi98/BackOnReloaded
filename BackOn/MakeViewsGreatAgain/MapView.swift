@@ -98,6 +98,8 @@ struct MapView: UIViewRepresentable {
     
     
     func makeUIView(context: Context) -> MKMapView {
+        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+
         let mapView = MKMapView(frame: UIScreen.main.bounds)
         let mapSpan = MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)
         mapView.delegate = context.coordinator
@@ -114,7 +116,7 @@ struct MapView: UIViewRepresentable {
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             return mapView
         case .TaskViews, .DiscoverableViews:
-            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(users[selectedTask!.neederID]!.name)'s request"))
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(shared.users[selectedTask!.neederID]!.name)'s request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView
@@ -122,7 +124,7 @@ struct MapView: UIViewRepresentable {
             guard discoverTabController.baseMKMap == nil else { return discoverTabController.baseMKMap! }
             print((UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables)
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
-                mapView.addAnnotation(generateAnnotation(discoverableTask, title: users[discoverableTask.neederID]!.name))
+                mapView.addAnnotation(generateAnnotation(discoverableTask, title: shared.users[discoverableTask.neederID]!.name))
             }
             if let lastLocation = MapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)

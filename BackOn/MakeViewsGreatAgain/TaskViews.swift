@@ -27,6 +27,7 @@ HStack(alignment: .center, spacing: 10, content: {
 struct TaskPreview: View {
     let mode: RequiredBy
     @ObservedObject var task: Task
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -34,20 +35,20 @@ struct TaskPreview: View {
                 if mode == .RequestViews {
                     Avatar(image:
                     //                    nil
-                                      (((task.helperID == nil ? nil : users[task.helperID!]) ?? noUser).profilePic))
+                        (((task.helperID == nil ? nil : self.shared.users[task.helperID!]) ?? noUser).profilePic))
                 } else {
-                    Avatar(image: users[task.neederID]!.profilePic)
+                    Avatar(image: self.shared.users[task.neederID]!.profilePic)
                 }
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
                         Text(
                         //                        "PROVA"
-                                                ((task.helperID == nil ? nil : users[task.helperID!]!) ?? noUser).identity
+                            ((task.helperID == nil ? nil : self.shared.users[task.helperID!]!) ?? noUser).identity
                                             )
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     } else {
-                        Text(users[task.neederID]!.identity)
+                        Text(self.shared.users[task.neederID]!.identity)
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     }
@@ -75,7 +76,8 @@ struct TaskView: View {
     @State var task: Task
     @State var showModal = false
     @State var mapSnap: Image?
-    
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
+
     var body: some View {
         Button(action: {self.showModal = true}) {
             ZStack (alignment: .bottom){
@@ -91,10 +93,10 @@ struct TaskView: View {
                             .foregroundColor(Color(.systemOrange))
                             .offset(y: -5)
                             .scaleEffect(0.97)
-                        Avatar(image: users[task.neederID]!.profilePic)
+                        Avatar(image: self.shared.users[task.neederID]!.profilePic)
                             .offset(y: -9.65)
                     }.scaleEffect(1.2)
-                    Text(users[task.neederID]!.name)
+                    Text(self.shared.users[task.neederID]!.name)
                         .fontWeight(.black)
                         .foregroundColor(.white)
                         .font(.system(size: 20))

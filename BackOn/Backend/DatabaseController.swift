@@ -12,11 +12,11 @@ import SwiftyJSON
 
 
 struct ServerRoutes {
-    private static let mainRoute = "https://8d5da3a1.ngrok.io/api"
+    private static let mainRoute = "https://ac2866e2.ngrok.io/api"
     private static let signupRoute = "/auth/signin"
     private static let getUserByIDRoute = "/auth/getUserByid"
     private static let getBondByIDRoute = "/tasks/bond"
-    private static let getMyBondsRoute = "/tasks/getTasks"
+    private static let getMyBondsRoute = "/tasks/getMyTasks"
     private static let removeTaskRoute = "/tasks/cancelTask"
     private static let removeRequestRoute = "/tasks/deleteRequest"
     private static let discoverRoute = "/tasks/discover"
@@ -53,7 +53,6 @@ struct ServerRoutes {
     }
 }
 
-var users: [String:User] = [:]
 let serverDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -181,40 +180,61 @@ struct DatabaseController {
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
         let parameters: [String: String] = ["helperID": CoreDataController.loggedUser!._id]
         print(parameters)
-        //now create the URLRequest object using the url object
+        
         var request = URLRequest(url: URL(string: ServerRoutes.getMyBonds())!)
         request.httpMethod = "POST" //set http method as POST
-        
-        
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) // pass dictionary to nsdata object and set it as request body
-        } catch let error {
-            completion(nil, nil, "Error in" + #function + "client error: " + error.localizedDescription)
-        }
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        //create dataTask using the session object to send data to the server
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) // pass dictionary to nsdata object and set it as request body
+        } catch let error {
+            print(error.localizedDescription)
+        }
         
-        //Next method is to get rerver response
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {return completion(nil, nil, "Error in " + #function + ": " + error!.localizedDescription)}
             if let data = data {
-                if let jsonArray = try? JSON(data: data){
-//                    var idSet: Set<String> = []
-                    var newTasks: [Task] = []
-                    var newUsers: [User] = []
-                    for (_,task):(String, JSON) in jsonArray {
-                        let taskID = task["_id"].stringValue
-//                        print("id arrivato nella getTasks: \(taskid)")
-//                        idSet.insert(taskid)
+                
+                if let jsonTasksAndUsers = try? JSON(data: data){
+                    print("Ok il json c'è")
+                    var taskArray: [Task] = []
+                    var userArray: [User] = []
+
+                    let myTasks = jsonTasksAndUsers["tasks"]
+                    for (_,currentTask):(String, JSON) in myTasks {
+                        print("sono nel for")
+                        let neederID = currentTask["neederID"].stringValue
+                        let title = currentTask["title"].stringValue
+                        let descr = currentTask["description"].string
+                        let date = serverDateFormatter(date: currentTask["date"].stringValue)
+                        let latitude =  currentTask["latitude"].doubleValue
+                        let longitude = currentTask["longitude"].doubleValue
+                        let _id = currentTask["_id"].stringValue
+                        let helperID = currentTask["helperID"].stringValue
+                        
+//                        print("\n\n\nAO CI ARRIVO"+descr!+"AAAAASSSS"+date.toString(dateFormat: "dd-MM"))
+                        
+                        print(currentTask)
+                        if helperID == CoreDataController.loggedUser!._id {taskArray.append(Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))}
                     }
-                    completion(newTasks, newUsers, nil)
+                    let users = jsonTasksAndUsers["users"]
+                    for (_,currentUser):(String, JSON) in users {
+                        let name = currentUser["name"].stringValue
+                        let surname = currentUser["surname"].stringValue
+                        let email = currentUser["email"].stringValue
+                        let photoURL = URL(string: currentUser["photo"].stringValue)!
+                        let _id = currentUser["_id"].stringValue
+                        
+                        print("\n\n\nAO CI ARRIVO"+name)
+                        print(currentUser)
+                        
+                        userArray.append(User(name: name, surname: surname == "" ? nil : surname, email: email, photoURL: photoURL, _id: _id))
+                    }
+                    completion(taskArray, userArray, nil)
                 }
             }
-        
-            
         }.resume()
     }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
     
@@ -229,40 +249,54 @@ struct DatabaseController {
         //now create the URLRequest object using the url object
         var request = URLRequest(url: URL(string: ServerRoutes.getMyBonds())!)
         request.httpMethod = "POST" //set http method as POST
+        
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) // pass dictionary to nsdata object and set it as request body
         } catch let error {
-            completion(nil, nil, "Error in" + #function + "client error: " + error.localizedDescription)
+            print(error.localizedDescription)
         }
         
-        
-        
-        //create dataTask using the session object to send data to the server
-        
-        //Next method is to get rerver response
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard error == nil else {return completion(nil, nil, "Error in " + #function + ": " + error!.localizedDescription)}
-
             if let data = data {
-                if let jsonArray = try? JSON(data: data){
-//                    var idSet: Set<String> = []
-                    var newRequests: [Task] = []
-                    var newUsers: [User] = []
-                    for (_,request):(String, JSON) in jsonArray {
-                        let requestid = request["_id"].stringValue
-//                        print("id arrivato nella getRequests: \(requestid)")
-//                        idSet.insert(requestid)
-//                        print("\n\nrequest id ottenuto nella get requests: " + requestid)
-//                        if shared.myRequests[requestid] == nil {getBondByID(id: requestid)}
-//                        for requestid in shared.myRequests.keys {
-//                            if !idSet.contains(requestid) {shared.myRequests[requestid] = nil}
-//                        }
-                    }
-                    completion(newRequests, newUsers, nil)
+                
+                if let jsonRequestsAndUsers = try? JSON(data: data){
+                    var requestArray: [Task] = []
+                    var userArray: [User] = []
 
+                    let myRequests = jsonRequestsAndUsers["tasks"]
+                    for (_,currentRequest):(String, JSON) in myRequests {
+                        let neederID = currentRequest["neederID"].stringValue
+                        let title = currentRequest["title"].stringValue
+                        let descr = currentRequest["description"].string
+                        let date = serverDateFormatter(date: currentRequest["date"].stringValue)
+                        let latitude =  currentRequest["latitude"].doubleValue
+                        let longitude = currentRequest["longitude"].doubleValue
+                        let _id = currentRequest["_id"].stringValue
+                        let helperID = currentRequest["helperID"].string
+                        
+                        print("\n\n\nAO CI ARRIVO"+descr!+"AAAAASSSS")
+                        
+                        print(currentRequest)
+                        if neederID == CoreDataController.loggedUser!._id {requestArray.append(Task(neederID: neederID, helperID: helperID == "" ? nil : helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))}
+                    }
+                    let users = jsonRequestsAndUsers["users"]
+                    for (_,currentUser):(String, JSON) in users {
+                        let name = currentUser["name"].stringValue
+                        let surname = currentUser["surname"].stringValue
+                        let email = currentUser["email"].stringValue
+                        let photoURL = URL(string: currentUser["photo"].stringValue)!
+                        let _id = currentUser["_id"].stringValue
+                        
+                        print("\n\n\nAO CI ARRIVO"+name)
+                        print(currentUser)
+                        
+                        userArray.append(User(name: name, surname: surname == "" ? nil : surname, email: email, photoURL: photoURL, _id: _id))
+                    }
+                    completion(requestArray, userArray, nil)
                 }
             }
         }.resume()
@@ -274,7 +308,7 @@ struct DatabaseController {
         print("addRequest")
         
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
-        let parameters: [String: Any] = ["title": title, "description": description ?? "" , "neederID" : CoreDataController.getLoggedUser()!._id, "date": serverDateFormatter.string(from: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]
+        let parameters: [String: Any] = ["title": title, "description": description ?? "" , "neederID" : CoreDataController.getLoggedUser()!._id, "date": serverDateFormatter(date: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]
         print(parameters)
         
         
@@ -444,7 +478,33 @@ struct DatabaseController {
     }
     
     
-    
+    static func serverDateFormatter(date:String) -> Date {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        if let parsedDate = formatter.date(from: date) {
+          return parsedDate
+        }
+        return Date()
+    }
+
+    static func serverDateFormatter(date:Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        return formatter.string(from: date)
+    }
+  
     
 }
 
+//extension Date {
+//      func toString( dateFormat format  : String ) -> String
+//      {
+//          let dateFormatter = DateFormatter()
+//          dateFormatter.dateFormat = format
+//          return dateFormatter.string(from: self)
+//      }
+//
+//  }

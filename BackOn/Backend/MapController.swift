@@ -52,12 +52,13 @@ class MapController {
     }
     
     static func openInMaps(commitment: Task) {
+        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
         let request = MKDirections.Request()
         if lastLocation != nil {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
         }
         let destination = MKMapItem(placemark: MKPlacemark(coordinate: commitment.position.coordinate))
-        destination.name = "\(users[commitment.neederID]!.name)'s request: \(commitment.title)"
+        destination.name = "\(shared.users[commitment.neederID]!.name)'s request: \(commitment.title)"
         request.destination = destination
         request.destination?.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
     }
