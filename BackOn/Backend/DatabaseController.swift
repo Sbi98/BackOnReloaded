@@ -391,7 +391,8 @@ struct DatabaseController {
     }
     
     static func discover(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void){
-        let parameters: [String: String] = ["neederID": CoreDataController.loggedUser!._id]
+        print("Discover")
+        let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
         //declare parameter as a dictionary which contains string as key and value combination. considering inputs are valid
         
         //now create the URLRequest object using the url object
@@ -419,7 +420,7 @@ struct DatabaseController {
                     
                     let discoverableTasks = jsonDiscoverables["tasks"]
                     for (_,currentTask):(String, JSON) in discoverableTasks {
-                        print("sono nel for")
+                        //print("sono nel for")
                         let neederID = currentTask["neederID"].stringValue
                         let title = currentTask["title"].stringValue
                         let descr = currentTask["description"].string
@@ -427,10 +428,11 @@ struct DatabaseController {
                         let latitude =  currentTask["latitude"].doubleValue
                         let longitude = currentTask["longitude"].doubleValue
                         let _id = currentTask["_id"].stringValue
-                        print(currentTask)
+                        //print(currentTask)
                         taskToDiscover.append(Task(neederID: neederID, helperID: nil, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))
                     }
                     let discoverableUsers = jsonDiscoverables["users"]
+                    print("Users:\n\n\n\n\n\n\(discoverableUsers.arrayValue)\n\n\n\n\n\n")
                     for (_,currentUser):(String, JSON) in discoverableUsers {
                         let name = currentUser["name"].stringValue
                         let surname = currentUser["surname"].stringValue
