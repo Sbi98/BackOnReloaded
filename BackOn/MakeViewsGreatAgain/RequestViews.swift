@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-struct RequestRow: View{
+struct RequestRow: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
@@ -35,7 +35,7 @@ struct RequestRow: View{
                             .foregroundColor(Color(.systemOrange))
                     }.padding(.horizontal, 20)
                 }.buttonStyle(PlainButtonStyle())
-                ScrollView(.horizontal) {
+                ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
                         ForEach(shared.requestsArray(), id: \._id) { currentRequest in
                             RequestView(request: currentRequest)
@@ -58,7 +58,7 @@ struct RequestView: View {
             VStack {
                 ZStack {
                     VStack(spacing: 3){
-                        Text((request.helperID == nil ? noUser : self.shared.users[request.helperID!])!.identity)
+                        Text(request.helperID == nil ? "Nobody accepted" : self.shared.users[request.helperID!]?.identity ?? "Helper with bad id")
                             .fontWeight(.semibold)
                             .font(.system(size: 23))
                             .foregroundColor(.white)
@@ -71,12 +71,14 @@ struct RequestView: View {
                             .frame(width: 320, alignment: .trailing)
                     }.offset(y: 10)
                         .frame(width: 320, height: 110)
-                        .background(Color(UIColor(#colorLiteral(red: 0.8, green: 0.5509817446, blue: 0.136245412, alpha: 1))))
+                        .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                         .cornerRadius(10)
-                        .shadow(radius: 5) ///LA METTIAMO?
-                    Avatar(image: (request.helperID == nil ? nil : self.shared.users[request.helperID!]?.profilePic), size: 75).offset(y: -70).shadow(radius: 5)
+                        .shadow(color: Color(.systemGray3), radius: 3)
+                    Avatar(image: (request.helperID == nil ? nil : self.shared.users[request.helperID!]?.profilePic), size: 75)
+                        .offset(y: -70)
+                        .shadow(color: Color(.systemGray3), radius: 3)
                 }
-            }.frame(height: 180).offset(y: 30)
+            }.frame(height: 185).offset(y: 30)
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: .RequestViews, selectedTask: self.request)}
@@ -101,9 +103,7 @@ struct RequestsListView: View {
                         Spacer()
                     }
             }.buttonStyle(PlainButtonStyle())
-            RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
-                ListView(mode: .RequestViews)
-            }
+            ListView(mode: .RequestViews)
             Spacer()
         }
     }

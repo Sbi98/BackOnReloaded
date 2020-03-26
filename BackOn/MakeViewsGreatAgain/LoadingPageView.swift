@@ -29,10 +29,9 @@ struct LoadingPageView: View {
             Spacer()
         }
         .onAppear {
-            self.shared.loading = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "CustomTabView"
-            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "CustomTabView"
+//            }
         }
         .frame(width: UIScreen.main.bounds.width)
         .offset(y: 50)

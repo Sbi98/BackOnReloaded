@@ -9,20 +9,6 @@
 import SwiftUI
 
 class Shared: ObservableObject {
-    @Published var loading: Bool = false {
-        didSet {
-            if oldValue == false && loading == true {
-                (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoadingPageView"
-              //  myDiscoverables = [:]
-              //  myTasks = [:]
-            //    myRequests = [:]
-//                DatabaseController.getRequests()
-//                DatabaseController.getTasks()
-//                DatabaseController.discover()
-                self.loading = false
-            }
-        }
-    }
     @Published var isLocationUpdating = true
     @Published var activeView = "HomeView"
     @Published var mainWindow = "LoadingPageView"

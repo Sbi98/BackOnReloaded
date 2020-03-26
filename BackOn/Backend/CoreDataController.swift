@@ -18,6 +18,9 @@ class CoreDataController {
         loggedUser = getLoggedUser()
         if loggedUser == nil {
             (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView"
+        } else {
+            (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "CustomTabView"
+            DatabaseController.loadFromServer()
         }
     }
     
@@ -31,6 +34,7 @@ class CoreDataController {
      newUser.photoURL = user.photoURL
      newUser.id = user._id
      do {
+        
          try context.save()
      } catch {
          print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n")
@@ -60,14 +64,29 @@ class CoreDataController {
     
     static func getLoggedUser() -> User? {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<PUsers> = PUsers.fetchRequest()
+        let fetchRequest: NSFetchRequest<PLoggedUser> = PLoggedUser.fetchRequest()
         do {
             let array = try context.fetch(fetchRequest)
-            guard !array.isEmpty else {print("User not logged yet"); return nil}
-            return User(name: array[0].name!, surname: array[0].surname, email: array[0].email!, photoURL: array[0].photoURL!, _id: array[0].id!)
+            guard let temp = array.first else {print("User not logged yet"); return nil}
+            return User(name: temp.name!, surname: temp.surname, email: temp.email!, photoURL: temp.photoURL!, _id: temp.id!)
         } catch let error {
             print("Error while getting logged user: \(error.localizedDescription)")
             return nil
+        }
+    }
+    
+    static func deleteLoggedUser() {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<PLoggedUser> = PLoggedUser.fetchRequest()
+        do {
+            let array = try context.fetch(fetchRequest)
+            for loggedUser in array {
+                context.delete(loggedUser)
+            }
+            try context.save()
+        } catch let error {
+            print("Error while deleting logged user: \(error.localizedDescription)")
+            return
         }
     }
     

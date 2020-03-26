@@ -11,10 +11,9 @@ import GoogleSignIn
 
 struct HomeView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @State var isLoading: Bool = true
     
     var body: some View {
-        RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
+        ScrollView {
             VStack (alignment: .leading, spacing: 10) {
                 HStack (alignment: .center, spacing: 10) {
                     Text("Hi \(CoreDataController.loggedUser!.name)!")
@@ -46,5 +45,4 @@ struct HomeView: View {
             }
         }
     }
-    
 }

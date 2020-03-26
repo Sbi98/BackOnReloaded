@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class User {
+class User: ObservableObject {
     var photoURL: URL
     var name: String
     var surname: String?
@@ -16,21 +16,20 @@ class User {
         return "\(name) \(surname ?? "")"
     }
     var email: String
-    var profilePic: Image?
+    @Published var profilePic: Image?
     let _id: String
 
-    
-//    Costruttore aggiuntivo utilizzato al momento dell'accesso con Google
     init(name: String, surname: String?, email: String, photoURL: URL, _id: String) {
         self._id = _id
         self.name = name
         self.surname = surname
         self.email = email
         self.photoURL = photoURL
-        do {
-            profilePic = try Image(uiImage: UIImage(data: Data(contentsOf: photoURL))!)
-        } catch {}
+        DispatchQueue(label: "loadProfilePic", qos: .utility).async {
+            do {
+                guard let uiimage = try UIImage(data: Data(contentsOf: photoURL)) else { return }
+                self.profilePic = Image(uiImage: uiimage)
+            } catch {}
+        }
     }
 }
-
-let noUser = User(name: "Nobody", surname: "accepted", email: "", photoURL: URL(string: "noUser")!, _id: "")

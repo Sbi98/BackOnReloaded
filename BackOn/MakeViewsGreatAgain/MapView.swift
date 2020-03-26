@@ -116,15 +116,14 @@ struct MapView: UIViewRepresentable {
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             return mapView
         case .TaskViews, .DiscoverableViews:
-            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(shared.users[selectedTask!.neederID]!.name)'s request"))
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(shared.users[selectedTask!.neederID]?.name ?? "Needer with bad id")'s request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView
         case .AroundYouMap:
             guard discoverTabController.baseMKMap == nil else { return discoverTabController.baseMKMap! }
-            print((UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables)
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
-                mapView.addAnnotation(generateAnnotation(discoverableTask, title: shared.users[discoverableTask.neederID]!.name))
+                mapView.addAnnotation(generateAnnotation(discoverableTask, title: shared.users[discoverableTask.neederID]?.name ?? "Needer with bad id"))
             }
             if let lastLocation = MapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)

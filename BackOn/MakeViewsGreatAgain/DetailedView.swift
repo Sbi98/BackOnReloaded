@@ -15,19 +15,25 @@ struct DetailedView: View {
     let requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task
     var body: some View {
-        VStack(alignment: .leading){
+        VStack(alignment: .leading, spacing: 0){
             HStack {
-                Avatar(image:
-//                    nil
-                    (((selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]) ?? noUser).profilePic))
+                if requiredBy == .RequestViews {
+                    Avatar(image: selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]?.profilePic)
+                } else {
+                    Avatar(image: self.shared.users[selectedTask.neederID]?.profilePic)
+                }
                 VStack(alignment: .leading){
-                    Text(
-//                        "PROVA"
-                        ((selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]) ?? noUser).identity
-                    )
-                        .fontWeight(.medium)
-                        .font(.title)
-                        .animation(.easeOut(duration: 0))
+                    if requiredBy == .RequestViews {
+                        Text(selectedTask.helperID == nil ? "Nobody accepted" : self.shared.users[selectedTask.helperID!]?.identity ?? "Helper with bad id")
+                            .fontWeight(.medium)
+                            .font(.title)
+                            .animation(.easeOut(duration: 0))
+                    } else {
+                        Text(self.shared.users[selectedTask.neederID]?.identity ?? "Needer with bad id")
+                            .fontWeight(.medium)
+                            .font(.title)
+                            .animation(.easeOut(duration: 0))
+                    }
                     Text(selectedTask.title)
                         .font(.body)
                         .animation(.easeOut(duration: 0))
@@ -39,10 +45,11 @@ struct DetailedView: View {
             .padding()
             .background(selectedTask.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
             if requiredBy != .AroundYouMap {
-                MapView(mode: requiredBy, selectedTask: selectedTask).offset(y: -10)
+                MapView(mode: requiredBy, selectedTask: selectedTask)
             }
             
             VStack(alignment: .leading, spacing: 20) {
+                Divider().hidden()
                 if selectedTask.descr != nil {
                     Text(selectedTask.descr!)
                         .fixedSize(horizontal: false, vertical: true)

@@ -73,9 +73,6 @@ struct DoItButton: View {
             DatabaseController.addTask(toAccept: self.task){ error in
                 guard error == nil else {print(error!); return}
                 self.task.helperID = CoreDataController.loggedUser!._id
-                DispatchQueue.main.async {
-                    
-                }
             }
         }
     }

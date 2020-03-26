@@ -27,73 +27,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         MapController.initController()
         CalendarController.initController() //controlla i permessi del calendario
-        CoreDataController.initController() //Qui se l'utente non ha fatto l'accesso imposta la LoginPageView
+        CoreDataController.initController() //Qui se l'utente non ha fatto l'accesso imposta la LoginPageView, altrimenti fa le richieste al server
         return true
     }
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        self.shared.mainWindow = "LoadingPageView"
         guard error == nil else {print("Sign error"); return}
         // Perform any operations on signed in user here.
         //let userid = user.userid                  // For client-side use only!
         //let idToken = user.authentication._idToken // Safe to send to the server
-        
         //      Aggiungo al DB e a Coredata
-        DatabaseController.signUp(name: user.profile.givenName!, surname: user.profile.familyName, email: user.profile.email!, photoURL: user.profile.imageURL(withDimension: 100)!){ loggedUser, error in
-            guard error == nil  && loggedUser != nil else {return} //FAI L'ALERT!
+        DatabaseController.signUp(
+            name: user.profile.givenName!,
+            surname: user.profile.familyName,
+            email: user.profile.email!,
+            photoURL: user.profile.imageURL(withDimension: 100)!
+        ){ loggedUser, error in
+            guard error == nil, let loggedUser = loggedUser else {print("Error with Google SignUp");return} //FAI L'ALERT!
             DispatchQueue.main.async {
-                CoreDataController.signup(user: loggedUser!)
-                DatabaseController.getMyRequests(){ requests, users, error in
-                    guard error == nil  && requests != nil && users != nil else {return} //FAI L'ALERT!
-                    DispatchQueue.main.async {
-                        for request in requests!{
-                            self.shared.myRequests[request._id] = request
-                        }
-                        for user in users!{
-                            self.shared.users[user._id] = user
-                        }
-                    }
-                }
-                DatabaseController.getMyTasks(){ tasks, users, error in
-                    guard error == nil  && tasks != nil && users != nil else {return} //FAI L'ALERT!
-                    DispatchQueue.main.async {
-                        for task in tasks!{
-                            self.shared.myTasks[task._id] = task
-                        }
-                        for user in users!{
-                            self.shared.users[user._id] = user
-                        }
-                    }
-                }
-                DatabaseController.discover{ discTasks, discUsers, error in
-                    guard error == nil  && discTasks != nil && discUsers != nil else {return} //FAI L'ALERT!
-                    DispatchQueue.main.async {
-                        for task in discTasks!{
-                            self.shared.myDiscoverables[task._id] = task
-                        }
-                        for user in discUsers!{
-                            self.shared.users[user._id] = user
-                        }
-                        print(self.shared.myDiscoverables)
-                    }
-                }
-                
+                CoreDataController.signup(user: loggedUser)
+                self.shared.mainWindow = "CustomTabView"
+                DatabaseController.loadFromServer()
             }
-            
-            
         }
-        
-        
-        //        CoreDataController.addUser(user: User(name: "Giancarlo", surname: "Sorrentino", email: "prova", photoURL: URL(string: "prova")!))
-        shared.mainWindow = "LoadingPageView"
     }
     
     
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
         print("\n*** User signed out from Google ***\n")
-        guard let loggedUser = CoreDataController.loggedUser else {return}
-        CoreDataController.deleteUser(user: loggedUser)
+        CoreDataController.deleteLoggedUser()
         shared.mainWindow = "LoginPageView"
     }
     

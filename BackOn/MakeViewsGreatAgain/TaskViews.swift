@@ -33,22 +33,17 @@ struct TaskPreview: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 if mode == .RequestViews {
-                    Avatar(image:
-                    //                    nil
-                        (((task.helperID == nil ? nil : self.shared.users[task.helperID!]) ?? noUser).profilePic))
+                    Avatar(image: task.helperID == nil ? nil : self.shared.users[task.helperID!]?.profilePic)
                 } else {
-                    Avatar(image: self.shared.users[task.neederID]!.profilePic)
+                    Avatar(image: self.shared.users[task.neederID]?.profilePic)
                 }
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
-                        Text(
-                        //                        "PROVA"
-                            ((task.helperID == nil ? nil : self.shared.users[task.helperID!]!) ?? noUser).identity
-                                            )
+                        Text(task.helperID == nil ? "Nobody accepted" : self.shared.users[task.helperID!]?.identity ?? "Helper with bad id")
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     } else {
-                        Text(self.shared.users[task.neederID]!.identity)
+                        Text(self.shared.users[task.neederID]?.identity ?? "Needer with bad id")
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     }
@@ -86,17 +81,16 @@ struct TaskView: View {
                 } else {
                     mapSnap
                 }
-//                MapView(mode: .TaskTab, selectedTask: task)
                 VStack (spacing: 0){
                     ZStack {
                         Image("cAnnotation")
                             .foregroundColor(Color(.systemOrange))
                             .offset(y: -5)
                             .scaleEffect(0.97)
-                        Avatar(image: self.shared.users[task.neederID]!.profilePic)
+                        Avatar(image: self.shared.users[task.neederID]?.profilePic)
                             .offset(y: -9.65)
                     }.scaleEffect(1.2)
-                    Text(self.shared.users[task.neederID]!.name)
+                    Text(self.shared.users[task.neederID]?.name ?? "Needer with bad id")
                         .fontWeight(.black)
                         .foregroundColor(.white)
                         .font(.system(size: 20))
@@ -105,7 +99,8 @@ struct TaskView: View {
                 .offset(y: -160)
                 VStack (spacing: 5){
                     Text(self.task.title)
-                        .font(.title)
+                        .fontWeight(.semibold)
+                        .font(.system(size: 25))
                         .foregroundColor(.white)
                     Text("\(self.task.date, formatter: customDateFormat)")
                         .foregroundColor(.secondary)
@@ -116,7 +111,6 @@ struct TaskView: View {
                 .frame(width: 320, height: 75)
                 .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                 .cornerRadius(10)
-                //.shadow(radius: 5) //LA METTIAMO?
             }.onAppear{
                 MapController.getSnapshot(location: self.task.position.coordinate, width: 320, height: 350){ snapshot, error in
                     guard error == nil, let snapshot = snapshot else {return}
@@ -171,10 +165,7 @@ struct TaskRow: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
                         ForEach(shared.tasksArray(), id: \._id) { currentTask in
-    //                        ZStack{
-    //                            Color(.black).cornerRadius(10).opacity(0.45).scaleEffect(0.998)
-                                TaskView(task: currentTask)
-    //                        }
+                            TaskView(task: currentTask)
                         }
                     }
                     .padding(20)
@@ -193,17 +184,15 @@ struct TasksListView: View {
         VStack (alignment: .leading, spacing: 10){
             Button(action: {withAnimation{HomeView.show()}}) {
                 HStack(spacing: 15) {
-                        Image(systemName: "chevron.left")
-                            .font(.headline).foregroundColor(Color(.systemOrange))
-                        Text("Your tasks")
-                            .fontWeight(.bold)
-                            .font(.title)
-                        Spacer()
+                    Image(systemName: "chevron.left")
+                        .font(.headline).foregroundColor(Color(.systemOrange))
+                    Text("Your tasks")
+                        .fontWeight(.bold)
+                        .font(.title)
+                    Spacer()
                 }.padding([.top,.horizontal])
             }.buttonStyle(PlainButtonStyle())
-            RefreshableScrollView(height: 70, refreshing: self.$shared.loading) {
-                ListView(mode: .TaskViews)
-            }
+            ListView(mode: .TaskViews)
             Spacer()
         }
     }

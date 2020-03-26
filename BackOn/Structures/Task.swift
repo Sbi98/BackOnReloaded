@@ -73,7 +73,8 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
         MapController.coordinatesToAddress(self.position) { result, error in
             guard error == nil, let result = result else {return}
             self.address = result
-            self.city = "\(result.split(separator: ",")[2])"
+            let splitted = result.split(separator: ",")
+            if splitted.count >= 3 { self.city = "\(splitted[2])" }
         }
     }
 }
