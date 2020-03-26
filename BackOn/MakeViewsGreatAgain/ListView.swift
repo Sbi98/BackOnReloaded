@@ -32,7 +32,7 @@ struct ListView: View {
                     if(!shared.myRequests.isEmpty){
                         Divider();
                     }
-                    ForEach(shared.expiredRequestsArray(), id: \._id) { current in
+                    ForEach(shared.requestsArray(), id: \._id) { current in
                         Button(action: {
                             self.selectedTask = current
                             self.showModal = true

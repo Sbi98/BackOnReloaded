@@ -137,7 +137,7 @@ struct ReportButton: View {
             isFilled: false,
             topText: "Report"
         ) {
-//
+//          Scegli che è andato storto
         }
     }
 }

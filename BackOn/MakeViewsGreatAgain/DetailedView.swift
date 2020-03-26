@@ -33,7 +33,7 @@ struct DetailedView: View {
                         .animation(.easeOut(duration: 0))
                 }.padding(.horizontal)
                 Spacer()
-                CloseButton(externalColor: #colorLiteral(red: 0.8717954159, green: 0.7912596464, blue: 0.6638498306, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
+                CloseButton(externalColor: selectedTask.isExpired() ? #colorLiteral(red: 0.7437255979, green: 0.7393060327, blue: 0.7471237779, alpha: 1) : #colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
             }
             .frame(height: 54)
             .padding()
@@ -49,27 +49,26 @@ struct DetailedView: View {
                         .font(.system(size: 19))
                         .animation(.easeOut(duration: 0))
                 }
-                if(!selectedTask.isExpired()){
-                    HStack {
-                        Spacer()
-                        if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
-                            DirectionsButton(selectedTask: selectedTask)
-                            DoItButton(task: selectedTask)
-                        } else if requiredBy == .RequestViews {
-                            DontNeedAnymoreButton(requestid: selectedTask._id)
+                
+                HStack {
+                    Spacer()
+                    if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
+                        DirectionsButton(selectedTask: selectedTask)
+                        DoItButton(task: selectedTask)
+                    } else if requiredBy == .RequestViews {
+                        if(selectedTask.isExpired()){
+                            ThankButton(task: selectedTask)
+                            ReportButton(task: selectedTask)
                         } else {
-                            DirectionsButton(selectedTask: selectedTask)
-                            CantDoItButton(taskid: selectedTask._id)
+                            DontNeedAnymoreButton(requestid: selectedTask._id)
                         }
-                        Spacer()
-                    }.padding(.horizontal)
-                }
-                else {
+                    } else {
+                        DirectionsButton(selectedTask: selectedTask)
+                        CantDoItButton(taskid: selectedTask._id)
+                    }
                     Spacer()
-                        ThankButton(task: selectedTask)
-                        ReportButton(task: selectedTask)
-                    Spacer()
-                }
+                }.padding(.horizontal)
+                
                 VStack(alignment: .leading, spacing: 5) { //Address section
                     Text("Address")
                         .foregroundColor(.secondary)
