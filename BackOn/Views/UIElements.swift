@@ -122,7 +122,14 @@ struct ThankButton: View {
             isFilled: true,
             topText: "Thank you"
         ) {
-//          Say thank you!
+            DatabaseController.stashTask(
+                toStash: self.task,
+            report: "Pisellini piccoli"
+            ){ error in
+            guard error == nil else {print(error!); return}
+                DispatchQueue.main.async {
+                }
+            }
         }
     }
 }

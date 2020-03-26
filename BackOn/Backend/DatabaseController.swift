@@ -22,6 +22,7 @@ struct ServerRoutes {
     private static let discoverRoute = "/tasks/discover"
     private static let addRequestRoute = "/tasks/addRequest"
     private static let addTaskRoute = "/tasks/addTask"
+    private static let stashTaskRoute = "/stashedtasks/stash"
     
     static func signUp() -> String{
         return mainRoute + signupRoute
@@ -49,6 +50,9 @@ struct ServerRoutes {
     }
     static func addTask() -> String{
         return mainRoute + addTaskRoute
+    }
+    static func stashTask() -> String{
+        return mainRoute + stashTaskRoute
     }
 }
 
@@ -236,6 +240,25 @@ class DatabaseController {
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
         //        ATTENZIONE!!! CAMBIA LA DATA SOPRA!
     } //Error handling missing, but should work
+    
+    
+    //MARK: StashTask
+    //Adding a task for current user
+    static func stashTask(toStash: Task, report: String, completion: @escaping (ErrorString?)-> Void){
+        do {
+            let parameters: [String: Any] = ["_id" : toStash._id, "title" : toStash.title, "description" : toStash.descr ?? "" , "neederID" : toStash.neederID , "date" : serverDateFormatter(date: toStash.date), "latitude" : toStash.position.coordinate.latitude, "longitude" : toStash.position.coordinate.longitude , "helperID" : toStash.helperID, "report" : report]
+            
+            let request = initJSONRequest(urlString: ServerRoutes.stashTask(), body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted), httpMethod: "PUT")
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
+                guard responseCode == 200 else {return completion("Invalid response code in \(#function): \(responseCode)")}
+                completion(nil)
+            }.resume()
+        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+    } //Error handling missing, but should work
+    
+    
     
     //MARK: AddTask
     //Adding a task for current user
