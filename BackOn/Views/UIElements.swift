@@ -124,7 +124,7 @@ struct ThankButton: View {
         ) {
             DatabaseController.stashTask(
                 toStash: self.task,
-            report: "Pisellini piccoli"
+            report: "Thank you!"
             ){ error in
             guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
@@ -135,14 +135,43 @@ struct ThankButton: View {
 }
 
 struct ReportButton: View {
+    @State var showActionSheet: Bool = false
+    var actionSheet: ActionSheet {
+        ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
+            .default(Text("The helper didn't show up")) {
+                DatabaseController.stashTask(
+                    toStash: self.task,
+                report: "Didn't show up"
+                ){ error in
+                guard error == nil else {print(error!); return}
+                    DispatchQueue.main.async {
+                    }
+                }
+            },
+            .default(Text("The helper had bad manners")) {
+                DatabaseController.stashTask(
+                    toStash: self.task,
+                report: "Bad manners"
+                ){ error in
+                guard error == nil else {print(error!); return}
+                    DispatchQueue.main.async {
+                    }
+                }
+            },
+            .destructive(Text("Cancel report"))
+        ])
+    }
     let task: Task
     var body: some View {
         GenericButton(
             isFilled: false,
             topText: "Report"
         ) {
-//          Scegli che è andato storto
+            self.showActionSheet.toggle()
         }
+        .actionSheet(isPresented: $showActionSheet, content: {
+            self.actionSheet
+        })
     }
 }
 

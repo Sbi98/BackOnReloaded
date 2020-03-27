@@ -28,7 +28,7 @@ struct ListView: View {
                     .buttonStyle(PlainButtonStyle())
                     .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1)))))   
                 }
-                if(mode == .RequestViews && !shared.myExpiredRequests.isEmpty){
+                if(mode == .RequestViews && true){ //aggiungi  && !shared.myExpiredRequests.isEmpty
                     if(!shared.myRequests.isEmpty){
                         Divider();
                     }
@@ -37,7 +37,9 @@ struct ListView: View {
                             self.selectedTask = current
                             self.showModal = true
                         }) {
-                            TaskPreview(mode: self.mode, task: current)
+                            if(current.helperID != nil && current.isExpired()){
+                                TaskPreview(mode: self.mode, task: current)
+                            }
                         }
                         .buttonStyle(PlainButtonStyle())
                         .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)))))   

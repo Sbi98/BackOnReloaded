@@ -12,7 +12,7 @@ import SwiftyJSON
 
 
 struct ServerRoutes {
-    private static let mainRoute = "https://ac2866e2.ngrok.io/api"
+    private static let mainRoute = "https://167a1983.ngrok.io/api"
     private static let signupRoute = "/auth/signin"
     private static let getUserByIDRoute = "/auth/getUserByid"
     private static let getBondByIDRoute = "/tasks/bond"
