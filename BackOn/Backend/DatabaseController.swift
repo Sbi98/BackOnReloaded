@@ -339,6 +339,44 @@ class DatabaseController {
         } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
+    static func discoverNestedJSON(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
+        do {
+            let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
+            let request = initJSONRequest(urlString: ServerRoutes.discover(), body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted))
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {return completion(nil, nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let data = data, let jsonDiscoverables = try? JSON(data: data) else {return completion(nil, nil, "Error with returned data in " + #function)}
+                var taskToDiscover: [Task] = []
+                var userToDiscover: [String:User] = [:]
+                for(_,current):(String, JSON) in jsonDiscoverables {
+                    let neederID = current["neederID"].stringValue
+                    let title = current["title"].stringValue
+                    let descr = current["description"].string
+                    let date = serverDateFormatter(date: current["date"].stringValue)
+                    let latitude =  current["latitude"].doubleValue
+                    let longitude = current["longitude"].doubleValue
+                    let _id = current["_id"].stringValue
+                    taskToDiscover.append(Task(neederID: neederID, helperID: nil, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))
+                    let user = current["user"]
+                    let userID = user["_id"].stringValue //Superfluo, che facciamo?
+                    let userName = user["name"].stringValue
+                    let userSurname = user["surname"].stringValue
+                    let userEmail = user["email"].stringValue
+                    let userPhoto = URL(string: user["photo"].stringValue)!
+                    ///Questo controllo è vitale, non esiste contains che non faccia grandi calcoli, questa mi sembra un'ottima alternativa.
+                    ///Il problema è che in swift la add su dizionario sostituisce il vecchio valore
+                    ///Apple documentation: unica add presente
+                    //      func updateValue(Value, forKey: Key) -> Value?
+                    ///     Updates the value stored in the dictionary for the given key, or adds a new key-value pair if the key does not exist.
+                    if(userToDiscover[userID] == nil){
+                        userToDiscover.updateValue(User(name: userName, surname: userSurname == "" ? nil : userSurname, email: userEmail, photoURL: userPhoto, _id: userID), forKey: userID)
+                    }
+                }
+                completion(taskToDiscover, Array(userToDiscover.values), nil)
+            }.resume()
+        } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+    }
+    
     
     static func serverDateFormatter(date:String) -> Date {
         let formatter = DateFormatter()
@@ -363,44 +401,44 @@ class DatabaseController {
 
 
 /*MARK: GetBondByID
-Get a user's request or task from its id
-    static func getBondByID(id: String, completion: @escaping ((Task?, User?), ErrorString?)-> Void){
-        print("getBondByID")
-
-        let parameters: [String: String] = ["_id": id]
-        print(parameters)
-        //now create the URLRequest object using the url object
-        var request = URLRequest(url: URL(string: ServerRoutes.getBondByID())!)
-        request.httpMethod = "POST" //set http method as POST
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) // pass dictionary to nsdata object and set it as request body
-        } catch let error {
-            completion(nil, "Error in" + #function + "client error: " + error.localizedDescription)
-        }
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard error == nil else {return completion(nil, "Error in " + #function + ": " + error!.localizedDescription)}
-//            print(data ?? "O-OH!")
-//            print("Faccio l'if!")
-            if let data = data {
-//                print("Hey,sono qui!")
-                if let jsonResponse = try? JSON(data: data){
-//                    print("Ci entro!")
-                    let neederID = jsonResponse["neederID"].stringValue
-                    print(neederID)
-                    let title = jsonResponse["title"].stringValue
-                    let descr = jsonResponse["description"].stringValue
-//                    let date = serverDateFormatter.date(from: jsonResponse["date"].stringValue)!
-                    let date = Date()
-                    let latitude =  jsonResponse["latitude"].doubleValue
-                    let longitude = jsonResponse["longitude"].doubleValue
-                    let id = jsonResponse["_id"].stringValue
-                    let helperID = jsonResponse["helperID"].stringValue
-                    completion(Task(neederID: neederID, helperID: helperID == "" ? nil : helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: id), nil)
-                }
-            }
-        }.resume()
-    }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
-*/
+ Get a user's request or task from its id
+ static func getBondByID(id: String, completion: @escaping ((Task?, User?), ErrorString?)-> Void){
+ print("getBondByID")
+ 
+ let parameters: [String: String] = ["_id": id]
+ print(parameters)
+ //now create the URLRequest object using the url object
+ var request = URLRequest(url: URL(string: ServerRoutes.getBondByID())!)
+ request.httpMethod = "POST" //set http method as POST
+ request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+ request.addValue("application/json", forHTTPHeaderField: "Accept")
+ do {
+ request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) // pass dictionary to nsdata object and set it as request body
+ } catch let error {
+ completion(nil, "Error in" + #function + "client error: " + error.localizedDescription)
+ }
+ 
+ URLSession.shared.dataTask(with: request) { data, response, error in
+ guard error == nil else {return completion(nil, "Error in " + #function + ": " + error!.localizedDescription)}
+ //            print(data ?? "O-OH!")
+ //            print("Faccio l'if!")
+ if let data = data {
+ //                print("Hey,sono qui!")
+ if let jsonResponse = try? JSON(data: data){
+ //                    print("Ci entro!")
+ let neederID = jsonResponse["neederID"].stringValue
+ print(neederID)
+ let title = jsonResponse["title"].stringValue
+ let descr = jsonResponse["description"].stringValue
+ //                    let date = serverDateFormatter.date(from: jsonResponse["date"].stringValue)!
+ let date = Date()
+ let latitude =  jsonResponse["latitude"].doubleValue
+ let longitude = jsonResponse["longitude"].doubleValue
+ let id = jsonResponse["_id"].stringValue
+ let helperID = jsonResponse["helperID"].stringValue
+ completion(Task(neederID: neederID, helperID: helperID == "" ? nil : helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: id), nil)
+ }
+ }
+ }.resume()
+ }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
+ */
