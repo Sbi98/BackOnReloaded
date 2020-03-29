@@ -25,9 +25,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     }
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        MapController.initController()
+        CoreDataController.initController() //inizializza CoreDataController e recupera l'utente loggato
+        MapController.initController() //avvia la localizzazione
         CalendarController.initController() //controlla i permessi del calendario
-        CoreDataController.initController() //Qui se l'utente non ha fatto l'accesso imposta la LoginPageView, altrimenti fa le richieste al server
+        if CoreDataController.loggedUser == nil {
+            shared.mainWindow = "LoginPageView"
+        } else {
+            DatabaseController.loadFromServer()
+            shared.loadFromCoreData()
+        }
         return true
     }
     
@@ -46,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         ){ loggedUser, error in
             guard error == nil, let loggedUser = loggedUser else {print("Error with Google SignUp");return} //FAI L'ALERT!
             DispatchQueue.main.async {
-                CoreDataController.signup(user: loggedUser)
+                CoreDataController.signUp(user: loggedUser)
                 self.shared.mainWindow = "CustomTabView"
                 DatabaseController.loadFromServer()
             }

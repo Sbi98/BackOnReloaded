@@ -16,7 +16,6 @@ class CalendarController {
     static func initController() {
         switch EKEventStore.authorizationStatus(for: .event) {
         case .authorized:
-            print("Calendar access granted")
             authorized = true
             initCalendar()
         case .denied:

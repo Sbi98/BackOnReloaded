@@ -39,7 +39,7 @@ struct DetailedView: View {
                         .animation(.easeOut(duration: 0))
                 }.padding(.horizontal)
                 Spacer()
-                CloseButton(externalColor: selectedTask.isExpired() ? #colorLiteral(red: 0.7437255979, green: 0.7393060327, blue: 0.7471237779, alpha: 1) : #colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1), internalColor: #colorLiteral(red: 0.4917932749, green: 0.4582487345, blue: 0.4234881997, alpha: 1))
+                CloseButton()
             }
             .frame(height: 54)
             .padding()
@@ -67,11 +67,11 @@ struct DetailedView: View {
                             ThankButton(task: selectedTask)
                             ReportButton(task: selectedTask)
                         } else {
-                            DontNeedAnymoreButton(requestid: selectedTask._id)
+                            DontNeedAnymoreButton(request: selectedTask)
                         }
                     } else {
                         DirectionsButton(selectedTask: selectedTask)
-                        CantDoItButton(taskid: selectedTask._id)
+                        CantDoItButton(task: selectedTask)
                     }
                     Spacer()
                 }.padding(.horizontal)

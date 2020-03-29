@@ -8,6 +8,7 @@
 
 import SwiftUI
 import MapKit
+import GoogleSignIn
 
 let defaultButtonDimensions = (width: CGFloat(155.52), height: CGFloat(48))
 
@@ -21,9 +22,6 @@ let customDateFormat: DateFormatter = {
 struct CloseButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
-    var externalColor = #colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)
-    var internalColor = UIColor.systemGroupedBackground
-    
     var body: some View {
         Button(action: {
             withAnimation {
@@ -32,23 +30,16 @@ struct CloseButton: View {
                 HomeView.show()
             }
         }){
-            ZStack{
-                Image(systemName: "circle.fill")
-                    .font(.title)
-                    .foregroundColor(Color(internalColor)).scaleEffect(1.15)
-                Image(systemName: "xmark.circle.fill")
-                    .font(.largeTitle)
-                    .foregroundColor(Color(externalColor))
-            }
+            Image(systemName: "xmark.circle.fill").font(.largeTitle).foregroundColor(Color(.systemGray))
         }.buttonStyle(PlainButtonStyle())
     }
 }
 
-
 struct ConfirmAddNeedButton: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var action: () -> Void
     var body: some View {
-        Button(action: action) {
+        Button(action: {self.action();self.presentationMode.wrappedValue.dismiss()}) {
             HStack{
                 Text("Confirm ")
                 Image(systemName: "hand.thumbsup")
@@ -64,6 +55,7 @@ struct ConfirmAddNeedButton: View {
 }
 
 struct DoItButton: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let task: Task
     var body: some View {
         GenericButton(
@@ -73,43 +65,48 @@ struct DoItButton: View {
             DatabaseController.addTask(toAccept: self.task){ error in
                 guard error == nil else {print(error!); return}
                 self.task.helperID = CoreDataController.loggedUser!._id
+                (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = self.task
+                self.presentationMode.wrappedValue.dismiss()
+                CoreDataController.addTask(task: self.task)
             }
         }
     }
 }
 
 struct CantDoItButton: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let taskid: String
+    let task: Task
     var body: some View {
         GenericButton(
             isFilled: false,
             topText: "Can't do it"
         ) {
-            DatabaseController.removeTask(taskid: self.taskid){ error in
+            DatabaseController.removeTask(taskid: self.task._id){ error in
                 guard error == nil else {print(error!); return}
-                DispatchQueue.main.async {
-                    self.shared.myTasks[self.taskid] = nil
-                }
+                self.shared.myTasks[self.task._id] = nil
+                self.presentationMode.wrappedValue.dismiss()
+                CoreDataController.deleteTask(task: self.task)
             }
         }
     }
 }
 
 struct DontNeedAnymoreButton: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    let requestid: String
+    let request: Task
     var body: some View {
         GenericButton(
             isFilled: true,
             isLarge: true,
             topText: "Don't need anymore"
         ) {
-            DatabaseController.removeRequest(requestid: self.requestid){ error in
+            DatabaseController.removeRequest(requestid: self.request._id){ error in
                 guard error == nil else {print(error!); return}
-                DispatchQueue.main.async {
-                    self.shared.myRequests[self.requestid] = nil
-                }
+                self.shared.myRequests[self.request._id] = nil
+                self.presentationMode.wrappedValue.dismiss()
+                CoreDataController.deleteTask(task: self.request)
             }
         }
     }
@@ -166,12 +163,8 @@ struct ReportButton: View {
         GenericButton(
             isFilled: false,
             topText: "Report"
-        ) {
-            self.showActionSheet.toggle()
-        }
-        .actionSheet(isPresented: $showActionSheet, content: {
-            self.actionSheet
-        })
+        ){self.showActionSheet.toggle()}
+        .actionSheet(isPresented: $showActionSheet){self.actionSheet}
     }
 }
 
@@ -179,17 +172,20 @@ struct AddNeedButton: View {
     @State var showModal = false
     var body: some View {
         Button(action: {self.showModal.toggle()}) {
-            Image("AddNeedSymbol").foregroundColor(Color(.systemOrange)).imageScale(.large).font(.largeTitle)
-        }.sheet(isPresented: $showModal, content: {AddNeedView()})
+            Image("AddNeedSymbol")
+                .foregroundColor(Color(.systemOrange))
+                .imageScale(.large)
+                .font(.largeTitle)
+        }.sheet(isPresented: $showModal){AddNeedView()}
     }
 }
 
 struct ProfileButton: View {
     @State var showModal = false
     var body: some View {
-        Button(action: {self.showModal.toggle()}) {
+        Button(action: {print("Logout!");GIDSignIn.sharedInstance()?.disconnect()}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
-        }.sheet(isPresented: $showModal, content: {HomeView()})
+        }
     }
 }
 
@@ -228,7 +224,7 @@ struct DirectionsButton: View {
     
     var body: some View {
         Button(action: {MapController.openInMaps(commitment: self.selectedTask)}){
-            VStack{
+            VStack {
                 Text("Directions")
                     .fontWeight(.semibold)
                     .font(.body)
@@ -288,3 +284,16 @@ struct GenericButton: View {
 //    },
 //    secondaryButton: .cancel()
 //)
+
+
+//    var externalColor = UIColor.systemGray // #colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)
+//    var internalColor = UIColor.systemGroupedBackground
+//
+//            ZStack{
+//                Image(systemName: "circle.fill")
+//                    .font(.title)
+//                    .foregroundColor(Color(internalColor)).scaleEffect(1.15)
+//                Image(systemName: "xmark.circle.fill")
+//                    .font(.largeTitle)
+//                    .foregroundColor(Color(externalColor))
+//            }

@@ -20,38 +20,91 @@ class DatabaseController {
                     shared.myDiscoverables[task._id] = task
                 }
                 for user in discUsers {
-                    shared.users[user._id] = user
+                    if shared.users[user._id] == nil {
+                        shared.users[user._id] = user
+                    }
                 }
+                print("*** DB - discover finished ***")
             }
         }
         getMyRequests(){ requests, users, error in
-            guard error == nil, let requests = requests, let users = users else {print("ops");return} //FAI L'ALERT!
+            guard error == nil, let requests = requests, let users = users else {return} //FAI L'ALERT!
             DispatchQueue.main.async {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                let today = Date()
                 for request in requests {
-                    shared.myRequests[request._id] = request
+                    if request.date < today {
+                        let corrispondent = shared.myExpiredRequests[request._id]
+                        if corrispondent == nil {
+                            shared.myExpiredRequests[request._id] = request
+                            CoreDataController.addTask(task: request, save: false)
+                        }
+                    } else {
+                        let corrispondent = shared.myRequests[request._id]
+                        if corrispondent == nil {
+                            shared.myRequests[request._id] = request
+                            CoreDataController.addTask(task: request, save: false)
+                        } else {
+                            if corrispondent!.helperID != request.helperID {
+                                corrispondent!.helperID = request.helperID
+                                CoreDataController.updateRequest(request: request, save: false)
+                            }
+                        }
+                    }
                 }
                 for user in users {
-                    shared.users[user._id] = user
+                    let corrispondent = shared.users[user._id]
+                    if corrispondent == nil {
+                        shared.users[user._id] = user
+                        CoreDataController.addUser(user: user, save: false)
+                    } else {
+                        if corrispondent!.identity != user.identity || corrispondent!.photoURL != user.photoURL {
+                            CoreDataController.updateUser(user: user, save: false)
+                        }
+                    }
                 }
+                do {
+                    try CoreDataController.saveContext()
+                } catch {print("Error while saving context")}
+                print("*** DB - getMyRequests finished ***")
             }
         }
         getMyTasks(){ tasks, users, error in
             guard error == nil, let tasks = tasks, let users = users else {return} //FAI L'ALERT!
             DispatchQueue.main.async {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                let today = Date()
                 for task in tasks {
-                    shared.myTasks[task._id] = task
+                    if task.date > today {
+                        let corrispondent = shared.myTasks[task._id]
+                        if corrispondent == nil {
+                            shared.myTasks[task._id] = task
+                            CoreDataController.addTask(task: task, save: false)
+                        }
+                    }
                 }
                 for user in users {
-                    shared.users[user._id] = user
+                    let corrispondent = shared.users[user._id]
+                    if corrispondent == nil {
+                        shared.users[user._id] = user
+                        CoreDataController.addUser(user: user, save: false)
+                    } else {
+                        if corrispondent!.identity != user.identity || corrispondent!.photoURL != user.photoURL {
+                            CoreDataController.updateUser(user: user, save: false)
+                        }
+                    }
                 }
+                do {
+                    try CoreDataController.saveContext()
+                } catch {print("Error while saving context")}
+                print("*** DB - getMyTasks finished ***")
             }
         }
     }
     
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: String] = ["name": name, "surname": surname ?? "", "email" : email, "photo": "\(photoURL)"]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -68,6 +121,7 @@ class DatabaseController {
 
     static func getMyTasks(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: String] = ["helperID": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.getMyTasks, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -85,6 +139,7 @@ class DatabaseController {
     
     static func getMyRequests(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: String] = ["neederID": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.getMyRequests, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -102,6 +157,7 @@ class DatabaseController {
     
     static func discover(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.discover, body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted))
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -119,6 +175,7 @@ class DatabaseController {
     
     static func addRequest(title: String, description: String?, date: Date, coordinates: CLLocationCoordinate2D, completion: @escaping (Task?, ErrorString?)-> Void) {
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: Any] = ["title": title, "description": description ?? "" , "neederID" : CoreDataController.loggedUser!._id, "date": serverDateFormatter(date: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]
             let request = initJSONRequest(urlString: ServerRoutes.addRequest, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -134,6 +191,7 @@ class DatabaseController {
 
     static func addTask(toAccept: Task, completion: @escaping (ErrorString?)-> Void){
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: String] = ["_id": toAccept._id, "helperID": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.addTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -146,15 +204,18 @@ class DatabaseController {
     } //Error handling missing, but should work
     
     static func removeRequest(requestid: String, completion: @escaping (ErrorString?)-> Void) {
+        print("*** DB - \(#function) ***")
         removeBond(idToRemove: requestid, isRequest: true, completion: completion)
     }
     
     static func removeTask(taskid: String, completion: @escaping (ErrorString?)-> Void) {
+        print("*** DB - \(#function) ***")
         removeBond(idToRemove: taskid, isRequest: false, completion: completion)
     }
     
     static func stashTask(toStash: Task, report: String, completion: @escaping (ErrorString?)-> Void){
         do {
+            print("*** DB - \(#function) ***")
             let parameters: [String: Any] = ["_id" : toStash._id, "title" : toStash.title, "description" : toStash.descr ?? "" , "neederID" : toStash.neederID , "date" : serverDateFormatter(date: toStash.date), "latitude" : toStash.position.coordinate.latitude, "longitude" : toStash.position.coordinate.longitude , "helperID" : toStash.helperID ?? "Error! NO HELPER!", "report" : report]
             let request = initJSONRequest(urlString: ServerRoutes.stashTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -193,7 +254,8 @@ class DatabaseController {
             let latitude =  current["latitude"].doubleValue
             let longitude = current["longitude"].doubleValue
             let _id = current["_id"].stringValue
-            taskArray.append(Task(neederID: neederID, helperID: nil, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))
+            let helperID = current["helperID"].string
+            taskArray.append(Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))
             let user = current["user"].arrayValue.first
             if user != nil {
                 let user = user!

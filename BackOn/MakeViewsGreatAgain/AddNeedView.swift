@@ -43,9 +43,11 @@ struct AddNeedView: View {
                     Text("\(selectedDate, formatter: customDateFormat)")
                         .onTapGesture{withAnimation{self.showDatePicker.toggle()}}
                 }
+                /*
                 Toggle(isOn: $toggleRepeat) {
                     Text("Repeat each week at the same hour")
                 }
+                */
             }
             Section(header: Text("Location")) {
                 HStack{
@@ -53,11 +55,13 @@ struct AddNeedView: View {
                     Text(self.address).onTapGesture{self.showAddressCompleter = true}
                 }
             }
+            /*
             Section(header: Text("Need informations")) {
                 Toggle(isOn: $toggleVerified) {
                     Text("Do you want only verified helpers?")
                 }
             }
+            */
             Section(header:
                 HStack {
                     Spacer()
@@ -70,9 +74,8 @@ struct AddNeedView: View {
                                 date: self.selectedDate, coordinates: result
                             ){ newRequest, error in
                                 guard error == nil else {print(error!); return}
-                                DispatchQueue.main.async {
-                                    self.shared.myRequests[newRequest!._id] = newRequest!
-                                }
+                                self.shared.myRequests[newRequest!._id] = newRequest!
+                                CoreDataController.addTask(task: newRequest!)
                             }
                         }
                     }

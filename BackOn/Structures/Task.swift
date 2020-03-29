@@ -9,7 +9,7 @@
 import CoreLocation
 import MapKit
 
-class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
+class Task: ObservableObject, CustomStringConvertible { //ho tolto che estende NSObject, mi sembra servisse solo per una cosa di COreData
     let neederID: String
     let title: String
     let descr: String?
@@ -22,6 +22,7 @@ class Task: ObservableObject { //ho tolto che estende NSObject, mi sembra servis
     @Published var address = "Locating..."
     @Published var city = "Locating..."
     
+    public var description: String {return "Request      #\(_id)\n          of #\(neederID)\n accepted by #\(helperID ?? "nobody")\n"}
     
     init(neederID: String, title: String, descr: String?, date: Date, latitude: Double, longitude: Double, _id: String) {
         self.neederID = neederID
