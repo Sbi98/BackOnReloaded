@@ -11,7 +11,7 @@ import SwiftUI
 class Shared: ObservableObject {
     @Published var isLocationUpdating = true
     @Published var activeView = "HomeView"
-    @Published var mainWindow = "LoadingPageView"
+    @Published var mainWindow = "CustomTabView"
     @Published var myTasks: [String:Task] = [:]
     @Published var myDiscoverables: [String:Task] = [:]
     @Published var myRequests: [String:Task] = [:]

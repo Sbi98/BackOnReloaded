@@ -33,7 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        self.shared.mainWindow = "LoadingPageView"
         guard error == nil else {print("Sign error"); return}
         // Perform any operations on signed in user here.
         //let userid = user.userid                  // For client-side use only!

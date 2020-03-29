@@ -2,15 +2,9 @@ import SwiftUI
 
 struct AddNeedView: View {
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-
     var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
     @State var showTitlePicker = false
-    @State var selectedTitle = "Click to select your need"
-    @State var titlePickerValue = -1 {
-        didSet {
-            selectedTitle = titles[titlePickerValue]
-        }
-    }
+    @State var titlePickerValue = -1
     @State var needDescription = ""
     @State var showDatePicker = false
     @State var selectedDate = Date()
@@ -33,11 +27,8 @@ struct AddNeedView: View {
                 HStack {
                     Text("Title: ")
                         .foregroundColor(Color(.systemBlue))
-                    Text(titlePickerValue == -1 ? "Click to select your need" : selectedTitle)
-                        .onTapGesture {
-                            self.titlePickerValue = 0
-                            withAnimation{self.showTitlePicker.toggle()}
-                        }
+                    Text(titlePickerValue == -1 ? "Click to select your need" : titles[titlePickerValue])
+                        .onTapGesture {self.titlePickerValue = 0;withAnimation{self.showTitlePicker.toggle()}}
                 }
                 HStack {
                     Text("Description: ")
@@ -73,7 +64,11 @@ struct AddNeedView: View {
                     ConfirmAddNeedButton(){
                         MapController.addressToCoordinates(self.address) { result, error in
                             guard error == nil, let result = result else {return}
-                            DatabaseController.addRequest(title: self.selectedTitle, description: self.needDescription == "" ? nil : self.needDescription, date: self.selectedDate, coordinates: result) { newRequest, error in
+                            DatabaseController.addRequest(
+                                title: self.titles[self.titlePickerValue],
+                                description: self.needDescription == "" ? nil : self.needDescription,
+                                date: self.selectedDate, coordinates: result
+                            ){ newRequest, error in
                                 guard error == nil else {print(error!); return}
                                 DispatchQueue.main.async {
                                     self.shared.myRequests[newRequest!._id] = newRequest!
@@ -84,9 +79,8 @@ struct AddNeedView: View {
                     Spacer()
                 }
             ){EmptyView()}
-        }.onTapGesture {
-            UIApplication.shared.windows.first!.endEditing(true)
         }
+        .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
         .frame(width: UIScreen.main.bounds.width, alignment: .leading)
         .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))
         .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))

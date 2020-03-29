@@ -56,6 +56,8 @@ class DatabaseController {
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,"Error in " + #function + ". Invalid response!")}
+                guard responseCode == 200 else {return completion(nil,"Response code != 200 in \(#function): \(responseCode)")}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in " + #function)}
                 let _id = jsonResponse["_id"].stringValue
                 completion(User(name: name, surname: surname, email: email, photoURL: photoURL, _id: _id), nil)

@@ -215,9 +215,7 @@ struct DatePickerGUI: View {
     @Binding var selectedDate: Date
     
     var body: some View {
-        DatePicker(selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute]) {
-            Text("Select a date")
-        }
+        DatePicker("",selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
         .labelsHidden()
         .frame(width: UIScreen.main.bounds.width, height: 250)
         .background(Color.primary.colorInvert())
