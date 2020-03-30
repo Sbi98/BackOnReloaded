@@ -42,6 +42,10 @@ struct TaskPreview: View {
                         Text(task.helperID == nil ? "Nobody accepted" : self.shared.users[task.helperID!]?.identity ?? "Helper with bad id")
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
+                    } else if mode == .DiscoverableViews {
+                        Text(self.shared.discUsers[task.neederID]?.identity ?? "Needer with bad id")
+                            .font(.title) //c'era 26 di grandezza invece di 28
+                            .lineLimit(1)
                     } else {
                         Text(self.shared.users[task.neederID]?.identity ?? "Needer with bad id")
                             .font(.title) //c'era 26 di grandezza invece di 28

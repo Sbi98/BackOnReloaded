@@ -64,10 +64,22 @@ struct DoItButton: View {
         ) {
             DatabaseController.addTask(toAccept: self.task){ error in
                 guard error == nil else {print(error!); return}
+                var user: User?
                 self.task.helperID = CoreDataController.loggedUser!._id
-                (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = self.task
+                DispatchQueue.main.sync {
+                    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                    let neederID = self.task.neederID
+                    shared.myTasks[self.task._id] = self.task
+                    user = shared.discUsers[neederID]
+                    if shared.users[neederID] == nil {
+                        shared.users[neederID] = user
+                    }
+                }
                 self.presentationMode.wrappedValue.dismiss()
                 CoreDataController.addTask(task: self.task)
+                if user != nil {
+                    CoreDataController.addUser(user: user!)
+                }
             }
         }
     }
@@ -75,7 +87,6 @@ struct DoItButton: View {
 
 struct CantDoItButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let task: Task
     var body: some View {
         GenericButton(
@@ -84,7 +95,9 @@ struct CantDoItButton: View {
         ) {
             DatabaseController.removeTask(taskid: self.task._id){ error in
                 guard error == nil else {print(error!); return}
-                self.shared.myTasks[self.task._id] = nil
+                DispatchQueue.main.async {
+                    (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil
+                }
                 self.presentationMode.wrappedValue.dismiss()
                 CoreDataController.deleteTask(task: self.task)
             }
@@ -94,7 +107,6 @@ struct CantDoItButton: View {
 
 struct DontNeedAnymoreButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let request: Task
     var body: some View {
         GenericButton(
@@ -104,7 +116,9 @@ struct DontNeedAnymoreButton: View {
         ) {
             DatabaseController.removeRequest(requestid: self.request._id){ error in
                 guard error == nil else {print(error!); return}
-                self.shared.myRequests[self.request._id] = nil
+                DispatchQueue.main.async {
+                    (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil
+                }
                 self.presentationMode.wrappedValue.dismiss()
                 CoreDataController.deleteTask(task: self.request)
             }

@@ -11,6 +11,7 @@ import MapKit
 
 struct FullDiscoverView: View {
     @ObservedObject var discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
+    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -23,10 +24,16 @@ struct FullDiscoverView: View {
                 Text("List").tag(false)
                 Text("Map").tag(true)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
-            if discoverTabController.mapMode {
-                MapView(mode: .AroundYouMap)
+            if shared.myDiscoverables.isEmpty {
+                Spacer()
+                Text("Loading from server")
+                Spacer()
             } else {
-                ListView(mode: .DiscoverableViews)
+                if discoverTabController.mapMode {
+                    MapView(mode: .AroundYouMap)
+                } else {
+                    ListView(mode: .DiscoverableViews)
+                }
             }
         }
     }

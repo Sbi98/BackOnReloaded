@@ -58,22 +58,17 @@ struct MapView: UIViewRepresentable {
                 view.canShowCallout = true
                 view.displayPriority = .required
                 view.pinTintColor = .systemBlue
-                
                 return view
             }
             return nil
-//            if parent.mode == .TaskTab {
-//                view.image = UIImage(named: "Empty")
-//                view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
-//                view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
-//                view.titleVisibility = .hidden
-//                view.subtitleVisibility = .hidden
-//            }
         }
         
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+            print("prima primo guard")
             guard parent.mode == .AroundYouMap else {return}
+            print("dopo primo guard")
             guard view.annotation!.isKind(of: TaskAnnotation.self) else {return}
+            print("dopo guard")
             parent.discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
         }
         
@@ -123,7 +118,7 @@ struct MapView: UIViewRepresentable {
         case .AroundYouMap:
             guard discoverTabController.baseMKMap == nil else { return discoverTabController.baseMKMap! }
             for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
-                mapView.addAnnotation(generateAnnotation(discoverableTask, title: shared.users[discoverableTask.neederID]?.name ?? "Needer with bad id"))
+                mapView.addAnnotation(generateAnnotation(discoverableTask, title: shared.discUsers[discoverableTask.neederID]?.name ?? "Needer with bad id"))
             }
             if let lastLocation = MapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
@@ -137,7 +132,7 @@ struct MapView: UIViewRepresentable {
     
     func updateUIView(_ uiView: MKMapView, context: Context) {}
     
-    private func generateAnnotation( _ Task: Task, title: String) -> MKAnnotation {
+    private func generateAnnotation( _ Task: Task, title: String) -> TaskAnnotation {
         let taskAnnotation = TaskAnnotation(task: Task)
         taskAnnotation.title = title
         taskAnnotation.subtitle = Task.title
@@ -238,3 +233,13 @@ struct searchLocation: View {
         }
     }
 }
+
+
+
+//            if parent.mode == .TaskTab {
+//                view.image = UIImage(named: "Empty")
+//                view.markerTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
+//                view.glyphTintColor = UIColor(#colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 0))
+//                view.titleVisibility = .hidden
+//                view.subtitleVisibility = .hidden
+//            }

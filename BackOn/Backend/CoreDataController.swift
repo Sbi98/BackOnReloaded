@@ -78,10 +78,11 @@ class CoreDataController {
         newUser.email = user.email
         newUser.photoURL = user.photoURL
         newUser.id = user._id
+        print("\(user)ready to save in memory\n")
         if save {
             do {
                 try saveContext()
-                print("\(user.name) saved in memory")
+                print("Saved in memory")
             } catch {print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n");return}
         }
     }
@@ -125,10 +126,14 @@ class CoreDataController {
             let array = try context!.fetch(fetchRequest)
             for pUser in array {
                 if pUser.email! == user.email {
+                    print("\(user)ready to be deleted from memory\n")
                     context!.delete(pUser)
                 }
             }
-            if save { try saveContext() }
+            if save {
+                try saveContext()
+                print("Deleted from memory")
+            }
         } catch {print("Error while deleting logged user: \(error.localizedDescription)");return}
     }
     
@@ -151,7 +156,7 @@ class CoreDataController {
             do {
                 try saveContext()
             } catch {print("\nError while saving \(task) in memory! The error is:\n\(error)\n");return}
-            print("\(task) saved in memory")
+            print("Saved in memory")
         }
     }
     
@@ -197,10 +202,14 @@ class CoreDataController {
             let array = try context!.fetch(fetchRequest)
             for pTask in array {
                 if pTask.id! == task._id {
+                    print("\(task)ready to be deleted from memory\n")
                     context!.delete(pTask)
                 }
             }
-            if save { try saveContext() }
+            if save {
+                try saveContext()
+                print("Deleted from memory\n")
+            }
         } catch {print("Error while deleting logged user: \(error.localizedDescription)");return}
     }
     

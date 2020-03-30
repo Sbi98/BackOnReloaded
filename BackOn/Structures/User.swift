@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class User: ObservableObject {
+class User: ObservableObject, CustomStringConvertible {
     var photoURL: URL
     var name: String
     var surname: String?
@@ -18,6 +18,8 @@ class User: ObservableObject {
     var email: String
     @Published var profilePic: Image?
     let _id: String
+    
+    public var description: String {return "User \(identity) #\(_id)\n"}
 
     init(name: String, surname: String?, email: String, photoURL: URL, _id: String) {
         self._id = _id

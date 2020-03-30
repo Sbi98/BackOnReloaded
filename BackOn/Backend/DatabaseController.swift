@@ -11,29 +11,61 @@ import CoreLocation
 import SwiftyJSON
 
 class DatabaseController {
+    // ERRORE! bisogna usare la getMyBonds, anche su zeit, altrimenti non possiamo sapere quando eliminare gli utenti
     static func loadFromServer() {
         discover(){ discTasks, discUsers, error in
-            guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {return} //FAI L'ALERT!
+            guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
             DispatchQueue.main.async {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                for task in discTasks {
-                    shared.myDiscoverables[task._id] = task
+                let now = Date()
+                for task in discTasks.values {
+                    if task.date > now {
+                        shared.myDiscoverables[task._id] = task
+                    }
                 }
-                for user in discUsers {
-                    if shared.users[user._id] == nil {
-                        shared.users[user._id] = user
+                for user in discUsers.values {
+                    if shared.discUsers[user._id] == nil {
+                        shared.discUsers[user._id] = user
                     }
                 }
                 print("*** DB - discover finished ***")
             }
         }
-        getMyRequests(){ requests, users, error in
-            guard error == nil, let requests = requests, let users = users else {return} //FAI L'ALERT!
+        getMyBonds(){ tasks, requests, users, error in
+            guard error == nil, let tasks = tasks, let requests = requests, let users = users else {print(error!);return} //FAI L'ALERT!
             DispatchQueue.main.async {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                let today = Date()
-                for request in requests {
-                    if request.date < today {
+                let now = Date()
+                for taskid in shared.myTasks.keys { //cancella (anche da CoreData) tutti i task non più presenti nella risposta del server
+                    if tasks[taskid] == nil {
+                        CoreDataController.deleteTask(task: shared.myTasks[taskid]!,save: false)
+                        shared.myTasks[taskid] = nil
+                    }
+                }
+                for requestid in shared.myRequests.keys { //cancella (anche da CoreData) tutte le request non più presenti nella risposta del server
+                    if requests[requestid] == nil {
+                        CoreDataController.deleteTask(task: shared.myRequests[requestid]!,save: false)
+                        shared.myRequests[requestid] = nil
+                    }
+                }
+                for userid in shared.users.keys { //cancella (anche da CoreData) tutti gli utenti non più presenti nella risposta del server
+                    if users[userid] == nil {
+                        CoreDataController.deleteUser(user: shared.users[userid]!,save: false)
+                        shared.users[userid] = nil
+                    }
+                }
+                for task in tasks.values {
+//                    print(task)
+                    if task.date > now {
+                        if shared.myTasks[task._id] == nil {
+                            print("added")
+                            shared.myTasks[task._id] = task
+                            CoreDataController.addTask(task: task, save: false)
+                        }
+                    }
+                }
+                for request in requests.values {
+                    if request.date < now { // se è una richiesta scaduta
                         let corrispondent = shared.myExpiredRequests[request._id]
                         if corrispondent == nil {
                             shared.myExpiredRequests[request._id] = request
@@ -41,18 +73,18 @@ class DatabaseController {
                         }
                     } else {
                         let corrispondent = shared.myRequests[request._id]
-                        if corrispondent == nil {
+                        if corrispondent == nil { // se non esisteva la aggiunge
                             shared.myRequests[request._id] = request
                             CoreDataController.addTask(task: request, save: false)
                         } else {
-                            if corrispondent!.helperID != request.helperID {
+                            if corrispondent!.helperID != request.helperID { // se esisteva ma l'helper è diverso lo aggiorna
                                 corrispondent!.helperID = request.helperID
                                 CoreDataController.updateRequest(request: request, save: false)
                             }
                         }
                     }
                 }
-                for user in users {
+                for user in users.values {
                     let corrispondent = shared.users[user._id]
                     if corrispondent == nil {
                         shared.users[user._id] = user
@@ -66,38 +98,7 @@ class DatabaseController {
                 do {
                     try CoreDataController.saveContext()
                 } catch {print("Error while saving context")}
-                print("*** DB - getMyRequests finished ***")
-            }
-        }
-        getMyTasks(){ tasks, users, error in
-            guard error == nil, let tasks = tasks, let users = users else {return} //FAI L'ALERT!
-            DispatchQueue.main.async {
-                let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                let today = Date()
-                for task in tasks {
-                    if task.date > today {
-                        let corrispondent = shared.myTasks[task._id]
-                        if corrispondent == nil {
-                            shared.myTasks[task._id] = task
-                            CoreDataController.addTask(task: task, save: false)
-                        }
-                    }
-                }
-                for user in users {
-                    let corrispondent = shared.users[user._id]
-                    if corrispondent == nil {
-                        shared.users[user._id] = user
-                        CoreDataController.addUser(user: user, save: false)
-                    } else {
-                        if corrispondent!.identity != user.identity || corrispondent!.photoURL != user.photoURL {
-                            CoreDataController.updateUser(user: user, save: false)
-                        }
-                    }
-                }
-                do {
-                    try CoreDataController.saveContext()
-                } catch {print("Error while saving context")}
-                print("*** DB - getMyTasks finished ***")
+                print("*** DB - getMyBonds finished ***")
             }
         }
     }
@@ -119,43 +120,29 @@ class DatabaseController {
     }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
 
 
-    static func getMyTasks(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
+    static func getMyBonds(completion: @escaping ([String:Task]?, [String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["helperID": CoreDataController.loggedUser!._id]
-            let request = initJSONRequest(urlString: ServerRoutes.getMyTasks, body: try JSONSerialization.data(withJSONObject: parameters))
+            let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
+            let request = initJSONRequest(urlString: ServerRoutes.getMyBonds, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
-                guard error == nil else {return completion(nil, nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
-                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,"Error in " + #function + ". Invalid response!")}
-                guard responseCode == 200 else {return completion(nil,nil,"Response code != 200 in \(#function): \(responseCode)")}
-                guard let data = data, var jsonArray = try? JSON(data: data).arrayValue else {return completion(nil, nil, "Error with returned data in " + #function)}
-                var taskArray: [Task] = []
+                guard error == nil else {return completion(nil,nil,nil,"Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,nil,"Error in " + #function + ". Invalid response!")}
+                guard responseCode == 200 else {return completion(nil,nil,nil,"Response code != 200 in \(#function): \(responseCode)")}
+                guard let data = data, let jsonTasksAndRequests = try? JSON(data: data) else {return completion(nil,nil,nil,"Error with returned data in " + #function)}
+                var tasksJSONArray = jsonTasksAndRequests["tasks"].arrayValue
+                var requestsJSONArray = jsonTasksAndRequests["requests"].arrayValue
+                var taskDict: [String:Task] = [:]
+                var requestDict: [String:Task] = [:]
                 var userDict: [String:User] = [:]
-                parseJSONArray(jsonArray: &jsonArray, taskArray: &taskArray, userDict: &userDict)
-                completion(taskArray, Array(userDict.values), nil)
+                parseJSONArray(jsonArray: &tasksJSONArray, taskDict: &taskDict, userDict: &userDict)
+                parseJSONArray(jsonArray: &requestsJSONArray, taskDict: &requestDict, userDict: &userDict)
+                completion(taskDict, requestDict, userDict, nil)
             }.resume()
-        } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+        } catch let error {completion(nil,nil,nil,"Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func getMyRequests(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
-        do {
-            print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["neederID": CoreDataController.loggedUser!._id]
-            let request = initJSONRequest(urlString: ServerRoutes.getMyRequests, body: try JSONSerialization.data(withJSONObject: parameters))
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                guard error == nil else {return completion(nil, nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
-                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,"Error in " + #function + ". Invalid response!")}
-                guard responseCode == 200 else {return completion(nil,nil,"Response code != 200 in \(#function): \(responseCode)")}
-                guard let data = data, var jsonArray = try? JSON(data: data).arrayValue else {return completion(nil, nil, "Error with returned data in " + #function)}
-                var taskArray: [Task] = []
-                var userDict: [String:User] = [:]
-                parseJSONArray(jsonArray: &jsonArray, taskArray: &taskArray, userDict: &userDict)
-                completion(taskArray, Array(userDict.values), nil)
-            }.resume()
-        } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
-    }
-    
-    static func discover(completion: @escaping ([Task]?, [User]?, ErrorString?)-> Void) {
+    static func discover(completion: @escaping ([String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
             let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
@@ -165,10 +152,10 @@ class DatabaseController {
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,nil,"Error in " + #function + ". Invalid response!")}
                 guard responseCode == 200 else {return completion(nil,nil,"Response code != 200 in \(#function): \(responseCode)")}
                 guard let data = data, var jsonDiscoverables = try? JSON(data: data).arrayValue else {return completion(nil, nil, "Error with returned data in " + #function)}
-                var taskToDiscover: [Task] = []
+                var taskToDiscover: [String:Task] = [:]
                 var userToDiscover: [String:User] = [:]
-                parseJSONArray(jsonArray: &jsonDiscoverables, taskArray: &taskToDiscover, userDict: &userToDiscover)
-                completion(taskToDiscover, Array(userToDiscover.values), nil)
+                parseJSONArray(jsonArray: &jsonDiscoverables, taskDict: &taskToDiscover, userDict: &userToDiscover)
+                completion(taskToDiscover, userToDiscover, nil)
             }.resume()
         } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
@@ -240,12 +227,12 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + " opering with a \(isRequest ? "request" : "task"). The error is:\n" + error.localizedDescription)}
     }
     
-    static func updateCathegories(lastUpdate: Date){
+    static func updateCathegories(lastUpdate: Date) {
         //Chiede l'ultima data di aggiornamento delle categorie di request al db e, se diversa da quella che ha internamente, richiede al db di inviarle e le aggiorna
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
     }
     
-    private static func parseJSONArray(jsonArray: inout [JSON], taskArray: inout [Task], userDict: inout [String:User]) {
+    private static func parseJSONArray(jsonArray: inout [JSON], taskDict: inout [String:Task], userDict: inout [String:User]) {
         for current: JSON in jsonArray {
             let neederID = current["neederID"].stringValue
             let title = current["title"].stringValue
@@ -255,7 +242,7 @@ class DatabaseController {
             let longitude = current["longitude"].doubleValue
             let _id = current["_id"].stringValue
             let helperID = current["helperID"].string
-            taskArray.append(Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id))
+            taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id)
             let user = current["user"].arrayValue.first
             if user != nil {
                 let user = user!
@@ -299,4 +286,3 @@ class DatabaseController {
     
     
 }
-
