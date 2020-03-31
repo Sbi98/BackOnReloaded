@@ -19,17 +19,19 @@ class Shared: ObservableObject {
     @Published var discUsers: [String:User] = [:]
     
 
-    func requestETA() {
+    func requestTasksETA() {
         for task in myTasks.values {
-            task.locate()
-            task.requestETA(source: MapController.lastLocation!)
+            if task.etaText != "Calculating..." {
+                task.requestETA()
+            }
         }
-        for task in myRequests.values {
-            task.locate()
-        }
+    }
+    
+    func requestDiscoverablesETA() {
         for task in myDiscoverables.values {
-            task.locate()
-            task.requestETA(source: MapController.lastLocation!)
+            if task.etaText != "Calculating..." {
+                task.requestETA()
+            }
         }
     }
     
@@ -57,45 +59,6 @@ class Shared: ObservableObject {
         } else {
             return discoverablesArray()
         }
-    }
-    
-    func loadFromCoreData() {
-        let today = Date()
-        let cachedUsers = CoreDataController.getCachedUsers()
-        for user in cachedUsers {
-            users[user._id] = user
-        }
-        let cachedTasks = CoreDataController.getCachedTasks()
-        for task in cachedTasks {
-            if task.helperID == nil {
-                if task.neederID == CoreDataController.loggedUser!._id {
-                    if task.date < today {
-                        if task.date < today.advanced(by: -259200) {
-                            CoreDataController.deleteTask(task: task, save: false)
-                        } else {
-                            myExpiredRequests[task._id] = task
-                        }
-                    } else {
-                        myRequests[task._id] = task
-                    }
-                } else {
-                    print("loadFromCD: inconsistent state for \(task)\nMaybe you are trying to add a discoverable!")
-                }
-            } else {
-                if task.helperID == CoreDataController.loggedUser!._id {
-                    if task.date > today {
-                        myTasks[task._id] = task
-                    } else {
-                        CoreDataController.deleteTask(task: task, save: false)
-                    }
-                } else {
-                    print("loadFromCD: inconsistent state for \(task)\nMaybe you are adding a task with a helperUser that isn't you!")
-                }
-            }
-        }
-        do {
-            try CoreDataController.saveContext()
-        } catch {print("Error in loadFromCoreData while saving context")}
     }
     
 }

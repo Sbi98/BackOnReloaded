@@ -12,17 +12,14 @@ import CoreData
 import GoogleSignIn
 
 typealias ErrorString = String
+typealias Request = Task
+typealias ExpiredRequest = Task
+typealias Discoverable = Task
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
-    let shared: Shared
-    let discoverTabController: DiscoverTabController
-    
-    override init() {
-        shared = Shared()
-        discoverTabController = DiscoverTabController()
-        super.init()
-    }
+    let shared: Shared = Shared()
+    let discoverTabController: DiscoverTabController = DiscoverTabController()
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         CoreDataController.initController() //inizializza CoreDataController e recupera l'utente loggato
@@ -31,8 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         if CoreDataController.loggedUser == nil {
             shared.mainWindow = "LoginPageView"
         } else {
+            CoreDataController.loadInShared()
             DatabaseController.loadFromServer()
-            shared.loadFromCoreData()
         }
         return true
     }

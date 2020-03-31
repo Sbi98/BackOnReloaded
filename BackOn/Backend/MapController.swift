@@ -66,9 +66,10 @@ class MapController {
     static private func updateLocation(lastLocation: CLLocation) {
         let shared = (UIApplication.shared.delegate as! AppDelegate).shared
         self.lastLocation = lastLocation
-        if lastLocation.horizontalAccuracy < 35.0 {
+        if lastLocation.horizontalAccuracy < 35.0 { // quando la posizione è abbastanza precisa richiede l'ETA di task e discoverable
             locationManager.stopUpdatingLocation()
-            shared.requestETA()
+            shared.requestTasksETA()
+            shared.requestDiscoverablesETA()
         }
     }
     

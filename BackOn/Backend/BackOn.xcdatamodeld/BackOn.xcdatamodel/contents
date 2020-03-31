@@ -7,18 +7,9 @@
         <attribute name="photoURL" optional="YES" attributeType="URI"/>
         <attribute name="surname" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="PRequests" representedClassName="PRequests" syncable="YES" codeGenerationType="class">
-        <attribute name="address" optional="YES" attributeType="String"/>
-        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="descr" attributeType="String"/>
-        <attribute name="helperID" optional="YES" attributeType="String"/>
-        <attribute name="id" attributeType="String"/>
-        <attribute name="latitude" attributeType="Double" usesScalarValueType="YES"/>
-        <attribute name="longitude" attributeType="Double" usesScalarValueType="YES"/>
-        <attribute name="title" attributeType="String"/>
-    </entity>
     <entity name="PTasks" representedClassName="PTasks" syncable="YES" codeGenerationType="class">
         <attribute name="address" optional="YES" attributeType="String"/>
+        <attribute name="city" optional="YES" attributeType="String"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descr" optional="YES" attributeType="String"/>
         <attribute name="helperID" optional="YES" attributeType="String"/>
@@ -38,8 +29,7 @@
     </entity>
     <elements>
         <element name="PLoggedUser" positionX="-45" positionY="36" width="128" height="118"/>
-        <element name="PRequests" positionX="-360" positionY="198" width="128" height="163"/>
-        <element name="PTasks" positionX="-671.9765625" positionY="20.36328125" width="128" height="193"/>
+        <element name="PTasks" positionX="-671.9765625" positionY="20.36328125" width="128" height="208"/>
         <element name="PUsers" positionX="-269.03125" positionY="291.82421875" width="150.8984375" height="118"/>
     </elements>
 </model>

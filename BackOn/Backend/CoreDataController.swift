@@ -28,7 +28,55 @@ class CoreDataController {
     static func saveContext() throws {
         if context!.hasChanges {
             try context!.save()
+        } else {print("Context haven't got any change!")}
+    }
+    
+    static func loadInShared() {
+        let cachedUsers = getCachedUsers()
+        let cachedTasks = getCachedTasks()
+        let today = Date()
+        for user in cachedUsers {
+            DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.users[user._id] = user}
         }
+        for task in cachedTasks {
+            if task.helperID == nil {
+                if task.neederID == loggedUser!._id {
+                    if task.date < today {
+                        if task.date < today.advanced(by: -259200) {
+                            deleteTask(task: task, save: false)
+                        } else {
+                            if task.address == "Locating..." {task.locate()}
+                            DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredRequests[task._id] = task}
+                        }
+                    } else {
+                        if task.address == "Locating..." {task.locate()}
+                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myRequests[task._id] = task}
+                    }
+                } else {
+                    print("\nloadInShared: inconsistent state for \(task)\nMaybe you are trying to add a discoverable!\n")
+                }
+            } else {
+                if task.helperID == loggedUser!._id {
+                    if task.date > today {
+                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myTasks[task._id] = task}
+                        if task.address == "Locating..." {task.locate()}
+                        if task.mapSnap == nil {
+                            MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
+                                guard error == nil, let snapshot = snapshot else {return}
+                                task.mapSnap = snapshot.image
+                            }
+                        }
+                    } else {
+                        deleteTask(task: task, save: false)
+                    }
+                } else {
+                    print("\nloadInShared: inconsistent state for \(task)\nMaybe you are adding a task with a helperUser that isn't you!\n")
+                }
+            }
+        }
+        do {
+            try saveContext()
+        } catch {print("\nError in loadFromCoreData while saving context\n")}
     }
     
     static func signUp(user: User) {
@@ -42,6 +90,7 @@ class CoreDataController {
         newUser.id = user._id
         do {
             try saveContext()
+            print("\nSaving context from \(#function)\n")
         } catch {print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n");return}
         print("\(user.name) saved in memory")
         loggedUser = user
@@ -53,8 +102,10 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             guard let temp = array.first else {print("User not logged yet"); return nil}
-            return User(name: temp.name!, surname: temp.surname, email: temp.email!, photoURL: temp.photoURL!, _id: temp.id!)
-        } catch {print("Error while getting logged user: \(error.localizedDescription)");return nil}
+            let loggedUser = User(name: temp.name!, surname: temp.surname, email: temp.email!, photoURL: temp.photoURL!, _id: temp.id!)
+            print("\nLogged user is \(loggedUser)")
+            return loggedUser
+        } catch {print("\nError while getting logged user: \(error.localizedDescription)\n");return nil}
     }
     
     static func deleteLoggedUser() {
@@ -66,7 +117,8 @@ class CoreDataController {
                 context!.delete(loggedUser)
             }
             try saveContext()
-        } catch {print("Error while deleting logged user: \(error.localizedDescription)");return}
+            print("\nSaving context from \(#function)\n")
+        } catch {print("\nError while deleting logged user: \(error.localizedDescription)\n");return}
     }
     
     static func addUser(user: User, save: Bool = true) {
@@ -78,16 +130,16 @@ class CoreDataController {
         newUser.email = user.email
         newUser.photoURL = user.photoURL
         newUser.id = user._id
-        print("\(user)ready to save in memory\n")
+        print("\n\(user)ready to save in memory\n")
         if save {
             do {
                 try saveContext()
                 print("Saved in memory")
-            } catch {print("Error while saving \(newUser.name!) in memory! The error is:\n\(error)\n");return}
+            } catch {print("\nError while saving \(newUser.name!) in memory! The error is:\n\(error)\n");return}
         }
     }
     
-    static func updateUser(user: User, save: Bool = false) {
+    static func updateUser(user: User, save: Bool = true) {
         print("*** CD - \(#function) ***")
         let fetchRequest: NSFetchRequest<PUsers> = PUsers.fetchRequest()
         do {
@@ -100,10 +152,9 @@ class CoreDataController {
             cachedUser.setValue(user.photoURL, forKey: "photoURL")
             if save {
                 try saveContext()
+                print("\nSaving context from \(#function)\n")
             }
-        } catch {
-            print("Errore recupero informazioni dal context \n \(error)")
-        }
+        } catch {print("\nErrore recupero informazioni dal context \n \(error)\n")}
     }
     
     static func getCachedUsers() -> [User] {
@@ -115,7 +166,7 @@ class CoreDataController {
             for pUser in array {
                 cachedUsers.append(User(name: pUser.name!, surname: pUser.surname, email: pUser.email!, photoURL: pUser.photoURL!, _id: pUser.id!))
             }
-        } catch {print("Error while getting cached tasks: \(error.localizedDescription)")}
+        } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
         return cachedUsers
     }
     
@@ -126,7 +177,7 @@ class CoreDataController {
             let array = try context!.fetch(fetchRequest)
             for pUser in array {
                 if pUser.email! == user.email {
-                    print("\(user)ready to be deleted from memory\n")
+                    print("\n\(user)ready to be deleted from memory\n")
                     context!.delete(pUser)
                 }
             }
@@ -134,7 +185,7 @@ class CoreDataController {
                 try saveContext()
                 print("Deleted from memory")
             }
-        } catch {print("Error while deleting logged user: \(error.localizedDescription)");return}
+        } catch {print("\nError while deleting logged user: \(error.localizedDescription)\n");return}
     }
     
     static func addTask(task: Task, save: Bool = true) {
@@ -146,17 +197,18 @@ class CoreDataController {
         newTask.descr = task.descr
         newTask.date = task.date
         newTask.address = task.address
+        newTask.city = task.city
         newTask.latitude = task.position.coordinate.latitude
         newTask.longitude = task.position.coordinate.longitude
         newTask.helperID = task.helperID
         newTask.neederID = task.neederID
         newTask.mapSnap = task.mapSnap?.pngData()
-        print("\(task)ready to save in memory\n")
+        print("\n\(task)ready to save in memory\n")
         if save {
             do {
                 try saveContext()
+                print("Saved in memory")
             } catch {print("\nError while saving \(task) in memory! The error is:\n\(error)\n");return}
-            print("Saved in memory")
         }
     }
     
@@ -171,9 +223,10 @@ class CoreDataController {
             cachedTask.setValue(request.helperID, forKey: "helperID")
             if save {
                 try saveContext()
+                print("\nSaving context from \(#function)\n")
             }
         } catch {
-            print("Errore recupero informazioni dal context \n \(error)")
+            print("\nErrore recupero informazioni dal context \n \(error)\n")
         }
     }
     
@@ -184,14 +237,13 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             for task in array {
-                let myTask = Task(neederID: task.neederID!, title: task.title!, descr: task.descr, date: task.date!, latitude: task.latitude, longitude: task.longitude, _id: task.id!)
-                if let helperID = task.helperID {myTask.helperID = helperID}
+                let myTask = Task(neederID: task.neederID!, helperID: task.helperID, title: task.title!, descr: task.descr, date: task.date!, latitude: task.latitude, longitude: task.longitude, _id: task.id!, address: task.address, city: task.city)
                 if let mapSnap = task.mapSnap {
                     myTask.mapSnap = UIImage(data: mapSnap)
                 }
                 cachedTasks.append(myTask)
             }
-        } catch {print("Error while getting cached tasks: \(error.localizedDescription)")}
+        } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
         return cachedTasks
     }
     
@@ -202,7 +254,7 @@ class CoreDataController {
             let array = try context!.fetch(fetchRequest)
             for pTask in array {
                 if pTask.id! == task._id {
-                    print("\(task)ready to be deleted from memory\n")
+                    print("\n\(task)ready to be deleted from memory\n")
                     context!.delete(pTask)
                 }
             }
@@ -210,26 +262,7 @@ class CoreDataController {
                 try saveContext()
                 print("Deleted from memory\n")
             }
-        } catch {print("Error while deleting logged user: \(error.localizedDescription)");return}
+        } catch {print("\nError while deleting logged user: \(error.localizedDescription)\n");return}
     }
-    
-    static func addTasks(tasks: [Task]) {
-        for task in tasks {
-            addTask(task: task)
-        }
-    }
-    
-//    static func deleteAll() {
-//        print("*** CD - \(#function) ***")
-//        let fetchRequestTask: NSFetchRequest<PTasks> = PTasks.fetchRequest()
-//        let fetchRequestUser: NSFetchRequest<PUsers> = PUsers.fetchRequest()
-//        do {
-//            let arrayTask = try context!.fetch(fetchRequestTask)
-//            let arrayTask = try context!.fetch(fetchRequestTask)
-//            for pTask in array {
-//                context!.delete(pTask)
-//            }
-//            try saveContext()
-//        } catch {print("Error while deleting logged user: \(error.localizedDescription)");return}
-//    }
+
 }

@@ -19,7 +19,7 @@ class User: ObservableObject, CustomStringConvertible {
     @Published var profilePic: Image?
     let _id: String
     
-    public var description: String {return "User \(identity) #\(_id)\n"}
+    public var description: String {return "\(identity) - #\(_id)\n"}
 
     init(name: String, surname: String?, email: String, photoURL: URL, _id: String) {
         self._id = _id

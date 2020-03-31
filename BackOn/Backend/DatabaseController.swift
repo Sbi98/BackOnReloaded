@@ -11,15 +11,20 @@ import CoreLocation
 import SwiftyJSON
 
 class DatabaseController {
-    // ERRORE! bisogna usare la getMyBonds, anche su zeit, altrimenti non possiamo sapere quando eliminare gli utenti
     static func loadFromServer() {
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
+            var shouldRequestETA = false
+            let now = Date()
             DispatchQueue.main.async {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                let now = Date()
+                if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
+                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
+                }
                 for task in discTasks.values {
                     if task.date > now {
+                        if shouldRequestETA { task.requestETA() }
+                        task.locate()
                         shared.myDiscoverables[task._id] = task
                     }
                 }
@@ -33,49 +38,54 @@ class DatabaseController {
         }
         getMyBonds(){ tasks, requests, users, error in
             guard error == nil, let tasks = tasks, let requests = requests, let users = users else {print(error!);return} //FAI L'ALERT!
+            var shouldRequestETA = false
+            let now = Date()
             DispatchQueue.main.async {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                let now = Date()
                 for taskid in shared.myTasks.keys { //cancella (anche da CoreData) tutti i task non più presenti nella risposta del server
                     if tasks[taskid] == nil {
-                        CoreDataController.deleteTask(task: shared.myTasks[taskid]!,save: false)
+                        CoreDataController.deleteTask(task: shared.myTasks[taskid]!, save: false)
                         shared.myTasks[taskid] = nil
                     }
                 }
                 for requestid in shared.myRequests.keys { //cancella (anche da CoreData) tutte le request non più presenti nella risposta del server
                     if requests[requestid] == nil {
-                        CoreDataController.deleteTask(task: shared.myRequests[requestid]!,save: false)
+                        CoreDataController.deleteTask(task: shared.myRequests[requestid]!, save: false)
                         shared.myRequests[requestid] = nil
                     }
                 }
                 for userid in shared.users.keys { //cancella (anche da CoreData) tutti gli utenti non più presenti nella risposta del server
                     if users[userid] == nil {
-                        CoreDataController.deleteUser(user: shared.users[userid]!,save: false)
+                        CoreDataController.deleteUser(user: shared.users[userid]!, save: false)
                         shared.users[userid] = nil
                     }
                 }
+                if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
+                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
+                }
                 for task in tasks.values {
-//                    print(task)
-                    if task.date > now {
-                        if shared.myTasks[task._id] == nil {
-                            print("added")
-                            shared.myTasks[task._id] = task
-                            CoreDataController.addTask(task: task, save: false)
+                    if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
+                        if shouldRequestETA { task.requestETA() }
+                        MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
+                            guard error == nil, let snapshot = snapshot else {return}
+                            task.mapSnap = snapshot.image
                         }
+                        CoreDataController.addTask(task: task, save: false)
+                        shared.myTasks[task._id] = task
                     }
                 }
                 for request in requests.values {
-                    if request.date < now { // se è una richiesta scaduta
+                    if request.date < now { // se è una richiesta scaduta e non esisteva la aggiunge
                         let corrispondent = shared.myExpiredRequests[request._id]
                         if corrispondent == nil {
-                            shared.myExpiredRequests[request._id] = request
                             CoreDataController.addTask(task: request, save: false)
+                            shared.myExpiredRequests[request._id] = request
                         }
                     } else {
                         let corrispondent = shared.myRequests[request._id]
                         if corrispondent == nil { // se non esisteva la aggiunge
-                            shared.myRequests[request._id] = request
                             CoreDataController.addTask(task: request, save: false)
+                            shared.myRequests[request._id] = request
                         } else {
                             if corrispondent!.helperID != request.helperID { // se esisteva ma l'helper è diverso lo aggiorna
                                 corrispondent!.helperID = request.helperID

@@ -66,6 +66,11 @@ struct DoItButton: View {
                 guard error == nil else {print(error!); return}
                 var user: User?
                 self.task.helperID = CoreDataController.loggedUser!._id
+                MapController.getSnapshot(location: self.task.position.coordinate){ snapshot, error in
+                    guard error == nil, let snapshot = snapshot else {CoreDataController.addTask(task: self.task);return}
+                    self.task.mapSnap = snapshot.image
+                    CoreDataController.addTask(task: self.task)
+                }
                 DispatchQueue.main.sync {
                     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
                     let neederID = self.task.neederID
@@ -76,7 +81,6 @@ struct DoItButton: View {
                     }
                 }
                 self.presentationMode.wrappedValue.dismiss()
-                CoreDataController.addTask(task: self.task)
                 if user != nil {
                     CoreDataController.addUser(user: user!)
                 }
@@ -288,26 +292,3 @@ struct GenericButton: View {
     }
 }
 
-//let locAlert = Alert(
-//    title: Text("Location permission denied"),
-//    message: Text("To let the app work properly, enable location permissions"),
-//    primaryButton: .default(Text("Open settings")) {
-//        if let url = URL(string:UIApplication.openSettingsURLString) {
-//            UIApplication.shared.open(url)
-//        }
-//    },
-//    secondaryButton: .cancel()
-//)
-
-
-//    var externalColor = UIColor.systemGray // #colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)
-//    var internalColor = UIColor.systemGroupedBackground
-//
-//            ZStack{
-//                Image(systemName: "circle.fill")
-//                    .font(.title)
-//                    .foregroundColor(Color(internalColor)).scaleEffect(1.15)
-//                Image(systemName: "xmark.circle.fill")
-//                    .font(.largeTitle)
-//                    .foregroundColor(Color(externalColor))
-//            }

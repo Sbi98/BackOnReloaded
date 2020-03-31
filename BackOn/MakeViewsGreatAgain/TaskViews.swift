@@ -67,23 +67,22 @@ struct TaskPreview: View {
                     .foregroundColor(.secondary)
                     .font(.body)
             }.offset(y: 1)
-        }.padding(12)//.onAppear{self.task.locate()}
+        }.padding(12)
     }
 }
 
 struct TaskView: View {
-    @State var task: Task
     @State var showModal = false
-    @State var mapSnap: Image?
+    @ObservedObject var task: Task
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
 
     var body: some View {
         Button(action: {self.showModal = true}) {
             ZStack (alignment: .bottom){
-                if mapSnap == nil {
-                    Color.orange.frame(width: 320, height: 350)
+                if task.mapSnap == nil {
+                    Image("DefaultMap").resizable().blur(radius: 5).frame(width: 320, height: 350).scaledToFill()
                 } else {
-                    mapSnap
+                    Image(uiImage: task.mapSnap!)
                 }
                 VStack (spacing: 0){
                     ZStack {
@@ -115,10 +114,12 @@ struct TaskView: View {
                 .frame(width: 320, height: 75)
                 .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                 .cornerRadius(10)
-            }.onAppear{
-                MapController.getSnapshot(location: self.task.position.coordinate, width: 320, height: 350){ snapshot, error in
-                    guard error == nil, let snapshot = snapshot else {return}
-                    self.mapSnap = Image(uiImage: snapshot.image)
+            }.onAppear {
+                if self.task.mapSnap == nil {
+                    MapController.getSnapshot(location: self.task.position.coordinate){ snapshot, error in
+                        guard error == nil, let snapshot = snapshot else {return}
+                        self.task.mapSnap = snapshot.image
+                    }
                 }
             }
             .frame(width: 320, height: 350)

@@ -6,6 +6,32 @@
 ////  Copyright © 2020 Vincenzo Riccio. All rights reserved.
 ////
 //
+
+
+//let locAlert = Alert(
+//    title: Text("Location permission denied"),
+//    message: Text("To let the app work properly, enable location permissions"),
+//    primaryButton: .default(Text("Open settings")) {
+//        if let url = URL(string:UIApplication.openSettingsURLString) {
+//            UIApplication.shared.open(url)
+//        }
+//    },
+//    secondaryButton: .cancel()
+//)
+
+
+//    var externalColor = UIColor.systemGray // #colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)
+//    var internalColor = UIColor.systemGroupedBackground
+//
+//            ZStack{
+//                Image(systemName: "circle.fill")
+//                    .font(.title)
+//                    .foregroundColor(Color(internalColor)).scaleEffect(1.15)
+//                Image(systemName: "xmark.circle.fill")
+//                    .font(.largeTitle)
+//                    .foregroundColor(Color(externalColor))
+//            }
+
 //import SwiftUI
 //
 //struct CommitmentView: View {
