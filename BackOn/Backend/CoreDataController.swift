@@ -39,24 +39,20 @@ class CoreDataController {
             DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.users[user._id] = user}
         }
         for task in cachedTasks {
-            if task.helperID == nil {
-                if task.neederID == loggedUser!._id {
-                    if task.date < today {
-                        if task.date < today.advanced(by: -259200) {
-                            deleteTask(task: task, save: false)
-                        } else {
-                            if task.address == "Locating..." {task.locate()}
-                            DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredRequests[task._id] = task}
-                        }
+            if task.neederID == loggedUser!._id { // è una mia request
+                if task.date < today {
+                    if task.date < today.advanced(by: -259200) {
+                        deleteTask(task: task, save: false)
                     } else {
                         if task.address == "Locating..." {task.locate()}
-                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myRequests[task._id] = task}
+                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredRequests[task._id] = task}
                     }
                 } else {
-                    print("\nloadInShared: inconsistent state for \(task)\nMaybe you are trying to add a discoverable!\n")
+                    if task.address == "Locating..." {task.locate()}
+                    DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myRequests[task._id] = task}
                 }
             } else {
-                if task.helperID == loggedUser!._id {
+                if task.helperID == loggedUser!._id { // è un mio task
                     if task.date > today {
                         DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myTasks[task._id] = task}
                         if task.address == "Locating..." {task.locate()}
@@ -70,7 +66,8 @@ class CoreDataController {
                         deleteTask(task: task, save: false)
                     }
                 } else {
-                    print("\nloadInShared: inconsistent state for \(task)\nMaybe you are adding a task with a helperUser that isn't you!\n")
+                    print("\nloadInShared - inconsistent state for\n\(task)\n")
+                    deleteTask(task: task, save: false)
                 }
             }
         }

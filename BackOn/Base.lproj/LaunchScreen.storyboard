@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -12,11 +12,11 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" opaque="NO" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Icon" translatesAutoresizingMaskIntoConstraints="NO" id="jS9-Hq-CA3">
-                                <rect key="frame" x="90" y="332" width="234" height="232"/>
+                            <imageView opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Icon" translatesAutoresizingMaskIntoConstraints="NO" id="jS9-Hq-CA3">
+                                <rect key="frame" x="84" y="302.66666666666669" width="207" height="207"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.95027321580000002" green="0.61477535959999996" blue="0.27340066429999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -24,8 +24,6 @@
                         <constraints>
                             <constraint firstItem="jS9-Hq-CA3" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="2MD-OU-47r"/>
                             <constraint firstItem="jS9-Hq-CA3" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Jm0-IV-5Yx"/>
-                            <constraint firstItem="jS9-Hq-CA3" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="288" id="QO3-pp-U1j"/>
-                            <constraint firstItem="jS9-Hq-CA3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="90" id="aJ4-fo-vg9"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -36,6 +34,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Icon" width="310.5" height="310.5"/>
+        <image name="Icon" width="207" height="207"/>
     </resources>
 </document>

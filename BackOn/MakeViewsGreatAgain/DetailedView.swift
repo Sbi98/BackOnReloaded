@@ -58,22 +58,25 @@ struct DetailedView: View {
                 }
                 
                 HStack {
-                    Spacer()
                     if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
                         DirectionsButton(selectedTask: selectedTask)
+                        Spacer()
                         DoItButton(task: selectedTask)
                     } else if requiredBy == .RequestViews {
-                        if(selectedTask.isExpired()){
+                        if selectedTask.isExpired() {
                             ThankButton(task: selectedTask)
+                            Spacer()
                             ReportButton(task: selectedTask)
                         } else {
+                            Spacer()
                             DontNeedAnymoreButton(request: selectedTask)
+                            Spacer()
                         }
                     } else {
                         DirectionsButton(selectedTask: selectedTask)
+                        Spacer()
                         CantDoItButton(task: selectedTask)
                     }
-                    Spacer()
                 }.padding(.horizontal)
                 
                 VStack(alignment: .leading, spacing: 5) { //Address section

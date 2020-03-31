@@ -94,7 +94,7 @@ struct CantDoItButton: View {
     let task: Task
     var body: some View {
         GenericButton(
-            isFilled: false,
+            isFilled: true,
             topText: "Can't do it"
         ) {
             DatabaseController.removeTask(taskid: self.task._id){ error in
@@ -253,7 +253,6 @@ struct DirectionsButton: View {
                         .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
             }
-            .padding()
             .frame(width: defaultButtonDimensions.width, height: defaultButtonDimensions.height)
             .background(isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
@@ -284,7 +283,6 @@ struct GenericButton: View {
                         .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
             }
-            .padding()
             .frame(width: isLarge ? dimensions.width*2 : dimensions.width, height: dimensions.height)
             .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
