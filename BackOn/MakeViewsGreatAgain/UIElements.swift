@@ -61,6 +61,8 @@ struct DoItButton: View {
             isFilled: true,
             topText: "I'll do it"
         ) {
+            let neederID = self.task.neederID
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             DatabaseController.addTask(toAccept: self.task){ error in
                 guard error == nil else {print(error!); return}
                 var user: User?
@@ -72,14 +74,12 @@ struct DoItButton: View {
                 }
                 DispatchQueue.main.sync {
                     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                    let neederID = self.task.neederID
                     shared.myTasks[self.task._id] = self.task
                     user = shared.discUsers[neederID]
                     if shared.users[neederID] == nil {
                         shared.users[neederID] = user
                     }
                 }
-                self.presentationMode.wrappedValue.dismiss()
                 if user != nil {
                     CoreDataController.addUser(user: user!)
                 }
@@ -96,12 +96,12 @@ struct CantDoItButton: View {
             isFilled: true,
             topText: "Can't do it"
         ) {
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             DatabaseController.removeTask(taskid: self.task._id){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
                     (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil
                 }
-                self.presentationMode.wrappedValue.dismiss()
                 CoreDataController.deleteTask(task: self.task)
             }
         }
@@ -117,12 +117,12 @@ struct DontNeedAnymoreButton: View {
             isLarge: true,
             topText: "Don't need anymore"
         ) {
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             DatabaseController.removeRequest(requestid: self.request._id){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
                     (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil
                 }
-                self.presentationMode.wrappedValue.dismiss()
                 CoreDataController.deleteTask(task: self.request)
             }
         }

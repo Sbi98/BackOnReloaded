@@ -67,6 +67,7 @@ struct AddNeedView: View {
                 HStack {
                     Spacer()
                     ConfirmAddNeedButton(){
+                        DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
                         MapController.addressToCoordinates(self.address) { result, error in
                             guard error == nil, let result = result else {return}
                             DatabaseController.addRequest(
@@ -75,10 +76,7 @@ struct AddNeedView: View {
                                 date: self.selectedDate, coordinates: result
                             ){ newRequest, error in
                                 guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
-                                DispatchQueue.main.async {
-                                    self.shared.myRequests[request._id] = request
-                                    self.presentationMode.wrappedValue.dismiss()
-                                }
+                                DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
                                 CoreDataController.addTask(task: request)
                             }
                         }
