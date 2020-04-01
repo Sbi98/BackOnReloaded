@@ -58,7 +58,7 @@ class CoreDataController {
                         if task.address == "Locating..." {task.locate()}
                         if task.mapSnap == nil {
                             MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
-                                guard error == nil, let snapshot = snapshot else {return}
+                                guard error == nil, let snapshot = snapshot else {print("Error while getting snapshot in loadInShared");return}
                                 task.mapSnap = snapshot.image
                             }
                         }

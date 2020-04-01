@@ -23,8 +23,7 @@ class MapController {
         let region = MKCoordinateRegion(center: location, span: mapSpan)
         mapSnapshotOptions.region = region
         mapSnapshotOptions.size = CGSize(width: width, height: height)
-        let snapShotter = MKMapSnapshotter(options: mapSnapshotOptions)
-        snapShotter.start { (snapshot:MKMapSnapshotter.Snapshot?, error:Error?) in
+        MKMapSnapshotter(options: mapSnapshotOptions).start { (snapshot:MKMapSnapshotter.Snapshot?, error:Error?) in
             completion(snapshot,error?.localizedDescription)
         }
     }

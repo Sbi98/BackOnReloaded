@@ -67,7 +67,7 @@ class DatabaseController {
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
                         if shouldRequestETA { task.requestETA() }
                         MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
-                            guard error == nil, let snapshot = snapshot else {return}
+                            guard error == nil, let snapshot = snapshot else {print("Error while getting snapshot in getMyBonds");return}
                             task.mapSnap = snapshot.image
                         }
                         CoreDataController.addTask(task: task, save: false)

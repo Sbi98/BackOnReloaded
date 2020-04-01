@@ -8,22 +8,6 @@
 
 import SwiftUI
 
-/*
-@State var rating = -1
-
-HStack(alignment: .center, spacing: 10, content: {
-    ForEach(0..<5){ i in
-        Image(systemName: "star.fill")
-            .resizable()
-            .frame(width: 35, height: 35)
-            .foregroundColor(self.rating < i ? .gray : .yellow)
-            .onTapGesture {
-                self.rating = i
-        }
-    }
-})
-*/
-
 struct TaskPreview: View {
     let mode: RequiredBy
     @ObservedObject var task: Task
@@ -84,7 +68,7 @@ struct TaskView: View {
                 if task.mapSnap == nil {
                     Image("DefaultMap").resizable().blur(radius: 5).frame(width: 320, height: 350).scaledToFill()
                 } else {
-                    Image(uiImage: task.mapSnap!)
+                    Image(uiImage: task.mapSnap!).resizable().frame(width: 320, height: 350).scaledToFill()
                 }
                 VStack (spacing: 0){
                     ZStack {
@@ -116,13 +100,6 @@ struct TaskView: View {
                 .frame(width: 320, height: 75)
                 .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                 .cornerRadius(10)
-            }.onAppear {
-                if self.task.mapSnap == nil {
-                    MapController.getSnapshot(location: self.task.position.coordinate){ snapshot, error in
-                        guard error == nil, let snapshot = snapshot else {return}
-                        self.task.mapSnap = snapshot.image
-                    }
-                }
             }
             .frame(width: 320, height: 350)
             .cornerRadius(10)
