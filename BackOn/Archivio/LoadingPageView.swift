@@ -70,4 +70,18 @@ struct ActivityIndicator: UIViewRepresentable {
 //}
 
 
+ //
+ //struct GoogleButton: UIViewRepresentable {
+ //
+ //    func makeUIView(context: UIViewRepresentableContext<GoogleButton>) -> GIDSignInButton {
+ //        let button = GIDSignInButton()
+ //        button.colorScheme = .light
+ //        button.style = .wide
+ //        GIDSignIn.sharedInstance()?.presentingViewController = UIApplication.shared.windows.first?.rootViewController
+ //        return button
+ //    }
+ //
+ //    func updateUIView(_ uiView: GIDSignInButton, context: UIViewRepresentableContext<GoogleButton>) {}
+ //}
+ 
 */

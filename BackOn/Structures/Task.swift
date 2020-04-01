@@ -54,8 +54,8 @@ class Task: ObservableObject, CustomStringConvertible {
         request.transportType = .walking
         let directions = MKDirections(request: request)
         directions.calculateETA { (res, error) in
-            guard error == nil else {print("Error while getting ETA");return}
-            let eta = res!.expectedTravelTime
+            guard error == nil, let res = res else {print("Error while getting ETA");return}
+            let eta = res.expectedTravelTime
             let hour = eta>7200 ? "hrs" : "hr"
             if eta > 3600 {
                 self.etaText = "\(Int(eta/3600)) \(hour) \(Int((Int(eta)%3600)/60)) min"

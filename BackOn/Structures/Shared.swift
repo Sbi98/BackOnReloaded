@@ -21,7 +21,7 @@ class Shared: ObservableObject {
 
     func requestTasksETA() {
         for task in myTasks.values {
-            if task.etaText != "Calculating..." {
+            if task.etaText == "Calculating..." {
                 task.requestETA()
             }
         }
@@ -29,7 +29,7 @@ class Shared: ObservableObject {
     
     func requestDiscoverablesETA() {
         for task in myDiscoverables.values {
-            if task.etaText != "Calculating..." {
+            if task.etaText == "Calculating..." {
                 task.requestETA()
             }
         }

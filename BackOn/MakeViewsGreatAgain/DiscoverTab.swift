@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 import MapKit
 
 struct FullDiscoverView: View {
@@ -30,7 +31,7 @@ struct FullDiscoverView: View {
                 Spacer()
             } else {
                 if discoverTabController.mapMode {
-                    MapView(mode: .AroundYouMap)
+                    discoverTabController.aroundYouMap == nil ? MapView(mode: .AroundYouMap) : discoverTabController.aroundYouMap
                 } else {
                     ListView(mode: .DiscoverableViews)
                 }
@@ -60,6 +61,7 @@ class DiscoverTabController: ObservableObject {
     @Published var showModal = false
     @Published var selectedTask: Task?
     @Published var baseMKMap: MKMapView?
+    @Published var aroundYouMap: MapView?
     @Published var mapMode = true {
         didSet {
             if oldValue == true && self.mapMode == false {

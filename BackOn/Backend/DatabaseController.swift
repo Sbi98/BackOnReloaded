@@ -16,25 +16,25 @@ class DatabaseController {
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
             var shouldRequestETA = false
             let now = Date()
-            DispatchQueue.main.async {
-                let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
-                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
+            if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
+                shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
+            }
+            for task in discTasks.values {
+                if task.date > now {
+                    if shouldRequestETA { task.requestETA() }
+                    task.locate()
+                    DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables[task._id] = task }
                 }
-                for task in discTasks.values {
-                    if task.date > now {
-                        if shouldRequestETA { task.requestETA() }
-                        task.locate()
-                        shared.myDiscoverables[task._id] = task
-                    }
-                }
-                for user in discUsers.values {
+            }
+            for user in discUsers.values {
+                DispatchQueue.main.async {
+                    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
                     if shared.discUsers[user._id] == nil {
                         shared.discUsers[user._id] = user
                     }
                 }
-                print("*** DB - discover finished ***")
             }
+            print("*** DB - discover finished ***")
         }
         getMyBonds(){ tasks, requests, users, error in
             guard error == nil, let tasks = tasks, let requests = requests, let users = users else {print(error!);return} //FAI L'ALERT!

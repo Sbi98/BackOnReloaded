@@ -10,91 +10,74 @@ import SwiftUI
 import UIKit
 import MapKit
 
+class MapCoordinator: NSObject, MKMapViewDelegate {
+    let mode: RequiredBy
+    let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
+    
+    init(mode: RequiredBy) {
+        self.mode = mode
+    }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.strokeColor = UIScreen.main.traitCollection.userInterfaceStyle != .dark ? #colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 1) : #colorLiteral(red: 0.2057153285, green: 0.5236110687, blue: 0.8851857781, alpha: 1)
+        renderer.lineWidth = 6.0
+        return renderer
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation.isKind(of: TaskAnnotation.self) {
+            let view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
+            view.canShowCallout = false
+            view.displayPriority = .required
+            return view
+        }
+        if annotation.isKind(of: MKPointAnnotation.self) {
+            let view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: nil)
+            view.canShowCallout = true
+            view.displayPriority = .required
+            view.pinTintColor = .systemBlue
+            return view
+        }
+        return nil
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard mode == .AroundYouMap else {return}
+        guard view.annotation!.isKind(of: TaskAnnotation.self) else {return}
+        discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
+    }
+    
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        guard mode == .AroundYouMap else {return}
+        guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
+        discoverTabController.closeSheet()
+    }
+    
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+        guard let location = userLocation.location else { return }
+        if location.horizontalAccuracy < 35.0 {
+            let myLocation = MKPointAnnotation()
+            myLocation.coordinate = location.coordinate
+            myLocation.title = "You"
+            mapView.addAnnotation(myLocation)
+            mapView.showsUserLocation = false
+        }
+    }
+    
+}
+
 struct MapView: UIViewRepresentable {
     let mode: RequiredBy
     var selectedTask: Task?
-    let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     
-    class TaskAnnotation: NSObject, MKAnnotation {
-        var task: Task
-        // This property must be key-value observable, which the `@objc dynamic` attributes provide.
-        @objc dynamic var coordinate: CLLocationCoordinate2D
-        var title: String?
-        var subtitle: String?
-        init(task: Task) {
-            self.task = task
-            self.coordinate = task.position.coordinate
-            super.init()
-        }
+    func makeCoordinator() -> MapCoordinator {
+        MapCoordinator(mode: mode)
     }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, MKMapViewDelegate {
-        var parent: MapView
-        
-        init(_ parent: MapView) {
-            self.parent = parent
-        }
-        
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            let renderer = MKPolylineRenderer(overlay: overlay)
-            renderer.strokeColor = UIScreen.main.traitCollection.userInterfaceStyle != .dark ? #colorLiteral(red: 0, green: 0.6529515386, blue: 1, alpha: 1) : #colorLiteral(red: 0.2057153285, green: 0.5236110687, blue: 0.8851857781, alpha: 1)
-            renderer.lineWidth = 6.0
-            return renderer
-        }
-        
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            if annotation.isKind(of: TaskAnnotation.self) {
-                let view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
-                view.canShowCallout = false
-                view.displayPriority = .required
-                return view
-            }
-            if annotation.isKind(of: MKPointAnnotation.self) {
-                let view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: nil)
-                view.canShowCallout = true
-                view.displayPriority = .required
-                view.pinTintColor = .systemBlue
-                return view
-            }
-            return nil
-        }
-        
-        func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-            print("prima primo guard")
-            guard parent.mode == .AroundYouMap else {return}
-            print("dopo primo guard")
-            guard view.annotation!.isKind(of: TaskAnnotation.self) else {return}
-            print("dopo guard")
-            parent.discoverTabController.showSheet(task: (view.annotation! as! TaskAnnotation).task)
-        }
-        
-        func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-            guard parent.mode == .AroundYouMap else {return}
-            guard !view.annotation!.isKind(of: MKUserLocation.self) else {return}
-            parent.discoverTabController.closeSheet()
-        }
-        
-        func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-            guard let location = userLocation.location else { return }
-            if location.horizontalAccuracy < 35.0 {
-                let myLocation = MKPointAnnotation()
-                myLocation.coordinate = location.coordinate
-                myLocation.title = "You"
-                mapView.addAnnotation(myLocation)
-                mapView.showsUserLocation = false
-            }
-        }
-        
-    }
-    
     
     func makeUIView(context: Context) -> MKMapView {
         let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-
+        let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
         let mapView = MKMapView(frame: UIScreen.main.bounds)
         let mapSpan = MKCoordinateSpan(latitudeDelta: 0.007, longitudeDelta: 0.007)
         mapView.delegate = context.coordinator
@@ -116,9 +99,8 @@ struct MapView: UIViewRepresentable {
             addRoute(mapView: mapView)
             return mapView
         case .AroundYouMap:
-            guard discoverTabController.baseMKMap == nil else { return discoverTabController.baseMKMap! }
-            for (_, discoverableTask) in (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables {
-                mapView.addAnnotation(generateAnnotation(discoverableTask, title: shared.discUsers[discoverableTask.neederID]?.name ?? "Needer with bad id"))
+            for discoverable in shared.myDiscoverables.values {
+                mapView.addAnnotation(generateAnnotation(discoverable, title: shared.discUsers[discoverable.neederID]?.name ?? "Needer with bad id"))
             }
             if let lastLocation = MapController.lastLocation {
                 mapView.setRegion(MKCoordinateRegion(center: lastLocation.coordinate, span: mapSpan), animated: true)
@@ -159,21 +141,30 @@ struct MapView: UIViewRepresentable {
     }
 }
 
+class TaskAnnotation: NSObject, MKAnnotation {
+    @ObservedObject var task: Task
+    // This property must be key-value observable, which the `@objc dynamic` attributes provide.
+    @objc dynamic var coordinate: CLLocationCoordinate2D
+    var title: String?
+    var subtitle: String?
+    init(task: Task) {
+        self.task = task
+        self.coordinate = task.position.coordinate
+        super.init()
+    }
+}
 
 struct SearchBar : UIViewRepresentable {
     @Binding var text : String
     
     class Coordinator : NSObject, UISearchBarDelegate {
         @Binding var text : String
-        
         init(_ text : Binding<String>) {
             _text = text
         }
-        
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             text = searchText
         }
-        
         func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
             searchBar.endEditing(true)
         }

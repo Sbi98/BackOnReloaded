@@ -36,10 +36,9 @@ struct CloseButton: View {
 }
 
 struct ConfirmAddNeedButton: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     var action: () -> Void
     var body: some View {
-        Button(action: {self.action();self.presentationMode.wrappedValue.dismiss()}) {
+        Button(action: {self.action()}) {
             HStack{
                 Text("Confirm ")
                 Image(systemName: "hand.thumbsup")
@@ -258,7 +257,6 @@ struct DirectionsButton: View {
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
     }
-    
 }
 
 struct GenericButton: View {

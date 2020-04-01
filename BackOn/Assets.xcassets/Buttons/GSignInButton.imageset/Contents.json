@@ -1,21 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "GSignInButton.png",
       "idiom" : "universal",
-      "filename" : "tim.png",
       "scale" : "1x"
     },
     {
+      "filename" : "GSignInButton-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "GSignInButton-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

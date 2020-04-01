@@ -18,36 +18,35 @@ struct LoginPageView: View {
                 .font(.title)
                 .padding([.top, .bottom], 40)
             
-            Image("iosapptemplate")
+            Image("Icon")
                 .resizable()
                 .frame(width: 250, height: 250)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.white, lineWidth: 4))
                 .shadow(radius: 10)
-            
             Spacer()
-            GoogleButton()
-                .frame(width: 200, height: 30, alignment: .center)
+            GoogleButton2()
             Spacer()
         }
         .frame(width: UIScreen.main.bounds.width)
         .offset(y: 50)
-        .background(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .top, endPoint: .bottom))
+        .background(Color(#colorLiteral(red: 0.9502732158, green: 0.6147753596, blue: 0.2734006643, alpha: 1)))
         .edgesIgnoringSafeArea(.all)
     }
 }
 
-
-struct GoogleButton: UIViewRepresentable {
-    
-    func makeUIView(context: UIViewRepresentableContext<GoogleButton>) -> GIDSignInButton {
-        let button = GIDSignInButton()
-        button.colorScheme = .light
-        GIDSignIn.sharedInstance()?.presentingViewController = UIApplication.shared.windows.last?.rootViewController
-        
-        return button
-    }
-    
-    func updateUIView(_ uiView: GIDSignInButton, context: UIViewRepresentableContext<GoogleButton>) {
+struct GoogleButton2: View {
+    var body: some View {
+        Button(action: {GIDSignIn.sharedInstance()?.presentingViewController = UIApplication.shared.windows.first?.rootViewController; GIDSignIn.sharedInstance()?.signIn()}) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 30).fill(Color(.white)).frame(width: 280, height: 60, alignment: .center)
+                HStack (spacing: 20){
+                    Image("GIcon").resizable().renderingMode(.original).scaledToFit()
+                    Text("Sign in with Google").foregroundColor(.black)
+                }.frame(width: 280, height: 30, alignment: .center)
+                
+            }
+            
+        }
     }
 }

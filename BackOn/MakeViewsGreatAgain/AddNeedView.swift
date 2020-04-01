@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddNeedView: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
     @State var showTitlePicker = false
@@ -28,7 +29,7 @@ struct AddNeedView: View {
                     Text("Title: ")
                         .foregroundColor(Color(.systemBlue))
                     Text(titlePickerValue == -1 ? "Click to select your need" : titles[titlePickerValue])
-                        .onTapGesture {self.titlePickerValue = 0;withAnimation{self.showTitlePicker.toggle()}}
+                        .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}}
                 }
                 HStack {
                     Text("Description: ")
@@ -73,9 +74,12 @@ struct AddNeedView: View {
                                 description: self.needDescription == "" ? nil : self.needDescription,
                                 date: self.selectedDate, coordinates: result
                             ){ newRequest, error in
-                                guard error == nil else {print(error!); return}
-                                self.shared.myRequests[newRequest!._id] = newRequest!
-                                CoreDataController.addTask(task: newRequest!)
+                                guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
+                                DispatchQueue.main.async {
+                                    self.shared.myRequests[request._id] = request
+                                    self.presentationMode.wrappedValue.dismiss()
+                                }
+                                CoreDataController.addTask(task: request)
                             }
                         }
                     }
