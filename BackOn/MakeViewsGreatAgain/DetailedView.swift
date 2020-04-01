@@ -19,12 +19,19 @@ struct DetailedView: View {
             HStack {
                 if requiredBy == .RequestViews {
                     Avatar(image: selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]?.profilePic)
+                } else if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
+                    Avatar(image: self.shared.discUsers[selectedTask.neederID]?.profilePic)
                 } else {
                     Avatar(image: self.shared.users[selectedTask.neederID]?.profilePic)
                 }
                 VStack(alignment: .leading){
                     if requiredBy == .RequestViews {
                         Text(selectedTask.helperID == nil ? "Nobody accepted" : self.shared.users[selectedTask.helperID!]?.identity ?? "Helper with bad id")
+                            .fontWeight(.medium)
+                            .font(.title)
+                            .animation(.easeOut(duration: 0))
+                    } else if requiredBy == .DiscoverableViews  || requiredBy == .AroundYouMap {
+                        Text(self.shared.discUsers[selectedTask.neederID]?.identity ?? "Needer with bad id")
                             .fontWeight(.medium)
                             .font(.title)
                             .animation(.easeOut(duration: 0))

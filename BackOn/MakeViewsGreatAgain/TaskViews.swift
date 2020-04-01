@@ -34,6 +34,8 @@ struct TaskPreview: View {
             HStack {
                 if mode == .RequestViews {
                     Avatar(image: task.helperID == nil ? nil : self.shared.users[task.helperID!]?.profilePic)
+                } else if mode == .DiscoverableViews {
+                    Avatar(image: self.shared.discUsers[task.neederID]?.profilePic)
                 } else {
                     Avatar(image: self.shared.users[task.neederID]?.profilePic)
                 }
