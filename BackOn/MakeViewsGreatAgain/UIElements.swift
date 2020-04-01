@@ -79,6 +79,7 @@ struct DoItButton: View {
                     if shared.users[neederID] == nil {
                         shared.users[neederID] = user
                     }
+                    shared.myDiscoverables[self.task._id] = nil
                 }
                 if user != nil {
                     CoreDataController.addUser(user: user!)
