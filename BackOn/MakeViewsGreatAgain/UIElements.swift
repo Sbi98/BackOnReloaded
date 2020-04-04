@@ -84,6 +84,7 @@ struct DoItButton: View {
                 if user != nil {
                     CoreDataController.addUser(user: user!)
                 }
+                let _ = CalendarController.addTask(task: self.task, needer: user!)
             }
         }
     }
@@ -105,6 +106,7 @@ struct CantDoItButton: View {
                 }
                 CoreDataController.deleteTask(task: self.task)
             }
+            let _ = CalendarController.removeTask(task: self.task)
         }
     }
 }

@@ -11,7 +11,7 @@ import EventKit
 class CalendarController {
     static var eventStore = EKEventStore()
     static var destCalendar: EKCalendar?
-    static var authorized = true
+    static var authorized = false
     
     static func initController() {
         switch EKEventStore.authorizationStatus(for: .event) {
@@ -38,7 +38,7 @@ class CalendarController {
         }
     }
     
-    static fileprivate func initCalendar() {
+    static private func initCalendar() {
         let calendars = eventStore.calendars(for: .event)
         for calendar in calendars {
             if calendar.title == "BackOn Tasks" {
@@ -55,25 +55,43 @@ class CalendarController {
         }
     }
     
-    static func addEvent(title: String, startDate: Date, endDate: Date?, relativeAlarmTime: TimeInterval = -60) {
-        if authorized {
-            let event = EKEvent(eventStore: eventStore)
-            event.title = title
-            event.startDate = startDate
-            event.endDate = endDate ?? startDate
-            event.addAlarm(EKAlarm(relativeOffset: relativeAlarmTime))
-            event.calendar = destCalendar!
-            do {
-                try eventStore.save(event, span: .thisEvent)
-            } catch {print(error.localizedDescription)}
-        } else {
-            print("Impossibile aggiungere un evento! Non sei autorizzato")
-        }
+    static func addTask(task: Task, needer: User) -> Bool {
+        return addEvent(title: "Help \(needer.name) with \(task.title)", startDate: task.date, notes: task._id)
     }
     
-    static func isNotBusy(when date: Date) -> Bool {
-        let predicate = eventStore.predicateForEvents(withStart: date, end: date.addingTimeInterval(3600), calendars: nil)
+    static func removeTask(task: Task) -> Bool {
+        let predicate = eventStore.predicateForEvents(withStart: task.date, end: task.date.addingTimeInterval(1800), calendars: [destCalendar!])
         let events = eventStore.events(matching: predicate)
-        return events.isEmpty
+        for event in events {
+            if let note = event.notes, note == task._id {
+                do {
+                    try eventStore.remove(event, span: .thisEvent)
+                    return true
+                } catch {print("Error while removing the event from the calendar"); return false}
+            }
+        }
+        print("No event matching the taskID")
+        return false
+    }
+    
+    static func addEvent(title: String, startDate: Date, endDate: Date? = nil, relativeAlarmTime: TimeInterval = -60, notes: String? = nil) -> Bool {
+        guard authorized else {print("You don't have the permission to add an event"); return false}
+        let event = EKEvent(eventStore: eventStore)
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate ?? startDate
+        event.notes = notes
+        event.addAlarm(EKAlarm(relativeOffset: relativeAlarmTime))
+        event.calendar = destCalendar!
+        do {
+            try eventStore.save(event, span: .thisEvent)
+            return true
+        } catch {print(error.localizedDescription); return false}
+    }
+    
+    static func isBusy(when date: Date) -> Bool { //controlla che non ho impegni in mezzora
+        let predicate = eventStore.predicateForEvents(withStart: date, end: date.addingTimeInterval(1800), calendars: nil)
+        let events = eventStore.events(matching: predicate)
+        return !events.isEmpty
     }
 }
