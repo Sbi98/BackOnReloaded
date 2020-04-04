@@ -50,7 +50,7 @@ struct RequestRow: View {
 
 struct RequestView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @State var request: Task
+    @State var request: Request
     @State var showModal = false
     
     var body: some View {
@@ -87,10 +87,6 @@ struct RequestView: View {
 }
 
 struct RequestsListView: View {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @State var selectedTask: Task?
-    @State var showModal = false
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Button(action: {withAnimation{HomeView.show()}}) {

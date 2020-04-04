@@ -159,11 +159,7 @@ struct TaskRow: View {
     }
 }
 
-struct TasksListView: View {
-    @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @State var selectedTask: Task?
-    @State var showModal = false
-    
+struct TasksListView: View {    
     var body: some View {
         VStack (alignment: .leading, spacing: 10){
             Button(action: {withAnimation{HomeView.show()}}) {

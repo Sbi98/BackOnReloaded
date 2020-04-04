@@ -59,11 +59,11 @@ class CalendarController {
         return addEvent(title: "Help \(needer.name) with \(task.title)", startDate: task.date, notes: task._id)
     }
     
-    static func addRequest(request: Task) -> Bool {
+    static func addRequest(request: Request) -> Bool {
         return addEvent(title: "You requested help with \(request.title)", startDate: request.date, notes: request._id)
     }
     
-    static func removeTask(task: Task) -> Bool {
+    static func remove(_ task: Task) -> Bool {
         let predicate = eventStore.predicateForEvents(withStart: task.date, end: task.date.addingTimeInterval(120), calendars: [destCalendar!])
         let events = eventStore.events(matching: predicate)
         for event in events {

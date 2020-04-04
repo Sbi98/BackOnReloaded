@@ -106,7 +106,7 @@ struct CantDoItButton: View {
                 }
                 CoreDataController.deleteTask(task: self.task)
             }
-            let _ = CalendarController.removeTask(task: self.task)
+            let _ = CalendarController.remove(self.task)
         }
     }
 }
@@ -127,7 +127,7 @@ struct DontNeedAnymoreButton: View {
                     (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil
                 }
                 CoreDataController.deleteTask(task: self.request)
-                let _ = CalendarController.removeTask(task: self.request)
+                let _ = CalendarController.remove(self.request)
             }
         }
     }
