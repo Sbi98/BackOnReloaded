@@ -78,6 +78,7 @@ struct AddNeedView: View {
                                 guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
                                 DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
                                 CoreDataController.addTask(task: request)
+                                let _ = CalendarController.addRequest(request: request)
                             }
                         }
                     }

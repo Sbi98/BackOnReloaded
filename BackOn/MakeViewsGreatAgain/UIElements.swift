@@ -127,6 +127,7 @@ struct DontNeedAnymoreButton: View {
                     (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil
                 }
                 CoreDataController.deleteTask(task: self.request)
+                let _ = CalendarController.removeTask(task: self.request)
             }
         }
     }

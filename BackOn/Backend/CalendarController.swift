@@ -59,8 +59,12 @@ class CalendarController {
         return addEvent(title: "Help \(needer.name) with \(task.title)", startDate: task.date, notes: task._id)
     }
     
+    static func addRequest(request: Task) -> Bool {
+        return addEvent(title: "You requested help with \(request.title)", startDate: request.date, notes: request._id)
+    }
+    
     static func removeTask(task: Task) -> Bool {
-        let predicate = eventStore.predicateForEvents(withStart: task.date, end: task.date.addingTimeInterval(1800), calendars: [destCalendar!])
+        let predicate = eventStore.predicateForEvents(withStart: task.date, end: task.date.addingTimeInterval(120), calendars: [destCalendar!])
         let events = eventStore.events(matching: predicate)
         for event in events {
             if let note = event.notes, note == task._id {
@@ -89,8 +93,8 @@ class CalendarController {
         } catch {print(error.localizedDescription); return false}
     }
     
-    static func isBusy(when date: Date) -> Bool { //controlla che non ho impegni in mezzora
-        let predicate = eventStore.predicateForEvents(withStart: date, end: date.addingTimeInterval(1800), calendars: nil)
+    static func isBusy(when date: Date) -> Bool { //controlla che non ho impegni in [data-10min:data+10min]
+        let predicate = eventStore.predicateForEvents(withStart: date.addingTimeInterval(-600), end: date.addingTimeInterval(600), calendars: nil)
         let events = eventStore.events(matching: predicate)
         return !events.isEmpty
     }
