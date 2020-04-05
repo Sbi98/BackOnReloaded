@@ -93,8 +93,13 @@ struct MapView: UIViewRepresentable {
             mapView.addAnnotation(generateAnnotation(selectedTask!, title: "Your request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             return mapView
-        case .TaskViews, .DiscoverableViews:
+        case .TaskViews:
             mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(shared.users[selectedTask!.neederID]?.name ?? "Needer with bad id")'s request"))
+            mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
+            addRoute(mapView: mapView)
+            return mapView
+        case .DiscoverableViews:
+            mapView.addAnnotation(generateAnnotation(selectedTask!, title: "\(shared.discUsers[selectedTask!.neederID]?.name ?? "Needer with bad id")'s request"))
             mapView.setRegion(MKCoordinateRegion(center:selectedTask!.position.coordinate, span: mapSpan), animated: true)
             addRoute(mapView: mapView)
             return mapView

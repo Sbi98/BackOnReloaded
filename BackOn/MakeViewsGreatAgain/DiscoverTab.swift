@@ -27,7 +27,7 @@ struct FullDiscoverView: View {
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
             if shared.myDiscoverables.isEmpty {
                 Spacer()
-                Text("Loading from server")
+                Text("There's nothing around you")
                 Spacer()
             } else {
                 if discoverTabController.mapMode {
