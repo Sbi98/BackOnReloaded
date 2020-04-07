@@ -71,9 +71,15 @@ struct DetailedView: View {
                         DoItButton(task: selectedTask)
                     } else if requiredBy == .RequestViews {
                         if selectedTask.isExpired() {
-                            ThankButton(task: selectedTask)
-                            Spacer()
-                            ReportButton(task: selectedTask)
+                            if selectedTask.helperID == nil {
+                                Spacer()
+                                AskAgainButton(request: selectedTask)
+                                Spacer()
+                            }else{
+                                ThankButton(task: selectedTask)
+                                Spacer()
+                                ReportButton(task: selectedTask)
+                            }
                         } else {
                             Spacer()
                             DontNeedAnymoreButton(request: selectedTask)
