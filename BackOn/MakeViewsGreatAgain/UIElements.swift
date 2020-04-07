@@ -75,6 +75,7 @@ struct DoItButton: View {
 
 struct CantDoItButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     let task: Task
     var body: some View {
         GenericButton(
@@ -111,6 +112,25 @@ struct DontNeedAnymoreButton: View {
         }
     }
 }
+
+struct AskAgainButton: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+    @State var showModal = false
+    let request: Task
+    var body: some View {
+        GenericButton(
+            isFilled: true,
+            isLarge: true,
+            topText: "Ask again"
+        ) {
+            self.showModal = true
+            
+        }.sheet(isPresented: $showModal){AddNeedView(nestedPresentationMode: self.presentationMode, titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address)}
+            
+        }
+    }
+
 
 struct ThankButton: View {
     let toReport: String

@@ -37,7 +37,7 @@ struct RequestRow: View {
                 }.buttonStyle(PlainButtonStyle())
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        ForEach(shared.requestsArray(), id: \._id) { currentRequest in
+                        ForEach(shared.arrayFromSet(mode: .RequestViews), id: \._id) { currentRequest in
                             RequestView(request: currentRequest)
                         }
                     }
@@ -88,16 +88,16 @@ struct RequestView: View {
 
 struct RequestsListView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack (alignment: .leading, spacing: 10){
             Button(action: {withAnimation{HomeView.show()}}) {
                 HStack(spacing: 15) {
-                        Image(systemName: "chevron.left")
-                            .font(.headline).foregroundColor(Color(.systemOrange))
-                        Text("Your requests")
-                            .fontWeight(.bold)
-                            .font(.title)
-                        Spacer()
-                    }
+                    Image(systemName: "chevron.left")
+                        .font(.headline).foregroundColor(Color(.systemOrange))
+                    Text("Your requests")
+                        .fontWeight(.bold)
+                        .font(.title)
+                    Spacer()
+                }.padding([.top,.horizontal])
             }.buttonStyle(PlainButtonStyle())
             ListView(mode: .RequestViews)
             Spacer()

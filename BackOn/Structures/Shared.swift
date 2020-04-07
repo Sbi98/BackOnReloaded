@@ -9,6 +9,7 @@
 import SwiftUI
 
 class Shared: ObservableObject {
+    var requestCategories = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
     @Published var activeView = "HomeView"
     @Published var mainWindow = "CustomTabView"
     @Published var myTasks: [String:Task] = [:]
@@ -48,6 +49,10 @@ class Shared: ObservableObject {
         return Array(myRequests.values)
     }
     
+    func expiredTasksArray() -> [Task] {
+        return Array(myExpiredTasks.values)
+    }
+    
     func expiredRequestsArray() -> [Task] {
         return Array(myExpiredRequests.values)
     }
@@ -56,14 +61,18 @@ class Shared: ObservableObject {
         return Array(myDiscoverables.values)
     }
     
-    func arrayFromSet(mode: RequiredBy) -> [Task] {
+    func arrayFromSet(mode: RequiredBy, expiredSet: Bool = false) -> [Task] {
+        var toReturn: [Task]
         if mode == .TaskViews {
-            return tasksArray()
+            toReturn = expiredSet ? expiredTasksArray() : tasksArray()
         } else if mode == .RequestViews {
-            return requestsArray()
+            toReturn = expiredSet ? expiredRequestsArray() : requestsArray()
         } else {
-            return discoverablesArray()
+            toReturn = discoverablesArray()
         }
+        return toReturn.sorted(by: { (task1, task2) -> Bool in
+            return task1.date<task2.date
+        })
     }
     
 }

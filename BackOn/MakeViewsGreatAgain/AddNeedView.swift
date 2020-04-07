@@ -2,11 +2,12 @@ import SwiftUI
 
 struct AddNeedView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    var nestedPresentationMode: Binding<PresentationMode>?
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    var titles = ["Getting groceries","Shopping","Pet Caring","Houseworks","Sharing time","Wheelchair transport"]
+    
     @State var showTitlePicker = false
     @State var titlePickerValue = -1
-    @State var needDescription = ""
+    @State var requestDescription = ""
     @State var showDatePicker = false
     @State var selectedDate = Date()
     @State var toggleRepeat = false
@@ -16,12 +17,24 @@ struct AddNeedView: View {
     
     var confirmButton: some View {
         Button(action: {
-            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
+            DispatchQueue.main.async {
+                if self.nestedPresentationMode != nil {
+                    self.nestedPresentationMode!.wrappedValue.dismiss()
+                }
+                self.presentationMode.wrappedValue.dismiss()
+            }
             MapController.addressToCoordinates(self.address) { result, error in
                 guard error == nil, let result = result else {return}
-                DatabaseController.addRequest(
-                    title: self.titles[self.titlePickerValue],
-                    description: self.needDescription == "" ? nil : self.needDescription,
+                let splitted = self.address.split(separator: ",")
+                var city: String?
+                if splitted.count == 4 { city = "\(splitted[1])"}
+                if splitted.count == 5 { city = "\(splitted[2])"}
+                if city == nil { city = "Incorrect city" }
+                DatabaseController.addRequest (
+                    title: self.shared.requestCategories[self.titlePickerValue],
+                    description: self.requestDescription == "" ? nil : self.requestDescription,
+                    address: self.address,
+                    city: city!,
                     date: self.selectedDate, coordinates: result
                 ){ newRequest, error in
                     guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
@@ -43,13 +56,13 @@ struct AddNeedView: View {
                     HStack {
                         Text("Title: ")
                             .foregroundColor(Color(.systemOrange))
-                        Text(titlePickerValue == -1 ? "Click to select your need" : titles[titlePickerValue])
+                        Text(titlePickerValue == -1 ? "Click to select your need" : self.shared.requestCategories[titlePickerValue])
                             .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}}
                     }
                     HStack {
                         Text("Description: ")
                             .foregroundColor(Color(.systemOrange))
-                        TextField("Insert a description (optional)", text: self.$needDescription).offset(y: 1)
+                        TextField("Insert a description (optional)", text: self.$requestDescription).offset(y: 1)
                     }
                 }
                 Section(header: Text("Time")) {
@@ -81,7 +94,7 @@ struct AddNeedView: View {
             }
             .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .frame(width: UIScreen.main.bounds.width, alignment: .leading)
-            .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))
+            .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.shared.requestCategories, selectedValue: self.$titlePickerValue))
             .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
             .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
             .navigationBarTitle(Text("Add a need").foregroundColor(Color(.systemOrange)), displayMode: .inline)

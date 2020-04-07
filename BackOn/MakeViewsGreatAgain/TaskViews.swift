@@ -80,7 +80,7 @@ struct TaskView: View {
                             .offset(y: -9.65)
                     }.scaleEffect(1.2)
                     Text(self.shared.users[task.neederID]?.name ?? "Needer with bad id")
-                        .fontWeight(.black)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
                         .font(.system(size: 20))
                         .background(Rectangle().cornerRadius(20).scaleEffect(1.1).foregroundColor(Color(.systemOrange)))
@@ -148,7 +148,7 @@ struct TaskRow: View {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        ForEach(shared.tasksArray(), id: \._id) { currentTask in
+                        ForEach(shared.arrayFromSet(mode: .TaskViews), id: \._id) { currentTask in
                             TaskView(task: currentTask)
                         }
                     }

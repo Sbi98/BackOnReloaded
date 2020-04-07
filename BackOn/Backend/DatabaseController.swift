@@ -71,6 +71,7 @@ class DatabaseController {
                     }
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
                         if shouldRequestETA { task.requestETA() }
+                        task.locate()
                         MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
                             guard error == nil, let snapshot = snapshot else {print("Error while getting snapshot in getMyBonds");return}
                             task.mapSnap = snapshot.image
@@ -176,7 +177,7 @@ class DatabaseController {
         } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func addRequest(title: String, description: String?, date: Date, coordinates: CLLocationCoordinate2D, completion: @escaping (Task?, ErrorString?)-> Void) {
+    static func addRequest(title: String, description: String?, address: String, city: String, date: Date, coordinates: CLLocationCoordinate2D, completion: @escaping (Task?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
             let parameters: [String: Any] = ["title": title, "description": description ?? "" , "neederID" : CoreDataController.loggedUser!._id, "date": serverDateFormatter(date: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]
@@ -187,7 +188,7 @@ class DatabaseController {
                 guard responseCode == 200 else {return completion(nil,"Response code != 200 in \(#function): \(responseCode)")}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in " + #function)}
                 let _id = jsonResponse["_id"].stringValue
-                completion(Task(neederID: CoreDataController.loggedUser!._id, helperID: nil, title: title, descr: description, date: date, latitude: coordinates.latitude, longitude: coordinates.longitude, _id: _id), nil)
+                completion(Task(neederID: CoreDataController.loggedUser!._id, helperID: nil, title: title, descr: description, date: date, latitude: coordinates.latitude, longitude: coordinates.longitude, _id: _id, address: address, city: city), nil)
             }.resume()
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     } //Error handling missing, but should work
