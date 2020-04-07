@@ -66,6 +66,7 @@ class DatabaseController {
                 for task in tasks.values {
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
                         if shouldRequestETA { task.requestETA() }
+                        task.locate()
                         MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
                             guard error == nil, let snapshot = snapshot else {print("Error while getting snapshot in getMyBonds");return}
                             task.mapSnap = snapshot.image

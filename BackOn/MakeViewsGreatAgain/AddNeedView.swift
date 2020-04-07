@@ -17,13 +17,11 @@ struct AddNeedView: View {
     
     var confirmButton: some View {
         Button(action: {
-            
             DispatchQueue.main.async {
                 if self.nestedPresentationMode != nil {
                     self.nestedPresentationMode!.wrappedValue.dismiss()
                 }
                 self.presentationMode.wrappedValue.dismiss()
-                
             }
             MapController.addressToCoordinates(self.address) { result, error in
                 guard error == nil, let result = result else {return}
