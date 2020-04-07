@@ -10,7 +10,7 @@ import SwiftUI
 import GoogleSignIn
 import AuthenticationServices
 
-struct LoginPageView: View { 
+struct LoginPageView: View {
     var body: some View {
         VStack {
             Text("BackOn")
@@ -25,7 +25,7 @@ struct LoginPageView: View {
                 .overlay(Circle().stroke(Color.white, lineWidth: 4))
                 .shadow(radius: 10)
             Spacer()
-            GoogleButton2()
+            GoogleButton()
             Spacer()
         }
         .frame(width: UIScreen.main.bounds.width)
@@ -35,7 +35,32 @@ struct LoginPageView: View {
     }
 }
 
-struct GoogleButton2: View {
+struct LoadingPageView: View {
+    var body: some View {
+        VStack {
+            Text("BackOn")
+                .fontWeight(.bold).foregroundColor(.white)
+                .font(.title)
+                .padding([.top, .bottom], 40)
+            
+            Image("Icon")
+                .resizable()
+                .frame(width: 250, height: 250)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                .shadow(radius: 10)
+            Spacer()
+            ActivityIndicator()
+            Spacer()
+        }
+        .frame(width: UIScreen.main.bounds.width)
+        .offset(y: 50)
+        .background(Color(#colorLiteral(red: 0.9502732158, green: 0.6147753596, blue: 0.2734006643, alpha: 1)))
+        .edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct GoogleButton: View {
     var body: some View {
         Button(action: {GIDSignIn.sharedInstance()?.presentingViewController = UIApplication.shared.windows.first?.rootViewController; GIDSignIn.sharedInstance()?.signIn()}) {
             ZStack {
@@ -44,9 +69,7 @@ struct GoogleButton2: View {
                     Image("GIcon").resizable().renderingMode(.original).scaledToFit()
                     Text("Sign in with Google").foregroundColor(.black)
                 }.frame(width: 280, height: 30, alignment: .center)
-                
             }
-            
         }
     }
 }
