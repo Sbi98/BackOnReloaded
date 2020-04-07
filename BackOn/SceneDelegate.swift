@@ -45,7 +45,7 @@ struct MainView: View {
             } else if LoginPageView.isMainWindow() {
                 LoginPageView()
              } else if LoadingPageView.isMainWindow() {
-                 LoadingPageView()
+                LoadingPageView()
              } else {
                 Text("Something's wrong, I can feel it").font(.title).foregroundColor(.primary)
             }
@@ -54,7 +54,6 @@ struct MainView: View {
 }
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
     var window: UIWindow?
     var isReadyToUpdate = false
     
@@ -91,7 +90,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
         guard isReadyToUpdate else {return}
-        print("***AGGIORNO!***")
         DatabaseController.loadFromServer()
         isReadyToUpdate = false
     }
@@ -99,10 +97,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).
-//        guard CoreDataController.loggedUser != nil else {return}
-//        print("***VADO IN BG!\nSvuoto i dizionari discover***")
-//        (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]
-//        (UIApplication.shared.delegate as! AppDelegate).shared.discUsers = [:]
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -112,7 +106,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save changes in the application's managed object context when the application transitions to the background.
         //(UIApplication.shared.delegate as? AppDelegate)?.saveContext()
         guard CoreDataController.loggedUser != nil else {return}
-        print("***Svuoto i dizionari Discover***")
+        print("*** Svuoto i dizionari Discover ***")
         (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]
         (UIApplication.shared.delegate as! AppDelegate).shared.discUsers = [:]
     }
@@ -120,13 +114,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
-        guard scene.activationState.rawValue == 2 else {print("raw value: \(scene.activationState.rawValue)");return}
-        guard CoreDataController.loggedUser != nil else {return}
+        guard scene.activationState == .background && CoreDataController.loggedUser != nil else {return}
         isReadyToUpdate = true
-    
+    }
+
 }
 
-        // Chiedo l'autorizzazione per le notifiche di tipo ALERT, BADGE E NOTIFICATION SOUND
+
+// Chiedo l'autorizzazione per le notifiche di tipo ALERT, BADGE E NOTIFICATION SOUND
 //        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
 //            if success {
 //                print("Notification permission set!")
@@ -134,4 +129,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //                print(error.localizedDescription)
 //            }
 //        }
-}

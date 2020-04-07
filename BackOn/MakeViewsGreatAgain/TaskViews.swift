@@ -80,7 +80,7 @@ struct TaskView: View {
                             .offset(y: -9.65)
                     }.scaleEffect(1.2)
                     Text(self.shared.users[task.neederID]?.name ?? "Needer with bad id")
-                        .fontWeight(.black)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
                         .font(.system(size: 20))
                         .background(Rectangle().cornerRadius(20).scaleEffect(1.1).foregroundColor(Color(.systemOrange)))
