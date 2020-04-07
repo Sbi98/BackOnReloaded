@@ -28,18 +28,14 @@ struct ListView: View {
                     .buttonStyle(PlainButtonStyle())
                     .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1)))))   
                 }
-                if(mode == .RequestViews && true){ //aggiungi  && !shared.myExpiredRequests.isEmpty
-                    if(!shared.myRequests.isEmpty){
-                        Divider();
-                    }
-                    ForEach(shared.requestsArray(), id: \._id) { current in
+                if (mode == .RequestViews && !shared.myExpiredRequests.isEmpty) || (mode == .TaskViews && !shared.myExpiredRequests.isEmpty){
+                    Divider()
+                    ForEach(shared.arrayFromSet(mode: mode, expiredSet: true), id: \._id) { current in
                         Button(action: {
                             self.selectedTask = current
                             self.showModal = true
                         }) {
-                            if(current.helperID != nil && current.isExpired()){
-                                TaskPreview(mode: self.mode, task: current)
-                            }
+                            TaskPreview(mode: self.mode, task: current)
                         }
                         .buttonStyle(PlainButtonStyle())
                         .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)))))   
