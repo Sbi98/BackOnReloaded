@@ -45,14 +45,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
             name: user.profile.givenName!,
             surname: user.profile.familyName,
             email: user.profile.email!,
-            photoURL: user.profile.imageURL(withDimension: 100)!
+            photoURL: user.profile.imageURL(withDimension: 200)!
         ){ loggedUser, error in
             guard error == nil, let loggedUser = loggedUser else {print("Error with Google SignUp");return} //FAI L'ALERT!
-            DispatchQueue.main.async {
-                CoreDataController.signUp(user: loggedUser)
-                self.shared.mainWindow = "CustomTabView"
-                DatabaseController.loadFromServer()
-            }
+            CoreDataController.signUp(user: loggedUser)
+            DispatchQueue.main.async { self.shared.mainWindow = "CustomTabView" }
+            DatabaseController.loadFromServer()
         }
     }
     
@@ -61,7 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Perform any operations when the user disconnects from app here.
         print("\n*** User signed out from Google ***\n")
         CoreDataController.deleteLoggedUser()
-        shared.mainWindow = "LoginPageView"
+        DispatchQueue.main.async { self.shared.mainWindow = "LoginPageView" }
     }
     
     

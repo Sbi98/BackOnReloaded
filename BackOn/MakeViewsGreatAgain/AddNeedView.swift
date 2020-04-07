@@ -14,83 +14,79 @@ struct AddNeedView: View {
     @State var showAddressCompleter = false
     @State var toggleVerified = false
     
-    var body: some View {
-        Form {
-            Section(header: HStack {
-                Text("Add Need")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                Spacer()
-                CloseButton()
-            }){EmptyView()}.padding(.top, 10)
-            Section(header: Text("Need informations")) {
-                HStack {
-                    Text("Title: ")
-                        .foregroundColor(Color(.systemBlue))
-                    Text(titlePickerValue == -1 ? "Click to select your need" : titles[titlePickerValue])
-                        .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}}
-                }
-                HStack {
-                    Text("Description: ")
-                        .foregroundColor(Color(.systemBlue))
-                    TextField("Insert a description (optional)", text: self.$needDescription).offset(y: 1)
+    var confirmButton: some View {
+        Button(action: {
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
+            MapController.addressToCoordinates(self.address) { result, error in
+                guard error == nil, let result = result else {return}
+                DatabaseController.addRequest(
+                    title: self.titles[self.titlePickerValue],
+                    description: self.needDescription == "" ? nil : self.needDescription,
+                    date: self.selectedDate, coordinates: result
+                ){ newRequest, error in
+                    guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
+                    DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
+                    CoreDataController.addTask(task: request)
+                    let _ = CalendarController.addRequest(request: request)
                 }
             }
-            Section(header: Text("Time")) {
-                HStack{
-                    Text("Date: ")
-                        .foregroundColor(Color(.systemBlue))
-                    Text("\(selectedDate, formatter: customDateFormat)")
-                        .onTapGesture{withAnimation{self.showDatePicker.toggle()}}
+        }) {
+            Text("Confirm").foregroundColor(Color(.systemOrange)).bold()
+        }
+    }
+    
+    var body: some View {
+        UITableView.appearance().backgroundColor = .systemGray6
+        return NavigationView {
+            Form {
+                Section(header: Text("Need informations")) {
+                    HStack {
+                        Text("Title: ")
+                            .foregroundColor(Color(.systemOrange))
+                        Text(titlePickerValue == -1 ? "Click to select your need" : titles[titlePickerValue])
+                            .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}}
+                    }
+                    HStack {
+                        Text("Description: ")
+                            .foregroundColor(Color(.systemOrange))
+                        TextField("Insert a description (optional)", text: self.$needDescription).offset(y: 1)
+                    }
+                }
+                Section(header: Text("Time")) {
+                    HStack{
+                        Text("Date: ")
+                            .foregroundColor(Color(.systemOrange))
+                        Text("\(selectedDate, formatter: customDateFormat)")
+                            .onTapGesture{withAnimation{self.showDatePicker.toggle()}}
+                    }
+                    /*
+                    Toggle(isOn: $toggleRepeat) {
+                        Text("Repeat each week at the same hour")
+                    }
+                    */
+                }
+                Section(header: Text("Location")) {
+                    HStack{
+                        Text("Place: ").foregroundColor(Color(.systemOrange))
+                        Text(self.address).onTapGesture{self.showAddressCompleter = true}
+                    }
                 }
                 /*
-                Toggle(isOn: $toggleRepeat) {
-                    Text("Repeat each week at the same hour")
+                Section(header: Text("Need informations")) {
+                    Toggle(isOn: $toggleVerified) {
+                        Text("Do you want only verified helpers?")
+                    }
                 }
                 */
             }
-            Section(header: Text("Location")) {
-                HStack{
-                    Text("Place: ").foregroundColor(Color(.systemBlue))
-                    Text(self.address).onTapGesture{self.showAddressCompleter = true}
-                }
-            }
-            /*
-            Section(header: Text("Need informations")) {
-                Toggle(isOn: $toggleVerified) {
-                    Text("Do you want only verified helpers?")
-                }
-            }
-            */
-            Section(header:
-                HStack {
-                    Spacer()
-                    ConfirmAddNeedButton(){
-                        DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
-                        MapController.addressToCoordinates(self.address) { result, error in
-                            guard error == nil, let result = result else {return}
-                            DatabaseController.addRequest(
-                                title: self.titles[self.titlePickerValue],
-                                description: self.needDescription == "" ? nil : self.needDescription,
-                                date: self.selectedDate, coordinates: result
-                            ){ newRequest, error in
-                                guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
-                                DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
-                                CoreDataController.addTask(task: request)
-                                let _ = CalendarController.addRequest(request: request)
-                            }
-                        }
-                    }
-                    Spacer()
-                }
-            ){EmptyView()}
+            .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
+            .frame(width: UIScreen.main.bounds.width, alignment: .leading)
+            .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))
+            .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
+            .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
+            .navigationBarTitle(Text("Add a need").foregroundColor(Color(.systemOrange)), displayMode: .inline)
+            .navigationBarItems(leading: Button(action: {self.presentationMode.wrappedValue.dismiss()}){Text("Cancel").foregroundColor(Color(.systemOrange))}, trailing: confirmButton)
         }
-        .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
-        .frame(width: UIScreen.main.bounds.width, alignment: .leading)
-        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.titles, selectedValue: self.$titlePickerValue))
-        .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
-        .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
     }
 }
 

@@ -274,6 +274,7 @@ class DatabaseController {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.httpBody = body
+        //request.setValue("close", forHTTPHeaderField: "Connection")
         return request
     }
     

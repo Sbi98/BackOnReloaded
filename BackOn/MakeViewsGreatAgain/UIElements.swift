@@ -35,23 +35,6 @@ struct CloseButton: View {
     }
 }
 
-struct ConfirmAddNeedButton: View {
-    var action: () -> Void
-    var body: some View {
-        Button(action: {self.action()}) {
-            HStack{
-                Text("Confirm ")
-                Image(systemName: "hand.thumbsup")
-            }
-            .font(.title)
-            .padding(20)
-            .background(Color.blue)
-            .cornerRadius(40)
-            .foregroundColor(.white)
-            .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
-        }
-    }
-}
 
 struct DoItButton: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
@@ -204,9 +187,9 @@ struct AddNeedButton: View {
 struct ProfileButton: View {
     @State var showModal = false
     var body: some View {
-        Button(action: {print("Logout!");GIDSignIn.sharedInstance()?.disconnect()}) {
+        Button(action: {self.showModal.toggle()}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
-        }
+        }.sheet(isPresented: $showModal){ProfileView()}
     }
 }
 

@@ -84,6 +84,7 @@ class CoreDataController {
         newUser.surname = user.surname
         newUser.email = user.email
         newUser.photoURL = user.photoURL
+        newUser.photoData = user.photo?.pngData()
         newUser.id = user._id
         do {
             try saveContext()
@@ -99,7 +100,7 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             guard let temp = array.first else {print("User not logged yet"); return nil}
-            let loggedUser = User(name: temp.name!, surname: temp.surname, email: temp.email!, photoURL: temp.photoURL!, _id: temp.id!)
+            let loggedUser = User(name: temp.name!, surname: temp.surname, email: temp.email!, photoURL: temp.photoURL!, _id: temp.id!, photo: UIImage(data: temp.photoData ?? Data()))
             print("\nLogged user is \(loggedUser)")
             return loggedUser
         } catch {print("\nError while getting logged user: \(error.localizedDescription)\n");return nil}
@@ -126,6 +127,7 @@ class CoreDataController {
         newUser.surname = user.surname
         newUser.email = user.email
         newUser.photoURL = user.photoURL
+        newUser.photoData = user.photo?.pngData()
         newUser.id = user._id
         print("\n\(user)ready to save in memory\n")
         if save {
@@ -146,6 +148,7 @@ class CoreDataController {
             guard let cachedUser = array.first else {return}
             cachedUser.setValue(user.name, forKey: "name")
             cachedUser.setValue(user.surname, forKey: "surname")
+            cachedUser.setValue(user.photo?.pngData(), forKey: "photoData")
             cachedUser.setValue(user.photoURL, forKey: "photoURL")
             if save {
                 try saveContext()
@@ -161,7 +164,7 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             for pUser in array {
-                cachedUsers.append(User(name: pUser.name!, surname: pUser.surname, email: pUser.email!, photoURL: pUser.photoURL!, _id: pUser.id!))
+                cachedUsers.append(User(name: pUser.name!, surname: pUser.surname, email: pUser.email!, photoURL: pUser.photoURL!, _id: pUser.id!, photo: UIImage(data: pUser.photoData ?? Data())))
             }
         } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
         return cachedUsers

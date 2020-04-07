@@ -6,6 +6,27 @@
 ////  Copyright © 2020 Vincenzo Riccio. All rights reserved.
 ////
 //
+
+
+
+//struct ConfirmAddNeedButton: View {
+//    var action: () -> Void
+//    var body: some View {
+//        Button(action: {self.action()}) {
+//            HStack{
+//                Text("Confirm ")
+//                Image(systemName: "hand.thumbsup")
+//            }
+//            .font(.title)
+//            .padding(20)
+//            .background(Color.blue)
+//            .cornerRadius(40)
+//            .foregroundColor(.white)
+//            .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color.blue, lineWidth: 1).foregroundColor(Color.blue))
+//        }
+//    }
+//}
+
 //import SwiftUI
 //
 //struct NeedView: View {
