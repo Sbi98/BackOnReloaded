@@ -49,6 +49,7 @@
 		8132988B24180CD800A0D52A /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8132988A24180CD800A0D52A /* ProfileView.swift */; };
 		81A0C4B923F9C6F00065CC87 /* DiscoverDetailedViewOLD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A0C4B823F9C6F00065CC87 /* DiscoverDetailedViewOLD.swift */; };
 		81A674A223FF1550006465EE /* RefreshableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A674A123FF1550006465EE /* RefreshableScrollView.swift */; };
+		81BBD801243C9ABE00F695BF /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81BBD800243C9ABE00F695BF /* NetworkExtension.framework */; };
 		A8E9F2EDA35F7780FFA72898 /* Pods_BackOn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55E0E97CC42E41EFEE4BC567 /* Pods_BackOn.framework */; };
 /* End PBXBuildFile section */
 
@@ -101,6 +102,7 @@
 		8132988A24180CD800A0D52A /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		81A0C4B823F9C6F00065CC87 /* DiscoverDetailedViewOLD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverDetailedViewOLD.swift; sourceTree = "<group>"; };
 		81A674A123FF1550006465EE /* RefreshableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshableScrollView.swift; sourceTree = "<group>"; };
+		81BBD800243C9ABE00F695BF /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A8E9F2EDA35F7780FFA72898 /* Pods_BackOn.framework in Frameworks */,
+				81BBD801243C9ABE00F695BF /* NetworkExtension.framework in Frameworks */,
 				2FE9A31123F6E69300E3419A /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -228,6 +231,7 @@
 		FFBA8951755E73F3CA5200A2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				81BBD800243C9ABE00F695BF /* NetworkExtension.framework */,
 				2FE9A31023F6E69300E3419A /* CloudKit.framework */,
 				55E0E97CC42E41EFEE4BC567 /* Pods_BackOn.framework */,
 			);
