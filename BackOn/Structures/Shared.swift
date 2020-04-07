@@ -12,6 +12,7 @@ class Shared: ObservableObject {
     @Published var activeView = "HomeView"
     @Published var mainWindow = "CustomTabView"
     @Published var myTasks: [String:Task] = [:]
+    @Published var myExpiredTasks: [String:Task] = [:]
     @Published var myDiscoverables: [String:Task] = [:]
     @Published var myRequests: [String:Task] = [:]
     @Published var myExpiredRequests: [String:Task] = [:]
@@ -37,6 +38,10 @@ class Shared: ObservableObject {
     
     func tasksArray() -> [Task] {
         return Array(myTasks.values)
+    }
+    
+    func expiredTasksArray() -> [Task] {
+        return Array(myExpiredTasks.values)
     }
     
     func requestsArray() -> [Task] {

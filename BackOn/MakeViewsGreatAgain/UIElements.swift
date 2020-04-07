@@ -113,15 +113,16 @@ struct DontNeedAnymoreButton: View {
 }
 
 struct ThankButton: View {
+    let toReport: String
     let task: Task
     var body: some View {
         GenericButton(
             isFilled: true,
-            topText: "Thank you"
+            topText: toReport == "helper" ? "Thank you" : "I feel better, thank you!"
         ) {
             DatabaseController.stashTask(
                 toStash: self.task,
-            report: "Thank you!"
+                report: "Thank you " + self.toReport + "!"
             ){ error in
             guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
@@ -133,29 +134,30 @@ struct ThankButton: View {
 
 struct ReportButton: View {
     @State var showActionSheet: Bool = false
+    let toReport: String
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
-            .default(Text("The helper didn't show up")) {
+            .default(Text("The " + toReport + " didn't show up")) {
                 DatabaseController.stashTask(
                     toStash: self.task,
-                report: "Didn't show up"
+                    report: self.toReport.capitalized + " didn't show up"
                 ){ error in
                 guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
                 }
             },
-            .default(Text("The helper had bad manners")) {
+            .default(Text("The " + toReport + " had bad manners")) {
                 DatabaseController.stashTask(
                     toStash: self.task,
-                report: "Bad manners"
+                    report: self.toReport.capitalized + " had bad manners"
                 ){ error in
                 guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
                 }
             },
-            .destructive(Text("Cancel report"))
+            .destructive(Text("Cancel"))
         ])
     }
     let task: Task

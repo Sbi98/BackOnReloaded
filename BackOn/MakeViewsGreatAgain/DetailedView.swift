@@ -71,18 +71,24 @@ struct DetailedView: View {
                         DoItButton(task: selectedTask)
                     } else if requiredBy == .RequestViews {
                         if selectedTask.isExpired() {
-                            ThankButton(task: selectedTask)
+                            ThankButton(toReport: "helper", task: selectedTask)
                             Spacer()
-                            ReportButton(task: selectedTask)
+                            ReportButton(toReport: "helper", task: selectedTask)
                         } else {
                             Spacer()
                             DontNeedAnymoreButton(request: selectedTask)
                             Spacer()
                         }
                     } else {
-                        DirectionsButton(selectedTask: selectedTask)
-                        Spacer()
-                        CantDoItButton(task: selectedTask)
+                        if selectedTask.isExpired(){
+                            ThankButton(toReport: "needer", task: selectedTask)
+                            Spacer()
+                            ReportButton(toReport: "needer", task: selectedTask)
+                        } else {
+                            DirectionsButton(selectedTask: selectedTask)
+                            Spacer()
+                            CantDoItButton(task: selectedTask)
+                        }
                     }
                 }.padding(.horizontal)
                 

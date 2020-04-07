@@ -64,6 +64,11 @@ class DatabaseController {
                     shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
                 }
                 for task in tasks.values {
+                    if task.date < now && shared.myExpiredTasks[task._id] == nil{ // se è un task scaduto e non esisteva lo aggiunge
+                        task.locate()
+//                        CoreDataController.addTask(task: task, save: false)
+                        shared.myExpiredTasks[task._id] = task
+                    }
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
                         if shouldRequestETA { task.requestETA() }
                         MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
@@ -78,7 +83,7 @@ class DatabaseController {
                     if request.date < now { // se è una richiesta scaduta e non esisteva la aggiunge
                         if shared.myExpiredRequests[request._id] == nil {
                             request.locate()
-                            CoreDataController.addTask(task: request, save: false)
+//                            CoreDataController.addTask(task: request, save: false)
                             shared.myExpiredRequests[request._id] = request
                         }
                     } else {
