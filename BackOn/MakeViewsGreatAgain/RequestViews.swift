@@ -37,7 +37,7 @@ struct RequestRow: View {
                 }.buttonStyle(PlainButtonStyle())
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        ForEach(shared.requestsArray(), id: \._id) { currentRequest in
+                        ForEach(shared.arrayFromSet(mode: .RequestViews), id: \._id) { currentRequest in
                             RequestView(request: currentRequest)
                         }
                     }

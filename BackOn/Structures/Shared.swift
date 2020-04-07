@@ -58,13 +58,17 @@ class Shared: ObservableObject {
     }
     
     func arrayFromSet(mode: RequiredBy, expiredSet: Bool = false) -> [Task] {
+        var toReturn: [Task]
         if mode == .TaskViews {
-            return expiredSet ? expiredTasksArray() : tasksArray()
+            toReturn = expiredSet ? expiredTasksArray() : tasksArray()
         } else if mode == .RequestViews {
-            return expiredSet ? expiredRequestsArray() : requestsArray()
+            toReturn = expiredSet ? expiredRequestsArray() : requestsArray()
         } else {
-            return discoverablesArray()
+            toReturn = discoverablesArray()
         }
+        return toReturn.sorted(by: { (task1, task2) -> Bool in
+            return task1.date<task2.date
+        })
     }
     
 }

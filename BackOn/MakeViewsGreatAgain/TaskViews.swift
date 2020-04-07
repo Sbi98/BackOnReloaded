@@ -148,7 +148,7 @@ struct TaskRow: View {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        ForEach(shared.tasksArray(), id: \._id) { currentTask in
+                        ForEach(shared.arrayFromSet(mode: .TaskViews), id: \._id) { currentTask in
                             TaskView(task: currentTask)
                         }
                     }
