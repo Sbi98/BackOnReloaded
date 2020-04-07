@@ -76,9 +76,9 @@ struct DetailedView: View {
                                 AskAgainButton(request: selectedTask)
                                 Spacer()
                             }else{
-                                ThankButton(task: selectedTask)
+                                ThankButton(toReport: "helper", task: selectedTask)
                                 Spacer()
-                                ReportButton(task: selectedTask)
+                                ReportButton(toReport: "helper", task: selectedTask)
                             }
                         } else {
                             Spacer()
@@ -86,9 +86,15 @@ struct DetailedView: View {
                             Spacer()
                         }
                     } else {
-                        DirectionsButton(selectedTask: selectedTask)
-                        Spacer()
-                        CantDoItButton(task: selectedTask)
+                        if selectedTask.isExpired(){
+                            ThankButton(toReport: "needer", task: selectedTask)
+                            Spacer()
+                            ReportButton(toReport: "needer", task: selectedTask)
+                        } else {
+                            DirectionsButton(selectedTask: selectedTask)
+                            Spacer()
+                            CantDoItButton(task: selectedTask)
+                        }
                     }
                 }.padding(.horizontal)
                 
