@@ -50,7 +50,7 @@ struct RequestRow: View {
 
 struct RequestView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @State var request: Request
+    @ObservedObject var request: Request
     @State var showModal = false
     
     var body: some View {

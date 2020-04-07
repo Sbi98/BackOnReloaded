@@ -5,7 +5,7 @@
 //  Created by Giancarlo Sorrentino on 20/02/2020.
 //  Copyright © 2020 Emmanuel Tesauro. All rights reserved.
 //
-
+/*
 import Foundation
 import SwiftUI
 import Combine
@@ -166,3 +166,4 @@ struct ActivityRep: UIViewRepresentable {
         uiView.startAnimating()
     }
 }
+*/

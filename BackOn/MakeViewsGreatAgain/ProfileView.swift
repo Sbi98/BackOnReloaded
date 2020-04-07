@@ -21,6 +21,7 @@ struct ProfileView: View {
                     Avatar(image: CoreDataController.loggedUser!.profilePic, size: 150)
                         .overlay(Circle().stroke(Color.white, lineWidth: 2))
                         .shadow(radius: 5)
+                        .padding(.top)
                         .padding()
                     Spacer()
                 }.background(Color(.systemGray6))

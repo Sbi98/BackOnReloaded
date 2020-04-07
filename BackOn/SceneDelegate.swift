@@ -44,7 +44,9 @@ struct MainView: View {
                 CustomTabView()
             } else if LoginPageView.isMainWindow() {
                 LoginPageView()
-            } else {
+             } else if LoadingPageView.isMainWindow() {
+                 LoadingPageView()
+             } else {
                 Text("Something's wrong, I can feel it").font(.title).foregroundColor(.primary)
             }
         }
@@ -94,14 +96,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This may occur due to temporary interruptions (ex. an incoming phone call).
     }
     
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        // Called as the scene transitions from the background to the foreground.
+        // Use this method to undo the changes made on entering the background.
+        guard scene.activationState.rawValue != -1 else {return}
+        print("Sono fuori dal tunnellll")
+    }
     
     func sceneDidEnterBackground(_ scene: UIScene) {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
-        
         // Save changes in the application's managed object context when the application transitions to the background.
-        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+        //(UIApplication.shared.delegate as? AppDelegate)?.saveContext()
     }
     
     func sceneWillEnterForeground(_ scene: UIScene) {

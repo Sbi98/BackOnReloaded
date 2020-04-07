@@ -84,9 +84,7 @@ struct CantDoItButton: View {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             DatabaseController.removeTask(taskid: self.task._id){ error in
                 guard error == nil else {print(error!); return}
-                DispatchQueue.main.async {
-                    (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil
-                }
+                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil }
                 CoreDataController.deleteTask(task: self.task)
             }
             let _ = CalendarController.remove(self.task)
@@ -106,9 +104,7 @@ struct DontNeedAnymoreButton: View {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             DatabaseController.removeRequest(requestid: self.request._id){ error in
                 guard error == nil else {print(error!); return}
-                DispatchQueue.main.async {
-                    (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil
-                }
+                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil }
                 CoreDataController.deleteTask(task: self.request)
                 let _ = CalendarController.remove(self.request)
             }
@@ -272,6 +268,16 @@ struct GenericButton: View {
             .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct ActivityIndicator: UIViewRepresentable {
+    func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
+        return UIActivityIndicatorView(style: .large)
+    }
+    
+    func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
+        uiView.startAnimating()
     }
 }
 

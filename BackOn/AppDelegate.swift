@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         guard error == nil else {print("Sign error"); return}
+        DispatchQueue.main.async { self.shared.mainWindow = "LoadingPageView" }
         // Perform any operations on signed in user here.
         //let userid = user.userid                  // For client-side use only!
         //let idToken = user.authentication._idToken // Safe to send to the server
@@ -96,6 +97,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
     
+    
+    /*
     // MARK: - Core Data stack
     
     lazy var persistentContainer: NSPersistentContainer = {
@@ -140,6 +143,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
             }
         }
     }
-    
+    */
 }
 
