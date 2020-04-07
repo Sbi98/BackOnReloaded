@@ -21,5 +21,6 @@ struct ServerRoutes {
     static let discover = {baseURL+"/discover.js"}()
     static let addRequest = {baseURL+"/addRequest.js"}()
     static let addTask = {baseURL+"/addTask.js"}()
-    static let stashTask = {baseURL+"/stashTask.js"}()
+//    static let stashTask = {baseURL+"/stashTask.js"}()
+    static let reportTask = {baseURL+"/reportTask"}()
 }

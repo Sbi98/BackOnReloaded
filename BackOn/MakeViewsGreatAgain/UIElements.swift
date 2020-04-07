@@ -140,10 +140,7 @@ struct ThankButton: View {
             isFilled: true,
             topText: toReport == "helper" ? "Thank you" : "I feel better, thank you!"
         ) {
-            DatabaseController.stashTask(
-                toStash: self.task,
-                report: "Thank you " + self.toReport + "!"
-            ){ error in
+            DatabaseController.reportTask(task: self.task, report: "Thank you " + self.toReport, toReport: self.toReport){ error in
             guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
                 }
@@ -158,20 +155,14 @@ struct ReportButton: View {
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
             .default(Text("The " + toReport + " didn't show up")) {
-                DatabaseController.stashTask(
-                    toStash: self.task,
-                    report: self.toReport.capitalized + " didn't show up"
-                ){ error in
+                DatabaseController.reportTask(task: self.task, report: self.toReport.capitalized + " didn't show up!", toReport: self.toReport){ error in
                 guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
                 }
             },
             .default(Text("The " + toReport + " had bad manners")) {
-                DatabaseController.stashTask(
-                    toStash: self.task,
-                    report: self.toReport.capitalized + " had bad manners"
-                ){ error in
+                DatabaseController.reportTask(task: self.task, report: self.toReport.capitalized + " had bad manners", toReport: self.toReport){ error in
                 guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
