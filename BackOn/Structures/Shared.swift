@@ -49,10 +49,6 @@ class Shared: ObservableObject {
         return Array(myRequests.values)
     }
     
-    func expiredTasksArray() -> [Task] {
-        return Array(myExpiredTasks.values)
-    }
-    
     func expiredRequestsArray() -> [Task] {
         return Array(myExpiredRequests.values)
     }

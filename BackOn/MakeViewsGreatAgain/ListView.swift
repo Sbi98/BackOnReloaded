@@ -30,7 +30,7 @@ struct ListView: View {
                 }
                 if(mode == .RequestViews && !shared.myExpiredRequests.isEmpty || mode == .TaskViews && !shared.myExpiredTasks.isEmpty){
                     Divider();
-                    ForEach(mode == .RequestViews ? shared.expiredRequestsArray() : shared.expiredTasksArray(), id: \._id) { current in
+                    ForEach(shared.arrayFromSet(mode: mode, expiredSet: true), id: \._id) { current in
                         Button(action: {
                             self.selectedTask = current
                             self.showModal = true

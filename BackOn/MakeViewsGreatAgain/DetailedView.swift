@@ -76,9 +76,9 @@ struct DetailedView: View {
                                 AskAgainButton(request: selectedTask)
                                 Spacer()
                             }else{
-                                ThankButton(task: selectedTask)
+                                ThankButton(toReport: "helper", task: selectedTask)
                                 Spacer()
-                                ReportButton(task: selectedTask)
+                                ReportButton(toReport: "helper", task: selectedTask)
                             }
                         } else {
                             Spacer()
