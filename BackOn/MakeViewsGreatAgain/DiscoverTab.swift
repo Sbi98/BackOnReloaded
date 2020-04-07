@@ -15,20 +15,32 @@ struct FullDiscoverView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
-        VStack (alignment: .leading) {
+        VStack (alignment: .center) {
+            HStack{
             Text("Around you")
                 .fontWeight(.bold)
                 .font(.title)
+                .frame(alignment: .leading)
                 .padding(.leading)
                 .offset(y: 2)
+                Spacer()
+            }
             Picker(selection: $discoverTabController.mapMode, label: Text("Select")) {
                 Text("List").tag(false)
                 Text("Map").tag(true)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
             if shared.myDiscoverables.isEmpty {
+                VStack(alignment: .center){
                 Spacer()
-                Text("There's nothing around you")
+                Image(systemName: "mappin.slash")
+                    .resizable()
+                    .frame(width: 152, height: 205)
+                    .imageScale(.large)
+                    .font(.largeTitle)
+                    .foregroundColor(Color(.systemGray))
+                    Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
                 Spacer()
+                }.offset(y: -30)
             } else {
                 if discoverTabController.mapMode {
                     discoverTabController.aroundYouMap == nil ? MapView(mode: .AroundYouMap) : discoverTabController.aroundYouMap
