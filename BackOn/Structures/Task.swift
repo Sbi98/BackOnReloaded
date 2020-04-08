@@ -27,7 +27,7 @@ class Task: ObservableObject, CustomStringConvertible {
     
     public var description: String {return "    Request  #\(_id)\n         of  #\(neederID)\naccepted by  #\(helperID ?? "nobody")\n"}
     
-    init(neederID: String, helperID: String? = nil, title: String, descr: String? = nil, date: Date, latitude: Double, longitude: Double, _id: String, mapSnap: UIImage? = nil, address: String? = nil, city: String? = nil, helperReport: String? = nil, neederReport: String? = nil) {
+    init(neederID: String, helperID: String? = nil, title: String, descr: String? = nil, date: Date, latitude: Double, longitude: Double, _id: String, mapSnap: UIImage? = nil, address: String? = nil, city: String? = nil) {
         self.neederID = neederID
         self.helperID = helperID
         self.title = title
@@ -38,12 +38,6 @@ class Task: ObservableObject, CustomStringConvertible {
         if address != nil { self.address = address! }
         if city != nil { self.city = city! }
         self.position = CLLocation(latitude: latitude, longitude: longitude)
-        self.helperReport = helperReport
-        self.neederReport = neederReport
-    }
-    
-    func isReported(helperToReport: Bool) -> Bool{
-        return helperToReport ? helperReport == nil : neederReport == nil
     }
     
     func isExpired() -> Bool {

@@ -98,7 +98,7 @@ struct TaskView: View {
                         .offset(y: 1)
                 }
                 .frame(width: 320, height: 75)
-                .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
+                .background(task.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                 .cornerRadius(10)
             }
             .frame(width: 320, height: 350)
@@ -115,7 +115,7 @@ struct TaskRow: View {
     
     var body: some View {
         VStack {
-            if shared.myTasks.isEmpty {
+            if shared.myTasks.isEmpty && shared.myExpiredTasks.isEmpty {
                 Spacer()
                 Image(systemName: "zzz")
                     .resizable()
@@ -149,6 +149,9 @@ struct TaskRow: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
                         ForEach(shared.arrayFromSet(mode: .TaskViews), id: \._id) { currentTask in
+                            TaskView(task: currentTask)
+                        }
+                        ForEach(shared.arrayFromSet(mode: .TaskViews, expiredSet: true), id: \._id) { currentTask in
                             TaskView(task: currentTask)
                         }
                     }

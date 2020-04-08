@@ -14,7 +14,7 @@ struct RequestRow: View {
     
     var body: some View {
         VStack {
-            if shared.myRequests.isEmpty {
+            if shared.myRequests.isEmpty && shared.myExpiredRequests.isEmpty {
                 Divider().hidden()
                 HStack(spacing: 7) {
                     Spacer()
@@ -38,6 +38,9 @@ struct RequestRow: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
                         ForEach(shared.arrayFromSet(mode: .RequestViews), id: \._id) { currentRequest in
+                            RequestView(request: currentRequest)
+                        }
+                        ForEach(shared.arrayFromSet(mode: .RequestViews, expiredSet: true), id: \._id) { currentRequest in
                             RequestView(request: currentRequest)
                         }
                     }
@@ -71,7 +74,7 @@ struct RequestView: View {
                             .frame(width: 320, alignment: .trailing)
                     }.offset(y: 10)
                         .frame(width: 320, height: 110)
-                        .background(Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
+                        .background(request.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                         .cornerRadius(10)
                         .shadow(color: Color(.systemGray3), radius: 3)
                     Avatar(image: (request.helperID == nil ? nil : self.shared.users[request.helperID!]?.profilePic), size: 75)

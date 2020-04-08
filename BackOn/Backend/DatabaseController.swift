@@ -188,7 +188,7 @@ class DatabaseController {
                 guard responseCode == 200 else {return completion(nil,"Response code != 200 in \(#function): \(responseCode)")}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in " + #function)}
                 let _id = jsonResponse["_id"].stringValue
-                completion(Task(neederID: CoreDataController.loggedUser!._id, helperID: nil, title: title, descr: description, date: date, latitude: coordinates.latitude, longitude: coordinates.longitude, _id: _id, address: address, city: city, helperReport: nil, neederReport: nil), nil)
+                completion(Task(neederID: CoreDataController.loggedUser!._id, helperID: nil, title: title, descr: description, date: date, latitude: coordinates.latitude, longitude: coordinates.longitude, _id: _id, address: address, city: city), nil)
             }.resume()
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     } //Error handling missing, but should work
@@ -265,6 +265,7 @@ class DatabaseController {
     }
     
     private static func parseJSONArray(jsonArray: inout [JSON], taskDict: inout [String:Task], userDict: inout [String:User]) {
+        let myID = CoreDataController.loggedUser!._id
         for current: JSON in jsonArray {
             let neederID = current["neederID"].stringValue
             let title = current["title"].stringValue
@@ -276,16 +277,17 @@ class DatabaseController {
             let helperID = current["helperID"].string
             let helperReport = current["helperReport"].string
             let neederReport = current["neederReport"].string
-            taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id, helperReport: helperReport, neederReport: neederReport)
+            guard (myID != neederID && myID != helperID) || (myID == neederID && helperReport == nil) || (myID == helperID && neederReport == nil) else {continue}
+            taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id)
             let user = current["user"].arrayValue.first
             if user != nil {
                 let user = user!
                 let userID = user["_id"].stringValue //Superfluo, che facciamo?
-                let userName = user["name"].stringValue
-                let userSurname = user["surname"].stringValue
-                let userEmail = user["email"].stringValue
-                let userPhoto = URL(string: user["photo"].stringValue)!
                 if userDict[userID] == nil {
+                    let userName = user["name"].stringValue
+                    let userSurname = user["surname"].stringValue
+                    let userEmail = user["email"].stringValue
+                    let userPhoto = URL(string: user["photo"].stringValue)!
                     userDict[userID] = User(name: userName, surname: userSurname == "" ? nil : userSurname, email: userEmail, photoURL: userPhoto, _id: userID)
                 }
             }
