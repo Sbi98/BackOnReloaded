@@ -202,8 +202,6 @@ class CoreDataController {
         newTask.longitude = task.position.coordinate.longitude
         newTask.helperID = task.helperID
         newTask.neederID = task.neederID
-        newTask.helperReport = task.helperReport
-        newTask.neederReport = task.neederReport
         newTask.mapSnap = task.mapSnap?.pngData()
         print("\n\(task)ready to save in memory\n")
         if save {
