@@ -14,13 +14,17 @@ struct AddNeedView: View {
     @State var address = "Click to insert the location"
     @State var showAddressCompleter = false
     @State var toggleVerified = false
-    
+    @State var locationNeeded = false
+    @State var titleNeeded = false
+    @State var dateNeeded = false
+
     var confirmButton: some View {
         Button(action: {
-            if self.address == "Click to insert the location"{
-                print("L'utente non ha inserito la posizione")
-            }
-            else {
+           
+            self.locationNeeded = self.address == "Click to insert the location"
+            self.titleNeeded = self.titlePickerValue == -1
+            self.dateNeeded = self.selectedDate < Date()
+            if !(self.locationNeeded || self.titleNeeded || self.dateNeeded) {
                 DispatchQueue.main.async {
                     if self.nestedPresentationMode != nil {
                         self.nestedPresentationMode!.wrappedValue.dismiss()
@@ -62,7 +66,10 @@ struct AddNeedView: View {
                         Text("Title: ")
                             .foregroundColor(Color(.systemOrange))
                         Text(titlePickerValue == -1 ? "Click to select your need" : self.shared.requestCategories[titlePickerValue])
-                            .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}}
+                            .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}; self.titleNeeded = false}
+                        if titleNeeded {
+                            Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
+                        }
                     }
                     HStack {
                         Text("Description: ")
@@ -75,7 +82,10 @@ struct AddNeedView: View {
                         Text("Date: ")
                             .foregroundColor(Color(.systemOrange))
                         Text("\(selectedDate, formatter: customDateFormat)")
-                            .onTapGesture{withAnimation{self.showDatePicker.toggle()}}
+                            .onTapGesture{withAnimation{self.showDatePicker.toggle(); self.dateNeeded = false}}
+                        if dateNeeded {
+                            Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
+                        }
                     }
                     /*
                      Toggle(isOn: $toggleRepeat) {
@@ -86,7 +96,10 @@ struct AddNeedView: View {
                 Section(header: Text("Location")) {
                     HStack{
                         Text("Place: ").foregroundColor(Color(.systemOrange))
-                        Text(self.address).onTapGesture{self.showAddressCompleter = true}
+                        Text(self.address).onTapGesture{self.showAddressCompleter = true;  self.locationNeeded = false}
+                        if locationNeeded {
+                            Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
+                        }
                     }
                 }
                 /*
