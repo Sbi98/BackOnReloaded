@@ -35,7 +35,7 @@ struct ListView: View {
                             self.selectedTask = current
                             self.showModal = true
                         }) {
-                            if(current.helperID != nil && current.isReported(helperToReport: self.mode == .RequestViews)){
+                            if(current.helperID != nil){
                                 TaskPreview(mode: self.mode, task: current)
                             }
                         }

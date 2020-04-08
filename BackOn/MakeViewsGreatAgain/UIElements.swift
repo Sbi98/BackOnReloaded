@@ -133,14 +133,15 @@ struct AskAgainButton: View {
 
 
 struct ThankButton: View {
-    let toReport: String
+    let helperToReport: Bool
     let task: Task
     var body: some View {
         GenericButton(
             isFilled: true,
-            topText: toReport == "helper" ? "Thank you" : "I feel better, thank you!"
+            topText: helperToReport ? "Thank you" : "I feel better, thank you!"
         ) {
-            DatabaseController.reportTask(task: self.task, report: "Thank you " + self.toReport, toReport: self.toReport){ error in
+            CoreDataController.deleteTask(task: self.task)
+            DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
             guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
                 }
@@ -151,18 +152,20 @@ struct ThankButton: View {
 
 struct ReportButton: View {
     @State var showActionSheet: Bool = false
-    let toReport: String
+    let helperToReport: Bool
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
-            .default(Text("The " + toReport + " didn't show up")) {
-                DatabaseController.reportTask(task: self.task, report: self.toReport.capitalized + " didn't show up!", toReport: self.toReport){ error in
+            .default(Text("The person didn't show up")) {
+                CoreDataController.deleteTask(task: self.task)
+                DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
                 guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
                 }
             },
-            .default(Text("The " + toReport + " had bad manners")) {
-                DatabaseController.reportTask(task: self.task, report: self.toReport.capitalized + " had bad manners", toReport: self.toReport){ error in
+            .default(Text("The person had bad manners")) {
+                CoreDataController.deleteTask(task: self.task)
+                DatabaseController.reportTask(task: self.task, report: "Bad manners", helperToReport: self.helperToReport){ error in
                 guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }

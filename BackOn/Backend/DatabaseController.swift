@@ -64,9 +64,9 @@ class DatabaseController {
                     shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
                 }
                 for task in tasks.values {
-                    if task.date < now && shared.myExpiredTasks[task._id] == nil{ // se è un task scaduto e non esisteva lo aggiunge
+                    if task.date < now && task.neederReport == nil && shared.myExpiredTasks[task._id] == nil{ // se è un task scaduto e non esisteva lo aggiunge
                         task.locate()
-//                        CoreDataController.addTask(task: task, save: false)
+                        CoreDataController.addTask(task: task, save: false)
                         shared.myExpiredTasks[task._id] = task
                     }
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
@@ -82,9 +82,9 @@ class DatabaseController {
                 }
                 for request in requests.values {
                     if request.date < now { // se è una richiesta scaduta e non esisteva la aggiunge
-                        if shared.myExpiredRequests[request._id] == nil {
+                        if shared.myExpiredRequests[request._id] == nil && request.helperID != nil && request.helperReport == nil {
                             request.locate()
-//                            CoreDataController.addTask(task: request, save: false)
+                            CoreDataController.addTask(task: request, save: false)
                             shared.myExpiredRequests[request._id] = request
                         }
                     } else {
@@ -217,10 +217,10 @@ class DatabaseController {
         removeBond(idToRemove: taskid, isRequest: false, completion: completion)
     }
     
-    static func reportTask(task: Task, report: String, toReport: String, completion: @escaping (ErrorString?)-> Void){
+    static func reportTask(task: Task, report: String, helperToReport: Bool, completion: @escaping (ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: Any] = ["_id" : task._id, "report" : report, "toReport" : toReport]
+            let parameters: [String: Any] = ["_id" : task._id, (helperToReport ? "helperReport" : "neederReport") : report]
             let request = initJSONRequest(urlString: ServerRoutes.reportTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
