@@ -20,15 +20,12 @@ struct AddNeedView: View {
 
     var confirmButton: some View {
         Button(action: {
-           
             self.locationNeeded = self.address == "Click to insert the location"
             self.titleNeeded = self.titlePickerValue == -1
             self.dateNeeded = self.selectedDate < Date()
             if !(self.locationNeeded || self.titleNeeded || self.dateNeeded) {
                 DispatchQueue.main.async {
-                    if self.nestedPresentationMode != nil {
-                        self.nestedPresentationMode!.wrappedValue.dismiss()
-                    }
+                    self.nestedPresentationMode?.wrappedValue.dismiss()
                     self.presentationMode.wrappedValue.dismiss()
                 }
                 MapController.addressToCoordinates(self.address) { result, error in

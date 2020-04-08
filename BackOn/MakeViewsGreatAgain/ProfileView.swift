@@ -12,6 +12,9 @@ struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
+    @State var showModal = false
+    @State var image: UIImage?
+    
     var body: some View {
         UITableView.appearance().backgroundColor = .systemGray6
         return NavigationView {
@@ -23,6 +26,7 @@ struct ProfileView: View {
                         .shadow(radius: 5)
                         .padding(.top)
                         .padding()
+                        .onTapGesture { self.showModal.toggle() }
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
@@ -46,6 +50,7 @@ struct ProfileView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showModal) {ImagePicker(isShown: self.$showModal, image: self.$image, source: .photoLibrary).edgesIgnoringSafeArea(.all)}
             .navigationBarTitle(Text("Your profile").foregroundColor(Color(.systemOrange)), displayMode: .inline)
             .navigationBarItems(
                 leading: Button(action: {self.presentationMode.wrappedValue.dismiss()})

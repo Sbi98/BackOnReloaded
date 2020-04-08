@@ -8,6 +8,7 @@
 
 import SwiftUI
 import MapKit
+import UIKit
 import GoogleSignIn
 
 let defaultButtonDimensions = (width: CGFloat(155.52), height: CGFloat(48))
@@ -127,9 +128,9 @@ struct AskAgainButton: View {
             self.showModal = true
             
         }.sheet(isPresented: $showModal){AddNeedView(nestedPresentationMode: self.presentationMode, titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address)}
-            
-        }
+        
     }
+}
 
 
 struct ThankButton: View {
@@ -142,7 +143,7 @@ struct ThankButton: View {
         ) {
             CoreDataController.deleteTask(task: self.task)
             DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
-            guard error == nil else {print(error!); return}
+                guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
                 }
             }
@@ -158,7 +159,7 @@ struct ReportButton: View {
             .default(Text("The person didn't show up")) {
                 CoreDataController.deleteTask(task: self.task)
                 DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
-                guard error == nil else {print(error!); return}
+                    guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
                 }
@@ -166,7 +167,7 @@ struct ReportButton: View {
             .default(Text("The person had bad manners")) {
                 CoreDataController.deleteTask(task: self.task)
                 DatabaseController.reportTask(task: self.task, report: "Bad manners", helperToReport: self.helperToReport){ error in
-                guard error == nil else {print(error!); return}
+                    guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
                     }
                 }
@@ -180,7 +181,7 @@ struct ReportButton: View {
             isFilled: false,
             topText: "Report"
         ){self.showActionSheet.toggle()}
-        .actionSheet(isPresented: $showActionSheet){self.actionSheet}
+            .actionSheet(isPresented: $showActionSheet){self.actionSheet}
     }
 }
 
@@ -228,9 +229,9 @@ struct DatePickerGUI: View {
     
     var body: some View {
         DatePicker("",selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-        .labelsHidden()
-        .frame(width: UIScreen.main.bounds.width, height: 250)
-        .background(Color.primary.colorInvert())
+            .labelsHidden()
+            .frame(width: UIScreen.main.bounds.width, height: 250)
+            .background(Color.primary.colorInvert())
     }
 }
 
@@ -297,3 +298,59 @@ struct ActivityIndicator: UIViewRepresentable {
     }
 }
 
+
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var isShown: Bool
+    @Binding var image: UIImage?
+    let source: UIImagePickerController.SourceType
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(isShown: $isShown, image: $image)
+    }
+    
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        @Binding var isShown: Bool
+        @Binding var image: UIImage?
+        init(isShown: Binding<Bool>, image: Binding<UIImage?>) {
+            self._isShown = isShown
+            self._image = image
+        }
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
+            picker.dismiss(animated: true, completion: nil)
+            image = selectedImage
+            //isShown = false
+        }
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            picker.dismiss(animated: true, completion: nil)
+            //isShown = false
+        }
+    }
+    
+    func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.imageExportPreset = .compatible
+        picker.allowsEditing = true
+        if source != .camera {
+            picker.sourceType = .photoLibrary
+        } else {
+            picker.sourceType = .camera
+            picker.cameraCaptureMode = .photo
+            picker.showsCameraControls = true
+        }
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {}
+}
+
+struct ImagePickerView: View {
+    @Binding var showImagePicker : Bool
+    @Binding var image : UIImage?
+    let source: UIImagePickerController.SourceType
+    
+    var body: some View {
+        ImagePicker(isShown: $showImagePicker, image: $image, source: source)
+    }
+}

@@ -41,6 +41,8 @@
 	<true/>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Calendar access is required in order to have the possibility to automatially add a task in a dedicated calendar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Access required to upload a profile picture</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Localization Services are required in order to get routes and automatically select your position</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
