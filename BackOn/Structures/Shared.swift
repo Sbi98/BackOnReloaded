@@ -9,7 +9,7 @@
 import SwiftUI
 
 class Shared: ObservableObject {
-    var requestCategories = ["Disabled Assistance", "Elder Care", "Generic Errands", "Going to the Pharmacy", "Grocery Shopping", "Houseworks", "Pet Caring", "Ride to a Medical Examination", "Sharing Time", "Tech Assistance", "Wheelchair Transport"]
+    var requestCategories = ["Disabled Assistance", "Elder Care", "Generic Errands", "Going to the Pharmacy", "Grocery Shopping", "Houseworks", "Pet Caring", "Ride to a Doctor's Appointment", "Sharing Time", "Tech Assistance", "Wheelchair Transport"]
     @Published var activeView = "HomeView"
     @Published var mainWindow = "CustomTabView"
     @Published var myTasks: [String:Task] = [:]
