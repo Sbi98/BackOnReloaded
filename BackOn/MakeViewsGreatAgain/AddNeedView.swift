@@ -17,30 +17,35 @@ struct AddNeedView: View {
     
     var confirmButton: some View {
         Button(action: {
-            DispatchQueue.main.async {
-                if self.nestedPresentationMode != nil {
-                    self.nestedPresentationMode!.wrappedValue.dismiss()
-                }
-                self.presentationMode.wrappedValue.dismiss()
+            if self.address == "Click to insert the location"{
+                print("L'utente non ha inserito la posizione")
             }
-            MapController.addressToCoordinates(self.address) { result, error in
-                guard error == nil, let result = result else {return}
-                let splitted = self.address.split(separator: ",")
-                var city: String?
-                if splitted.count == 4 { city = "\(splitted[1])"}
-                if splitted.count == 5 { city = "\(splitted[2])"}
-                if city == nil { city = "Incorrect city" }
-                DatabaseController.addRequest (
-                    title: self.shared.requestCategories[self.titlePickerValue],
-                    description: self.requestDescription == "" ? nil : self.requestDescription,
-                    address: self.address,
-                    city: city!,
-                    date: self.selectedDate, coordinates: result
-                ){ newRequest, error in
-                    guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
-                    DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
-                    CoreDataController.addTask(task: request)
-                    let _ = CalendarController.addRequest(request: request)
+            else {
+                DispatchQueue.main.async {
+                    if self.nestedPresentationMode != nil {
+                        self.nestedPresentationMode!.wrappedValue.dismiss()
+                    }
+                    self.presentationMode.wrappedValue.dismiss()
+                }
+                MapController.addressToCoordinates(self.address) { result, error in
+                    guard error == nil, let result = result else {return}
+                    let splitted = self.address.split(separator: ",")
+                    var city: String?
+                    if splitted.count == 4 { city = "\(splitted[1])"}
+                    if splitted.count == 5 { city = "\(splitted[2])"}
+                    if city == nil { city = "Incorrect city" }
+                    DatabaseController.addRequest (
+                        title: self.shared.requestCategories[self.titlePickerValue],
+                        description: self.requestDescription == "" ? nil : self.requestDescription,
+                        address: self.address,
+                        city: city!,
+                        date: self.selectedDate, coordinates: result
+                    ){ newRequest, error in
+                        guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
+                        DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
+                        CoreDataController.addTask(task: request)
+                        let _ = CalendarController.addRequest(request: request)
+                    }
                 }
             }
         }) {
@@ -73,10 +78,10 @@ struct AddNeedView: View {
                             .onTapGesture{withAnimation{self.showDatePicker.toggle()}}
                     }
                     /*
-                    Toggle(isOn: $toggleRepeat) {
-                        Text("Repeat each week at the same hour")
-                    }
-                    */
+                     Toggle(isOn: $toggleRepeat) {
+                     Text("Repeat each week at the same hour")
+                     }
+                     */
                 }
                 Section(header: Text("Location")) {
                     HStack{
@@ -85,12 +90,12 @@ struct AddNeedView: View {
                     }
                 }
                 /*
-                Section(header: Text("Need informations")) {
-                    Toggle(isOn: $toggleVerified) {
-                        Text("Do you want only verified helpers?")
-                    }
-                }
-                */
+                 Section(header: Text("Need informations")) {
+                 Toggle(isOn: $toggleVerified) {
+                 Text("Do you want only verified helpers?")
+                 }
+                 }
+                 */
             }
             .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .frame(width: UIScreen.main.bounds.width, alignment: .leading)
