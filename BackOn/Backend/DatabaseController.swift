@@ -11,6 +11,7 @@ import CoreLocation
 import SwiftyJSON
 
 class DatabaseController {
+    static var deviceToken: String?
     static func loadFromServer() {
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
@@ -135,8 +136,8 @@ class DatabaseController {
             }.resume()
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
-
-
+    
+    
     static func getMyBonds(completion: @escaping ([String:Task]?, [String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
@@ -192,7 +193,7 @@ class DatabaseController {
             }.resume()
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     } //Error handling missing, but should work
-
+    
     static func addTask(toAccept: Task, completion: @escaping (ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
@@ -231,20 +232,20 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-////  Non deve più esistere: sostituito con report bilaterale, stash a posteriori.
-//    static func stashTask(toStash: Task, report: String, completion: @escaping (ErrorString?)-> Void){
-//        do {
-//            print("*** DB - \(#function) ***")
-//            let parameters: [String: Any] = ["_id" : toStash._id, "title" : toStash.title, "description" : toStash.descr ?? "" , "neederID" : toStash.neederID , "date" : serverDateFormatter(date: toStash.date), "latitude" : toStash.position.coordinate.latitude, "longitude" : toStash.position.coordinate.longitude , "helperID" : toStash.helperID ?? "Error! NO HELPER!", "report" : report]
-//            let request = initJSONRequest(urlString: ServerRoutes.stashTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
-//            URLSession.shared.dataTask(with: request) { data, response, error in
-//                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
-//                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
-//                guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
-//                completion(nil)
-//            }.resume()
-//        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
-//    } //Error handling missing, but should work
+    ////  Non deve più esistere: sostituito con report bilaterale, stash a posteriori.
+    //    static func stashTask(toStash: Task, report: String, completion: @escaping (ErrorString?)-> Void){
+    //        do {
+    //            print("*** DB - \(#function) ***")
+    //            let parameters: [String: Any] = ["_id" : toStash._id, "title" : toStash.title, "description" : toStash.descr ?? "" , "neederID" : toStash.neederID , "date" : serverDateFormatter(date: toStash.date), "latitude" : toStash.position.coordinate.latitude, "longitude" : toStash.position.coordinate.longitude , "helperID" : toStash.helperID ?? "Error! NO HELPER!", "report" : report]
+    //            let request = initJSONRequest(urlString: ServerRoutes.stashTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
+    //            URLSession.shared.dataTask(with: request) { data, response, error in
+    //                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+    //                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
+    //                guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
+    //                completion(nil)
+    //            }.resume()
+    //        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+    //    } //Error handling missing, but should work
     
     private static func removeBond(idToRemove: String, isRequest: Bool, completion: @escaping (ErrorString?)-> Void) {
         do {
@@ -262,6 +263,21 @@ class DatabaseController {
     static func updateCathegories(lastUpdate: Date) {
         //Chiede l'ultima data di aggiornamento delle categorie di request al db e, se diversa da quella che ha internamente, richiede al db di inviarle e le aggiorna
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
+    }
+    
+    static func refreshToken(){
+        do{
+            print("*** DB - \(#function) ***")
+            let parameters: [String: String] = ["deviceToken": deviceToken ?? "", "date": serverDateFormatter(date: Date())]
+            let request = initJSONRequest(urlString: ServerRoutes.refreshToken, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
+                guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
+            }.resume()
+        } catch{
+            print("Error in " + #function + ". The error is:\n" + error.localizedDescription)
+        }
     }
     
     private static func parseJSONArray(jsonArray: inout [JSON], taskDict: inout [String:Task], userDict: inout [String:User]) {

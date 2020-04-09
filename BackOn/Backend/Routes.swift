@@ -22,4 +22,6 @@ struct ServerRoutes {
     static let addRequest = {baseURL+"/addRequest.js"}()
     static let addTask = {baseURL+"/addTask.js"}()
     static let reportTask = {baseURL+"/reportTask.js"}()
+    static let refreshToken = {baseURL+"/refreshToken.js"}()
+
 }
