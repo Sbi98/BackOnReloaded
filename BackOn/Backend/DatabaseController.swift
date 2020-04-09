@@ -14,6 +14,7 @@ class DatabaseController {
     static var deviceToken: String = ""
     
     static func loadFromServer() {
+        refreshToken()
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
             var shouldRequestETA = false
