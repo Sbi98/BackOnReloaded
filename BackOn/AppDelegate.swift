@@ -10,6 +10,7 @@ import UIKit
 import SwiftUI
 import CoreData
 import GoogleSignIn
+import UserNotifications
 
 typealias ErrorString = String
 typealias Request = Task
@@ -17,7 +18,7 @@ typealias ExpiredRequest = Task
 typealias Discoverable = Task
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUserNotificationCenterDelegate {
     let shared: Shared = Shared()
     let discoverTabController: DiscoverTabController = DiscoverTabController()
     
@@ -79,6 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Initialize sign-in
         GIDSignIn.sharedInstance()?.clientID = "445586099169-q07rg5bbaa4p5ajhe3gfitikj35ige1h.apps.googleusercontent.com"
         GIDSignIn.sharedInstance().delegate = self
+        registerForPushNotifications()
         return true
     }
     
@@ -97,6 +99,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
     
+    func registerForPushNotifications() {
+              UNUserNotificationCenter.current().delegate = self
+              UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
+                  (granted, error) in
+                  print("Permission granted: \(granted)")
+                  // 1. Check if permission granted
+                  guard granted else { return }
+                  // 2. Attempt registration for remote notifications on the main thread
+                  DispatchQueue.main.async {
+                      UIApplication.shared.registerForRemoteNotifications()
+                  }
+              }
+          }
+       
+       func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+           // 1. Convert device token to string
+           let tokenParts = deviceToken.map { data -> String in
+               return String(format: "%02.2hhx", data)
+           }
+           let token = tokenParts.joined()
+           // 2. Print device token to use for PNs payloads
+           print("Device Token: \(token)")
+       }
+
+       func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+           // 1. Print out error if PNs registration not successful
+           print("Failed to register for remote notifications with error: \(error)")
+       }
     
     /*
     // MARK: - Core Data stack
