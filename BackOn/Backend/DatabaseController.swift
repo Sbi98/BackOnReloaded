@@ -11,7 +11,8 @@ import CoreLocation
 import SwiftyJSON
 
 class DatabaseController {
-    static var deviceToken: String?
+    static var deviceToken: String = ""
+    
     static func loadFromServer() {
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!

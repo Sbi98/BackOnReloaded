@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
             return String(format: "%02.2hhx", data)
         }
         let token = tokenParts.joined()
-        // 2. Print device token to use for PNs payloads
+        DatabaseController.deviceToken = token
         print("Device Token: \(token)")
     }
     
