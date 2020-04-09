@@ -69,6 +69,7 @@ struct ProfileView: View {
                     }
                 }
             }
+            .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .actionSheet(isPresented: $showActionSheet){actionSheet}
             .sheet(isPresented: $showModal) {ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all)}
             .navigationBarTitle(Text("Your profile").foregroundColor(Color(.systemOrange)), displayMode: .inline)
