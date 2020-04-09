@@ -13,7 +13,25 @@ struct ProfileView: View {
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
     @State var showModal = false
+    @State var showActionSheet = false
+    @State var pickerMode: UIImagePickerController.SourceType = .photoLibrary
     @State var image: UIImage?
+    
+    var actionSheet: ActionSheet {
+        ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
+            .default(Text("Take a picture")) {
+                self.pickerMode = .camera
+                self.showModal.toggle()
+                self.showActionSheet.toggle()
+            },
+            .default(Text("Photo Library")) {
+                self.pickerMode = .photoLibrary
+                self.showModal.toggle()
+                self.showActionSheet.toggle()
+            },
+            .destructive(Text("Cancel"))
+        ])
+    }
     
     var body: some View {
         UITableView.appearance().backgroundColor = .systemGray6
@@ -21,12 +39,13 @@ struct ProfileView: View {
             VStack (spacing: 0){
                 HStack {
                     Spacer()
-                    Avatar(image: CoreDataController.loggedUser!.profilePic, size: 150)
-                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                        .shadow(radius: 5)
-                        .padding(.top)
-                        .padding()
-                        .onTapGesture { self.showModal.toggle() }
+                    Button(action: {self.showActionSheet.toggle()}){
+                        Avatar(image: CoreDataController.loggedUser!.profilePic, size: 150)
+                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            .shadow(radius: 5)
+                            .padding(.top)
+                            .padding()
+                    }.buttonStyle(PlainButtonStyle())
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
@@ -50,7 +69,8 @@ struct ProfileView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showModal) {ImagePicker(isShown: self.$showModal, image: self.$image, source: .photoLibrary).edgesIgnoringSafeArea(.all)}
+            .actionSheet(isPresented: $showActionSheet){actionSheet}
+            .sheet(isPresented: $showModal) {ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all)}
             .navigationBarTitle(Text("Your profile").foregroundColor(Color(.systemOrange)), displayMode: .inline)
             .navigationBarItems(
                 leading: Button(action: {self.presentationMode.wrappedValue.dismiss()})

@@ -11,11 +11,11 @@ import Foundation
 struct ServerRoutes {
     private static let baseURL = "https://serverlessbackon.now.sh/api"
     static let signUp = {baseURL+"/signin.js"}()
-    static let getUserByID = {baseURL+"/getUserByID.js"}()
-    static let getBondByID = {baseURL+"/getBondByID.js"}()
+    //static let getUserByID = {baseURL+"/getUserByID.js"}()
+    //static let getBondByID = {baseURL+"/getBondByID.js"}()
     static let getMyBonds = {baseURL+"/getMyBonds.js"}()
-    static let getMyTasks = {baseURL+"/getMyTasks.js"}()
-    static let getMyRequests = {baseURL+"/getMyRequests.js"}()
+    //static let getMyTasks = {baseURL+"/getMyTasks.js"}()
+    //static let getMyRequests = {baseURL+"/getMyRequests.js"}()
     static let removeTask = {baseURL+"/cancelTask.js"}()
     static let removeRequest = {baseURL+"/deleteRequest.js"}()
     static let discover = {baseURL+"/discover.js"}()

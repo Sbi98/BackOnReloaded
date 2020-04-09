@@ -300,30 +300,25 @@ struct ActivityIndicator: UIViewRepresentable {
 
 
 struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var isShown: Bool
     @Binding var image: UIImage?
     let source: UIImagePickerController.SourceType
     
     func makeCoordinator() -> Coordinator {
-        return Coordinator(isShown: $isShown, image: $image)
+        return Coordinator(image: $image)
     }
     
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        @Binding var isShown: Bool
         @Binding var image: UIImage?
-        init(isShown: Binding<Bool>, image: Binding<UIImage?>) {
-            self._isShown = isShown
+        init(image: Binding<UIImage?>) {
             self._image = image
         }
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
-            picker.dismiss(animated: true, completion: nil)
             image = selectedImage
-            //isShown = false
+            picker.dismiss(animated: true, completion: nil)
         }
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             picker.dismiss(animated: true, completion: nil)
-            //isShown = false
         }
     }
     
@@ -345,12 +340,12 @@ struct ImagePicker: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {}
 }
 
-struct ImagePickerView: View {
-    @Binding var showImagePicker : Bool
-    @Binding var image : UIImage?
-    let source: UIImagePickerController.SourceType
-    
-    var body: some View {
-        ImagePicker(isShown: $showImagePicker, image: $image, source: source)
-    }
-}
+//struct ImagePickerView: View {
+//    @Binding var showImagePicker : Bool
+//    @Binding var image : UIImage?
+//    let source: UIImagePickerController.SourceType
+//
+//    var body: some View {
+//        ImagePicker(isShown: $showImagePicker, image: $image, source: source)
+//    }
+//}
