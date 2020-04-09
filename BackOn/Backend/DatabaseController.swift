@@ -269,7 +269,7 @@ class DatabaseController {
     static func refreshToken(){
         do{
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["deviceToken": deviceToken ?? "", "date": serverDateFormatter(date: Date())]
+            let parameters: [String: String] = ["deviceToken": deviceToken, "date": serverDateFormatter(date: Date())]
             let request = initJSONRequest(urlString: ServerRoutes.refreshToken, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
