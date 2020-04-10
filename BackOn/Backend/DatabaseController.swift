@@ -84,7 +84,7 @@ class DatabaseController {
                 }
                 for request in requests.values {
                     if request.date < now { // se è una richiesta scaduta e non esisteva la aggiunge
-                        if shared.myExpiredRequests[request._id] == nil && request.helperID != nil && request.helperReport == nil {
+                        if shared.myExpiredRequests[request._id] == nil && request.helperReport == nil {
                             request.locate()
                             CoreDataController.addTask(task: request, save: false)
                             shared.myExpiredRequests[request._id] = request
