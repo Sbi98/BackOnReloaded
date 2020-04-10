@@ -74,8 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
             return String(format: "%02.2hhx", data)
         }
         let token = tokenParts.joined()
-        DatabaseController.deviceToken = token
-        print("Device Token: \(token)")
+        CoreDataController.saveDeviceToken(deviceToken: token)
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

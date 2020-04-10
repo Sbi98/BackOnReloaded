@@ -11,7 +11,6 @@ import CoreLocation
 import SwiftyJSON
 
 class DatabaseController {
-    static var deviceToken: String = ""
     
     static func loadFromServer() {
         refreshToken()
@@ -126,7 +125,7 @@ class DatabaseController {
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["name": name, "surname": surname ?? "", "email" : email, "photo": "\(photoURL)", "deviceToken": deviceToken]
+            let parameters: [String: String] = ["name": name, "surname": surname ?? "", "email" : email, "photo": "\(photoURL)", "deviceToken": CoreDataController.deviceToken]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -270,7 +269,7 @@ class DatabaseController {
     static func refreshToken(){
         do{
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["deviceToken": deviceToken, "_id": CoreDataController.loggedUser!._id]
+            let parameters: [String: String] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}

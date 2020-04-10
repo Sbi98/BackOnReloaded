@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19D76" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="PDeviceToken" representedClassName="PDeviceToken" syncable="YES" codeGenerationType="class">
+        <attribute name="token" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="PLoggedUser" representedClassName="PLoggedUser" syncable="YES" codeGenerationType="class">
         <attribute name="email" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
@@ -33,5 +36,6 @@
         <element name="PLoggedUser" positionX="-45" positionY="36" width="128" height="133"/>
         <element name="PTasks" positionX="-671.9765625" positionY="20.36328125" width="128" height="208"/>
         <element name="PUsers" positionX="-269.03125" positionY="291.82421875" width="150.8984375" height="133"/>
+        <element name="PDeviceToken" positionX="-468" positionY="171" width="128" height="58"/>
     </elements>
 </model>

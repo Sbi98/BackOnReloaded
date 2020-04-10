@@ -13,6 +13,7 @@ import SwiftUI
 
 class CoreDataController {
     static var loggedUser: User?
+    static var deviceToken = ""
     static var persistentContainer: NSPersistentContainer?
     static var context: NSManagedObjectContext?
     
@@ -22,6 +23,7 @@ class CoreDataController {
             guard error == nil else {fatalError("Unresolved error \(error!)")}
             context = persistentContainer!.newBackgroundContext()
             loggedUser = getLoggedUser()
+            deviceToken = getDeviceToken()
         })
     }
     
@@ -74,6 +76,31 @@ class CoreDataController {
         do {
             try saveContext()
         } catch {print("\nError in loadFromCoreData while saving context\n")}
+    }
+    
+    static func saveDeviceToken(deviceToken: String){
+        print("*** CD - \(#function) ***")
+        let entity = NSEntityDescription.entity(forEntityName: "PDeviceToken", in: context!)
+        let newToken = PDeviceToken(entity: entity!, insertInto: context)
+        newToken.token = deviceToken
+        do {
+            try saveContext()
+            print("\nSaving context from \(#function)\n")
+        } catch {print("Error while saving \(newToken.token!) in memory! The error is:\n\(error)\n");return}
+        print("Device token \(deviceToken) saved in memory")
+        self.deviceToken = deviceToken
+    }
+    
+    static func getDeviceToken() -> String {
+        print("*** CD - \(#function) ***")
+        let fetchRequest: NSFetchRequest<PDeviceToken> = PDeviceToken.fetchRequest()
+        do {
+            let array = try context!.fetch(fetchRequest)
+            guard let temp = array.first else {print("Token not saved yet"); return ""}
+            let token = temp.token
+            print("\nDeviceToken is " + (token ?? "Token unaviable"))
+            return token ?? ""
+        } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return ""}
     }
     
     static func signUp(user: User) {
