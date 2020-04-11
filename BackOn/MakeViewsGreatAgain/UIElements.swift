@@ -198,11 +198,11 @@ struct AddNeedButton: View {
 }
 
 struct ProfileButton: View {
-    @State var showModal = false
+    @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
-        Button(action: {self.showModal.toggle()}) {
+        Button(action: {self.underlyingVC.value.presentView(ProfileView())}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
-        }.sheet(isPresented: $showModal){ProfileView()}
+        }
     }
 }
 
@@ -298,7 +298,18 @@ struct ActivityIndicator: UIViewRepresentable {
     }
 }
 
-
+extension UIImagePickerController {
+    open override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    open override var childForStatusBarHidden: UIViewController? {
+        return nil
+    }
+}
+ 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     let source: UIImagePickerController.SourceType
@@ -326,6 +337,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
         picker.imageExportPreset = .compatible
+        picker.setNeedsStatusBarAppearanceUpdate()
         picker.allowsEditing = true
         if source != .camera {
             picker.sourceType = .photoLibrary
@@ -340,12 +352,3 @@ struct ImagePicker: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {}
 }
 
-//struct ImagePickerView: View {
-//    @Binding var showImagePicker : Bool
-//    @Binding var image : UIImage?
-//    let source: UIImagePickerController.SourceType
-//
-//    var body: some View {
-//        ImagePicker(isShown: $showImagePicker, image: $image, source: source)
-//    }
-//}

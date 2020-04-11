@@ -7,9 +7,11 @@
 //
 
 import SwiftUI
+import GoogleSignIn
 
 struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @EnvironmentObject var underlyingVC: ViewControllerHolder
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
     @State var showModal = false
@@ -21,13 +23,13 @@ struct ProfileView: View {
         ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
             .default(Text("Take a picture")) {
                 self.pickerMode = .camera
-                self.showModal.toggle()
                 self.showActionSheet.toggle()
+                self.underlyingVC.value.presentView(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .default(Text("Photo Library")) {
                 self.pickerMode = .photoLibrary
-                self.showModal.toggle()
                 self.showActionSheet.toggle()
+                self.underlyingVC.value.presentView(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .destructive(Text("Cancel"))
         ])
@@ -67,16 +69,29 @@ struct ProfileView: View {
                             Text(CoreDataController.loggedUser!.email)
                         }
                     }
+                    
+                    Section(header: EmptyView()) {
+                        HStack {
+                            Button(action: {
+                                print("Logging out from Google!")
+                                GIDSignIn.sharedInstance()?.disconnect()
+                            }) {
+                                Text("Logout")
+                                    .foregroundColor(Color(.systemOrange))
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                        }
+                    }
                 }
             }
             .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .actionSheet(isPresented: $showActionSheet){actionSheet}
-            .sheet(isPresented: $showModal) {ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all)}
             .navigationBarTitle(Text("Your profile").foregroundColor(Color(.systemOrange)), displayMode: .inline)
             .navigationBarItems(
-                leading: Button(action: {self.presentationMode.wrappedValue.dismiss()})
+                leading: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
                 {Text("Cancel").foregroundColor(Color(.systemOrange))},
-                trailing: Button(action: {self.presentationMode.wrappedValue.dismiss()})
+                trailing: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
                 {Text("Save").foregroundColor(Color(.systemOrange))}
             )
         }
