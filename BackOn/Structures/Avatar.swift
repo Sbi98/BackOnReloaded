@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  BeMyPal
+//  BackOn
 //
 //  Created by Vincenzo Riccio on 10/02/2020.
 //  Copyright © 2020 Vincenzo Riccio. All rights reserved.

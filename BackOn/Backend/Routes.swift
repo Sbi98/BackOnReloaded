@@ -3,7 +3,7 @@
 //  BackOn
 //
 //  Created by Vincenzo Riccio on 28/03/2020.
-//  Copyright © 2020 Emmanuel Tesauro. All rights reserved.
+//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 
 import Foundation
@@ -23,4 +23,5 @@ struct ServerRoutes {
     static let addTask = {baseURL+"/addTask.js"}()
     static let reportTask = {baseURL+"/reportTask.js"}()
     static let updateProfile = {baseURL+"/updateProfile.js"}()
+    static let sendNotification = {baseURL + "/sendPush.js"}()
 }
