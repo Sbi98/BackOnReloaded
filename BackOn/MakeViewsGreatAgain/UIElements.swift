@@ -200,7 +200,7 @@ struct AddNeedButton: View {
 struct ProfileButton: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
-        Button(action: {self.underlyingVC.presentViewInChildVC(ProfileView())}) {
+        Button(action: {self.underlyingVC.presentViewInChildVC(ProfileView(),modalPresentationStyle: .formSheet)}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
         }
     }
@@ -297,18 +297,6 @@ struct ActivityIndicator: UIViewRepresentable {
         uiView.startAnimating()
     }
 }
-
-extension UIImagePickerController {
-    open override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    open override var childForStatusBarHidden: UIViewController? {
-        return nil
-    }
-}
  
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
@@ -339,6 +327,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         picker.imageExportPreset = .compatible
         picker.setNeedsStatusBarAppearanceUpdate()
         picker.allowsEditing = true
+        picker.view.tintColor = .systemOrange
         if source != .camera {
             picker.sourceType = .photoLibrary
         } else {
