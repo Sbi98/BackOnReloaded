@@ -35,9 +35,9 @@ struct ListView: View {
                             self.selectedTask = current
                             self.showModal = true
                         }) {
-                            if(current.helperID != nil){
-                                TaskPreview(mode: self.mode, task: current)
-                            }
+                            
+                            TaskPreview(mode: self.mode, task: current)
+                            
                         }
                         .buttonStyle(PlainButtonStyle())
                         .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color(UIColor(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)))))   
