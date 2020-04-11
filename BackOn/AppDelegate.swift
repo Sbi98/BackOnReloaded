@@ -74,7 +74,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
             return String(format: "%02.2hhx", data)
         }
         let token = tokenParts.joined()
-        CoreDataController.saveDeviceToken(deviceToken: token)
+        CoreDataController.deviceToken = token
+        //CoreDataController.saveDeviceToken(deviceToken: token)
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -85,11 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     func registerForPushNotifications() {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
-            guard error == nil && granted else { return }
-            print("Permission granted: \(granted)")
-            DispatchQueue.main.async {
-                UIApplication.shared.registerForRemoteNotifications()
-            }
+            guard error == nil && granted else { print("Permission not granted!"); return }
+            DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
         }
     }
     
