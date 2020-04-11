@@ -13,7 +13,7 @@ import SwiftUI
 
 class CoreDataController {
     static var loggedUser: User?
-    static var deviceToken = ""
+    static var deviceToken: String?
     static var persistentContainer: NSPersistentContainer?
     static var context: NSManagedObjectContext?
     
@@ -78,32 +78,32 @@ class CoreDataController {
         } catch {print("\nError in loadFromCoreData while saving context\n")}
     }
     
-    /*
-    static func saveDeviceToken(deviceToken: String) {
+    static func saveDeviceToken(deviceToken: String){
         print("*** CD - \(#function) ***")
+        guard deviceToken != "" && getDeviceToken() == nil else {return}
         let entity = NSEntityDescription.entity(forEntityName: "PDeviceToken", in: context!)
         let newToken = PDeviceToken(entity: entity!, insertInto: context)
         newToken.token = deviceToken
         do {
             try saveContext()
+            print("\nSaving context from \(#function)\n")
         } catch {print("Error while saving \(newToken.token!) in memory! The error is:\n\(error)\n");return}
         print("Device token \(deviceToken) saved in memory")
         self.deviceToken = deviceToken
     }
     
-    static func getDeviceToken() -> String {
+    static func getDeviceToken() -> String? {
         print("*** CD - \(#function) ***")
         let fetchRequest: NSFetchRequest<PDeviceToken> = PDeviceToken.fetchRequest()
         do {
             let array = try context!.fetch(fetchRequest)
-            guard let temp = array.first else {print("Token not saved yet"); return ""}
-            print(array)
+            guard let temp = array.first else {print("Token not saved yet"); return nil}
             let token = temp.token
-            print("DeviceToken from CD is " + (token ?? "--Token unavailable"))
-            return token ?? ""
-        } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return ""}
+            print("\nDeviceToken from CD is " + (token ?? "Token unavailable"))
+            return token
+        } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return nil}
     }
-     */
+
     
     static func signUp(user: User) {
         print("*** CD - \(#function) ***")

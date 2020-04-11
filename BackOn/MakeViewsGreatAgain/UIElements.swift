@@ -84,7 +84,7 @@ struct CantDoItButton: View {
             topText: "Can't do it"
         ) {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
-            DatabaseController.removeTask(taskid: self.task._id){ error in
+            DatabaseController.removeTask(toRemove: self.task){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil }
                 CoreDataController.deleteTask(task: self.task)
@@ -104,7 +104,7 @@ struct DontNeedAnymoreButton: View {
             topText: "Don't need anymore"
         ) {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
-            DatabaseController.removeRequest(requestid: self.request._id){ error in
+            DatabaseController.removeRequest(toRemove: self.request){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil }
                 CoreDataController.deleteTask(task: self.request)

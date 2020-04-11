@@ -126,7 +126,7 @@ class DatabaseController {
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["name": name, "surname": surname ?? "", "email" : email, "photo": "\(photoURL)", "deviceToken": CoreDataController.deviceToken]
+            let parameters: [String: String] = ["name": name, "surname": surname ?? "", "email" : email, "photo": "\(photoURL)", "deviceToken": CoreDataController.deviceToken ?? ""]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -206,19 +206,20 @@ class DatabaseController {
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
                 guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
+                sendPushNotification(receiverID: toAccept.neederID, title: "Good news!", body: "Your \(toAccept.title) request has been accepted!")
                 completion(nil)
             }.resume()
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     } //Error handling missing, but should work
     
-    static func removeRequest(requestid: String, completion: @escaping (ErrorString?)-> Void) {
+    static func removeRequest(toRemove: Task, completion: @escaping (ErrorString?)-> Void) {
         print("*** DB - \(#function) ***")
-        removeBond(idToRemove: requestid, isRequest: true, completion: completion)
+        removeBond(toRemove: toRemove, isRequest: true, receiverID: toRemove.helperID, completion: completion)
     }
     
-    static func removeTask(taskid: String, completion: @escaping (ErrorString?)-> Void) {
+    static func removeTask(toRemove: Task, completion: @escaping (ErrorString?)-> Void) {
         print("*** DB - \(#function) ***")
-        removeBond(idToRemove: taskid, isRequest: false, completion: completion)
+        removeBond(toRemove: toRemove, isRequest: false, receiverID: toRemove.neederID, completion: completion)
     }
     
     static func reportTask(task: Task, report: String, helperToReport: Bool, completion: @escaping (ErrorString?)-> Void){
@@ -265,14 +266,15 @@ class DatabaseController {
     //        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     //    } //Error handling missing, but should work
     
-    private static func removeBond(idToRemove: String, isRequest: Bool, completion: @escaping (ErrorString?)-> Void) {
+    private static func removeBond(toRemove: Task, isRequest: Bool, receiverID: String?, completion: @escaping (ErrorString?)-> Void) {
         do {
-            let parameters: [String: String] = ["_id": idToRemove]
+            let parameters: [String: String] = ["_id": toRemove._id]
             let request = initJSONRequest(urlString: isRequest ? ServerRoutes.removeRequest : ServerRoutes.removeTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: isRequest ? "DELETE" : "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + " opering with a \(isRequest ? "request" : "task"). The error is:\n" + error!.localizedDescription)}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
                 guard responseCode == 200 else {return completion("Invalid response code in \(#function): \(responseCode)")}
+                sendPushNotification(receiverID: isRequest ? toRemove.helperID : toRemove.neederID, title: isRequest ? "Don't worry!" : "Oh no! \(CoreDataController.loggedUser!.name) can't help you anymore" , body: isRequest ? "\(CoreDataController.loggedUser!.name) doesn't need your help anymore.\nThanks anyway for your care!" : "Wait for someone else to accept your \(toRemove.title) request." )
                 completion(nil)
             }.resume()
         } catch let error {completion("Error in " + #function + " opering with a \(isRequest ? "request" : "task"). The error is:\n" + error.localizedDescription)}
@@ -286,8 +288,25 @@ class DatabaseController {
     static func refreshToken(){
         do{
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
+            let parameters: [String: String] = ["deviceToken": CoreDataController.deviceToken ?? "", "_id": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
+                guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
+            }.resume()
+        } catch{
+            print("Error in " + #function + ". The error is:\n" + error.localizedDescription)
+        }
+    }
+    
+    private static func sendPushNotification(receiverID: String? ,title: String, body: String){
+        guard let receiverID = receiverID else {return}
+        do{
+            print("*** DB - \(#function) ***")
+            print ("Receiver ID: \(receiverID)")
+            let parameters: [String: String] = ["receiverID": receiverID, "title": title, "body": body]
+            let request = initJSONRequest(urlString: ServerRoutes.sendNotification, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
