@@ -19,7 +19,7 @@ class DatabaseController {
             var shouldRequestETA = false
             let now = Date()
             if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
-                shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
+                shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 70.0 ? true : false
             }
             for task in discTasks.values {
                 if task.date > now {
@@ -64,7 +64,7 @@ class DatabaseController {
                     }
                 }
                 if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
-                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 35.0 ? true : false
+                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 70.0 ? true : false
                 }
                 for task in tasks.values {
                     if task.date < now && task.neederReport == nil && shared.myExpiredTasks[task._id] == nil{ // se è un task scaduto e non esisteva lo aggiunge

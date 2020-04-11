@@ -65,7 +65,7 @@ class MapController {
     static private func updateLocation(lastLocation: CLLocation) {
         let shared = (UIApplication.shared.delegate as! AppDelegate).shared
         self.lastLocation = lastLocation
-        if lastLocation.horizontalAccuracy < 35.0 { // quando la posizione è abbastanza precisa richiede l'ETA di task e discoverable
+        if lastLocation.horizontalAccuracy < 70.0 { // quando la posizione è abbastanza precisa richiede l'ETA di task e discoverable
             locationManager.stopUpdatingLocation()
             shared.requestTasksETA()
             shared.requestDiscoverablesETA()
@@ -81,14 +81,14 @@ class MapController {
             address = "\(address)\(streetInfo2), "
         }
         if let locality = p.locality {
-            address = "\(address)\(locality), "
+            address = "\(address)\(locality)"
         }
-        if let postalCode = p.postalCode {
+        /*if let postalCode = p.postalCode {
             address = "\(address)\(postalCode), "
         }
         if let country = p.country {
             address = "\(address)\(country)"
-        }
+        }*/
         return address
     }
 }

@@ -23,7 +23,7 @@ class CoreDataController {
             guard error == nil else {fatalError("Unresolved error \(error!)")}
             context = persistentContainer!.newBackgroundContext()
             loggedUser = getLoggedUser()
-            deviceToken = getDeviceToken()
+            //deviceToken = getDeviceToken()
         })
     }
     
@@ -99,10 +99,11 @@ class CoreDataController {
             let array = try context!.fetch(fetchRequest)
             guard let temp = array.first else {print("Token not saved yet"); return nil}
             let token = temp.token
-            print("\nDeviceToken is " + (token ?? "Token unaviable"))
+            print("\nDeviceToken from CD is " + (token ?? "Token unavailable"))
             return token
         } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return nil}
     }
+     */
     
     static func signUp(user: User) {
         print("*** CD - \(#function) ***")
