@@ -36,6 +36,7 @@ class DatabaseController {
                     }
                 }
             }
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = true }
             print("*** DB - discover finished ***")
         }
         getMyBonds(){ tasks, requests, users, error in
@@ -164,6 +165,7 @@ class DatabaseController {
     static func discover(completion: @escaping ([String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = false }
             let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.discover, body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted))
             URLSession.shared.dataTask(with: request) { data, response, error in
