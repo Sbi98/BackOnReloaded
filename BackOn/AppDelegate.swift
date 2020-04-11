@@ -74,6 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
             return String(format: "%02.2hhx", data)
         }
         let token = tokenParts.joined()
+        print("Device token: \(token)")
         CoreDataController.saveDeviceToken(deviceToken: token)
     }
     

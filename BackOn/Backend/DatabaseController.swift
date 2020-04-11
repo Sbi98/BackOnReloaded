@@ -250,7 +250,7 @@ class DatabaseController {
     
     private static func removeBond(idToRemove: String, isRequest: Bool, completion: @escaping (ErrorString?)-> Void) {
         do {
-            let parameters: [String: String] = ["_id": idToRemove]
+            let parameters: [String: String] = ["_id": idToRemove, "removingUser": CoreDataController.loggedUser!.name]
             let request = initJSONRequest(urlString: isRequest ? ServerRoutes.removeRequest : ServerRoutes.removeTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: isRequest ? "DELETE" : "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + " opering with a \(isRequest ? "request" : "task"). The error is:\n" + error!.localizedDescription)}

@@ -92,6 +92,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard isReadyToUpdate else {return}
         DatabaseController.loadFromServer()
         isReadyToUpdate = false
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
