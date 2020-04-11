@@ -235,6 +235,21 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
+    static func updateProfile(newName: String = "", newSurname: String = "", newImage: String? = nil, completion: @escaping (ErrorString?)-> Void){
+        do {
+            print("*** DB - \(#function) ***")
+            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : (newName == "" ? CoreDataController.loggedUser!.name : newName), "surname" : (newSurname == "" ? CoreDataController.loggedUser!.surname! : newSurname)]
+            if(newImage != nil) {parameters["photo"] = newImage}
+            let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
+                guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
+                completion(nil)
+            }.resume()
+        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+    }
+    
     ////  Non deve più esistere: sostituito con report bilaterale, stash a posteriori.
     //    static func stashTask(toStash: Task, report: String, completion: @escaping (ErrorString?)-> Void){
     //        do {

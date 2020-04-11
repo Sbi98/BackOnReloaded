@@ -48,6 +48,13 @@ struct ProfileView: View {
                             .padding(.top)
                             .padding()
                     }.buttonStyle(PlainButtonStyle())
+                    Button(action: {
+                        let imageData = self.image!.pngData()
+                        let base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
+                        
+                    }){
+                        Text("@@@@@@@@@@@@@@@@@@@")
+                    }.buttonStyle(PlainButtonStyle())
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
