@@ -13,7 +13,7 @@ import SwiftUI
 
 class CoreDataController {
     static var loggedUser: User?
-    static var deviceToken = ""
+    static var deviceToken: String?
     static var persistentContainer: NSPersistentContainer?
     static var context: NSManagedObjectContext?
     
@@ -80,6 +80,7 @@ class CoreDataController {
     
     static func saveDeviceToken(deviceToken: String){
         print("*** CD - \(#function) ***")
+        guard deviceToken != "" && getDeviceToken() == nil else {return}
         let entity = NSEntityDescription.entity(forEntityName: "PDeviceToken", in: context!)
         let newToken = PDeviceToken(entity: entity!, insertInto: context)
         newToken.token = deviceToken
@@ -91,16 +92,16 @@ class CoreDataController {
         self.deviceToken = deviceToken
     }
     
-    static func getDeviceToken() -> String {
+    static func getDeviceToken() -> String? {
         print("*** CD - \(#function) ***")
         let fetchRequest: NSFetchRequest<PDeviceToken> = PDeviceToken.fetchRequest()
         do {
             let array = try context!.fetch(fetchRequest)
-            guard let temp = array.first else {print("Token not saved yet"); return ""}
+            guard let temp = array.first else {print("Token not saved yet"); return nil}
             let token = temp.token
             print("\nDeviceToken is " + (token ?? "Token unaviable"))
-            return token ?? ""
-        } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return ""}
+            return token
+        } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return nil}
     }
     
     static func signUp(user: User) {
