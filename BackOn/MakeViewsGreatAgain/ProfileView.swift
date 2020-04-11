@@ -98,7 +98,14 @@ struct ProfileView: View {
             .navigationBarItems(
                 leading: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
                 {Text("Cancel").foregroundColor(Color(.systemOrange))},
-                trailing: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
+                trailing: Button(action: {
+                    self.underlyingVC.value.dismiss(animated: true)
+                    if(image != nil){
+                        let imageData = self.image!.pngData()
+                        let base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
+                        DatabaseController.updateProfile(completion: <#T##(ErrorString?) -> Void#>)
+                    }
+                })
                 {Text("Save").foregroundColor(Color(.systemOrange))}
             )
         }
