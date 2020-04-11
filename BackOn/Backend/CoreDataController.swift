@@ -103,7 +103,7 @@ class CoreDataController {
             return token
         } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return nil}
     }
-     */
+
     
     static func signUp(user: User) {
         print("*** CD - \(#function) ***")
