@@ -24,12 +24,12 @@ struct ProfileView: View {
             .default(Text("Take a picture")) {
                 self.pickerMode = .camera
                 self.showActionSheet.toggle()
-                self.underlyingVC.value.presentView(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .default(Text("Photo Library")) {
                 self.pickerMode = .photoLibrary
                 self.showActionSheet.toggle()
-                self.underlyingVC.value.presentView(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .destructive(Text("Cancel"))
         ])

@@ -200,7 +200,7 @@ struct AddNeedButton: View {
 struct ProfileButton: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
-        Button(action: {self.underlyingVC.value.presentView(ProfileView())}) {
+        Button(action: {self.underlyingVC.presentViewInChildVC(ProfileView())}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
         }
     }

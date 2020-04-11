@@ -32,8 +32,8 @@ struct AddNeedView: View {
                     guard error == nil, let result = result else {return}
                     let splitted = self.address.split(separator: ",")
                     var city: String?
-                    if splitted.count == 4 { city = "\(splitted[1])"}
-                    if splitted.count == 5 { city = "\(splitted[2])"}
+                    if splitted.count == 2 { city = "\(splitted[1])"} //+2 se riaggiungi CAP e Stato
+                    if splitted.count == 3 { city = "\(splitted[2])"}
                     if city == nil { city = "Incorrect city" }
                     DatabaseController.addRequest (
                         title: self.shared.requestCategories[self.titlePickerValue],

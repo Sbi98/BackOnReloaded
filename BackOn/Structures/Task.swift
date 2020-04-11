@@ -73,8 +73,8 @@ class Task: ObservableObject, CustomStringConvertible {
             guard error == nil, let result = result else {action();return}
             self.address = result
             let splitted = result.split(separator: ",")
-            if splitted.count == 4 { self.city = "\(splitted[1])"}
-            if splitted.count == 5 { self.city = "\(splitted[2])"}
+            if splitted.count == 2 { self.city = "\(splitted[1])"} // +2 se riaggiungi CAP e Paese
+            if splitted.count == 3 { self.city = "\(splitted[2])"}
             action()
         }
     }

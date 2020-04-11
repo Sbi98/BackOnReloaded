@@ -86,7 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     func registerForPushNotifications() {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
-            guard error == nil && granted else { print("Permission not granted!"); return }
+            guard error == nil && granted else { print("Permission for push notifications not granted!"); return }
             DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
         }
     }
