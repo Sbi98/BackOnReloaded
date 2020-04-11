@@ -236,10 +236,10 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func updateProfile(newName: String = "", newSurname: String = "", newImage: String? = nil, completion: @escaping (ErrorString?)-> Void){
+    static func updateProfile(newName: String, newSurname: String, newImage: String? = nil, completion: @escaping (ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
-            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : (newName == "" ? CoreDataController.loggedUser!.name : newName), "surname" : (newSurname == "" ? CoreDataController.loggedUser!.surname! : newSurname)]
+            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname]
             if(newImage != nil) {parameters["photo"] = newImage}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in

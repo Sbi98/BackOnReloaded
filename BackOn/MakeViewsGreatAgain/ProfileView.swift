@@ -42,18 +42,11 @@ struct ProfileView: View {
                 HStack {
                     Spacer()
                     Button(action: {self.showActionSheet.toggle()}){
-                        Avatar(image: CoreDataController.loggedUser!.profilePic, size: 150)
+                        Avatar(image: image == nil ? CoreDataController.loggedUser!.profilePic : Image(uiImage: image!), size: 150)
                             .overlay(Circle().stroke(Color.white, lineWidth: 2))
                             .shadow(radius: 5)
                             .padding(.top)
                             .padding()
-                    }.buttonStyle(PlainButtonStyle())
-                    Button(action: {
-                        let imageData = self.image!.pngData()
-                        let base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
-                        
-                    }){
-                        Text("@@@@@@@@@@@@@@@@@@@")
                     }.buttonStyle(PlainButtonStyle())
                     Spacer()
                 }.background(Color(.systemGray6))
@@ -100,10 +93,23 @@ struct ProfileView: View {
                 {Text("Cancel").foregroundColor(Color(.systemOrange))},
                 trailing: Button(action: {
                     self.underlyingVC.value.dismiss(animated: true)
-                    if(image != nil){
+                    if(self.image != nil){
                         let imageData = self.image!.pngData()
                         let base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
-                        DatabaseController.updateProfile(completion: <#T##(ErrorString?) -> Void#>)
+                        DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
+                            guard error == nil else {print(error!); return}
+                            DispatchQueue.main.async {
+                                
+                            }
+                        }
+                    }
+                    else if(self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname ?? ""){
+                        DatabaseController.updateProfile(newName: self.name, newSurname: self.surname){ error in
+                            guard error == nil else {print(error!); return}
+                            DispatchQueue.main.async {
+                                
+                            }
+                        }
                     }
                 })
                 {Text("Save").foregroundColor(Color(.systemOrange))}
