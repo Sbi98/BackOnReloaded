@@ -36,6 +36,7 @@ class DatabaseController {
                     }
                 }
             }
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = true }
             print("*** DB - discover finished ***")
         }
         getMyBonds(){ tasks, requests, users, error in
@@ -84,7 +85,7 @@ class DatabaseController {
                 }
                 for request in requests.values {
                     if request.date < now { // se è una richiesta scaduta e non esisteva la aggiunge
-                        if shared.myExpiredRequests[request._id] == nil && request.helperID != nil && request.helperReport == nil {
+                        if shared.myExpiredRequests[request._id] == nil && request.helperReport == nil {
                             request.locate()
                             CoreDataController.addTask(task: request, save: false)
                             shared.myExpiredRequests[request._id] = request
@@ -164,6 +165,7 @@ class DatabaseController {
     static func discover(completion: @escaping ([String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = false }
             let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
             let request = initJSONRequest(urlString: ServerRoutes.discover, body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted))
             URLSession.shared.dataTask(with: request) { data, response, error in

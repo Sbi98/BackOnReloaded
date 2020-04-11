@@ -16,6 +16,38 @@ enum RequiredBy {
     case AroundYouMap
 }
 
+class CustomHostingController<Content:View>: UIHostingController<AnyView> {
+    let hideStatusBar: Bool
+    
+    init(contentView: Content, hideStatusBar: Bool = false, modalPresentationStyle: UIModalPresentationStyle = .fullScreen) {
+        self.hideStatusBar = hideStatusBar
+        super.init(rootView: AnyView(EmptyView()))
+        self.modalPresentationStyle = modalPresentationStyle
+        self.rootView = AnyView(contentView.environmentObject(ViewControllerHolder(self)))
+    }
+    
+    @objc required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    open override var prefersStatusBarHidden: Bool {
+        return hideStatusBar
+    }
+}
+
+class ViewControllerHolder: ObservableObject {
+    var value: UIViewController
+    init(_ viewController: UIViewController) {
+        self.value = viewController
+    }
+}
+
+extension UIViewController {
+    func presentView<Content: View>(_ viewToPresent: Content, hideStatusBar: Bool = false, modalPresentationStyle: UIModalPresentationStyle = .fullScreen) {
+        self.present(CustomHostingController(contentView: viewToPresent, hideStatusBar: hideStatusBar, modalPresentationStyle: modalPresentationStyle), animated: true, completion: nil)
+    }
+}
+
 extension View {
     var darkMode: Bool {
         get {
@@ -68,12 +100,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let contentView = MainView()
         
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
+            window.rootViewController = CustomHostingController(contentView: MainView())
             self.window = window
             window.makeKeyAndVisible()
         }

@@ -12,6 +12,7 @@ class Shared: ObservableObject {
         var requestCategories = ["Disabled Assistance", "Elder Care", "Generic Errands", "Going to the Pharmacy", "Grocery Shopping", "Houseworks", "Pet Caring", "Ride to a Doctor's Appointment", "Sharing Time", "Study Support", "Tech Assistance", "Wheelchair Transport"]
     @Published var activeView = "HomeView"
     @Published var mainWindow = "CustomTabView"
+    @Published var canLoadAroundYouMap = false
     @Published var myTasks: [String:Task] = [:]
     @Published var myExpiredTasks: [String:Task] = [:]
     @Published var myDiscoverables: [String:Task] = [:]
