@@ -40,11 +40,8 @@ class ViewControllerHolder: ObservableObject {
     init(_ viewController: UIViewController) {
         self.value = viewController
     }
-}
-
-extension UIViewController {
-    func presentView<Content: View>(_ viewToPresent: Content, hideStatusBar: Bool = false, modalPresentationStyle: UIModalPresentationStyle = .fullScreen) {
-        self.present(CustomHostingController(contentView: viewToPresent, hideStatusBar: hideStatusBar, modalPresentationStyle: modalPresentationStyle), animated: true, completion: nil)
+    func presentViewInChildVC<Content: View>(_ viewToPresent: Content, hideStatusBar: Bool = false, modalPresentationStyle: UIModalPresentationStyle = .fullScreen){
+        value.present(CustomHostingController(contentView: viewToPresent, hideStatusBar: hideStatusBar, modalPresentationStyle: modalPresentationStyle), animated: true, completion: nil)
     }
 }
 
