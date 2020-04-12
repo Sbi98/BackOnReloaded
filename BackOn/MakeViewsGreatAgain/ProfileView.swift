@@ -104,8 +104,9 @@ struct ProfileView: View {
                             
                         }
                     }
-                })
-                {Text("Save").foregroundColor(Color(.systemOrange))}
+                    })
+                {Text("Save").foregroundColor(Color(CoreDataController.loggedUser!.name == name && CoreDataController.loggedUser?.surname ?? "" == surname && image == nil ? .systemGray : .systemOrange))}
+                    .disabled(CoreDataController.loggedUser!.name == name && CoreDataController.loggedUser?.surname ?? "" == surname && image == nil)
             )
         }
     }
