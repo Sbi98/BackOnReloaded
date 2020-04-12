@@ -93,22 +93,15 @@ struct ProfileView: View {
                 {Text("Cancel").foregroundColor(Color(.systemOrange))},
                 trailing: Button(action: {
                     self.underlyingVC.value.dismiss(animated: true)
+                    var base64String: String? = nil
                     if(self.image != nil){
                         let imageData = self.image!.pngData()
-                        let base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
-                        DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
-                            guard error == nil else {print(error!); return}
-                            DispatchQueue.main.async {
-                                print("")
-                            }
-                        }
+                        base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
                     }
-                    else if(self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname ?? ""){
-                        DatabaseController.updateProfile(newName: self.name, newSurname: self.surname){ error in
-                            guard error == nil else {print(error!); return}
-                            DispatchQueue.main.async {
-                                print("")
-                            }
+                    DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
+                        guard error == nil else {print(error!); return}
+                        DispatchQueue.main.async {
+                            
                         }
                     }
                 })

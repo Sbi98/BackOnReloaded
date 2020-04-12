@@ -239,8 +239,11 @@ class DatabaseController {
     static func updateProfile(newName: String, newSurname: String, newImage: String? = nil, completion: @escaping (ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
-            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname]
+            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id]
+            if(newName != CoreDataController.loggedUser?.name) {parameters["name"] = newName}
+            if(newSurname != CoreDataController.loggedUser?.surname ?? "") {parameters["name"] = newName}
             if(newImage != nil) {parameters["photo"] = newImage}
+            if(parameters.count < 2) {return}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
