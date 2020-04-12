@@ -1,10 +1,8 @@
 import SwiftUI
 
 struct AddNeedView: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    var nestedPresentationMode: Binding<PresentationMode>?
+    @EnvironmentObject var underlyingVC: ViewControllerHolder
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    
     @State var showTitlePicker = false
     @State var titlePickerValue = -1
     @State var requestDescription = ""
@@ -25,8 +23,7 @@ struct AddNeedView: View {
             self.dateNeeded = self.selectedDate < Date()
             if !(self.locationNeeded || self.titleNeeded || self.dateNeeded) {
                 DispatchQueue.main.async {
-                    self.nestedPresentationMode?.wrappedValue.dismiss()
-                    self.presentationMode.wrappedValue.dismiss()
+                    self.underlyingVC.dismissVC()
                 }
                 MapController.addressToCoordinates(self.address) { result, error in
                     guard error == nil, let result = result else {return}
@@ -50,7 +47,7 @@ struct AddNeedView: View {
                 }
             }
         }) {
-            Text("Confirm").foregroundColor(Color(.systemOrange)).bold()
+            Text("Confirm").orange().bold()
         }
     }
     
@@ -60,26 +57,32 @@ struct AddNeedView: View {
             Form {
                 Section(header: Text("Need informations")) {
                     HStack {
-                        Text("Title: ")
-                            .foregroundColor(Color(.systemOrange))
+                        Text("Title: ").orange()
                         Text(titlePickerValue == -1 ? "Click to select your need" : self.shared.requestCategories[titlePickerValue])
-                            .onTapGesture {self.titlePickerValue = 0; withAnimation{self.showTitlePicker.toggle()}; self.titleNeeded = false}
+                            .onTapGesture {
+                                self.titlePickerValue = 0
+                                withAnimation{self.showTitlePicker.toggle()}
+                                self.titleNeeded = false
+                                self.underlyingVC.setEditMode(true)
+                            }
                         if titleNeeded {
                             Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
                         }
                     }
                     HStack {
-                        Text("Description: ")
-                            .foregroundColor(Color(.systemOrange))
+                        Text("Description: ").orange()
                         TextField("Insert a description (optional)", text: self.$requestDescription).offset(y: 1)
                     }
                 }
                 Section(header: Text("Time")) {
                     HStack{
-                        Text("Date: ")
-                            .foregroundColor(Color(.systemOrange))
+                        Text("Date: ").orange()
                         Text("\(selectedDate, formatter: customDateFormat)")
-                            .onTapGesture{withAnimation{self.showDatePicker.toggle(); self.dateNeeded = false}}
+                            .onTapGesture{withAnimation{
+                                self.showDatePicker.toggle()
+                                self.dateNeeded = false
+                                self.underlyingVC.setEditMode(true)
+                            }}
                         if dateNeeded {
                             Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
                         }
@@ -92,8 +95,13 @@ struct AddNeedView: View {
                 }
                 Section(header: Text("Location")) {
                     HStack{
-                        Text("Place: ").foregroundColor(Color(.systemOrange))
-                        Text(self.address).onTapGesture{self.showAddressCompleter = true;  self.locationNeeded = false}
+                        Text("Place: ").orange()
+                        Text(self.address)
+                            .onTapGesture{
+                                self.showAddressCompleter = true
+                                self.locationNeeded = false
+                                self.underlyingVC.setEditMode(true)
+                            }
                         if locationNeeded {
                             Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
                         }
@@ -112,8 +120,8 @@ struct AddNeedView: View {
             .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.shared.requestCategories, selectedValue: self.$titlePickerValue))
             .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
             .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
-            .navigationBarTitle(Text("Add a need").foregroundColor(Color(.systemOrange)), displayMode: .inline)
-            .navigationBarItems(leading: Button(action: {self.presentationMode.wrappedValue.dismiss()}){Text("Cancel").foregroundColor(Color(.systemOrange))}, trailing: confirmButton)
+            .navigationBarTitle(Text("Add a need").orange(), displayMode: .inline)
+            .navigationBarItems(leading: Button(action: {self.underlyingVC.dismissVC()}){Text("Cancel").orange()}, trailing: confirmButton)
         }
     }
 }
