@@ -21,7 +21,7 @@ let customDateFormat: DateFormatter = {
 }()
 
 struct CloseButton: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     let discoverTabController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
     var body: some View {
         Button(action: {
@@ -38,7 +38,7 @@ struct CloseButton: View {
 
 
 struct DoItButton: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     let task: Task
     var body: some View {
         GenericButton(
@@ -75,7 +75,7 @@ struct DoItButton: View {
 }
 
 struct CantDoItButton: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     
     let task: Task
     var body: some View {
@@ -95,7 +95,7 @@ struct CantDoItButton: View {
 }
 
 struct DontNeedAnymoreButton: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     let request: Task
     var body: some View {
         GenericButton(
@@ -115,9 +115,7 @@ struct DontNeedAnymoreButton: View {
 }
 
 struct AskAgainButton: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-    @State var showModal = false
     let request: Task
     var body: some View {
         GenericButton(
@@ -125,9 +123,9 @@ struct AskAgainButton: View {
             isLarge: true,
             topText: "Ask again"
         ) {
-            self.showModal = true
-            
-        }.sheet(isPresented: $showModal){AddNeedView(nestedPresentationMode: self.presentationMode, titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address)}
+            UIViewController.main?.children.last?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddNeedView(titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address), modalPresentationStyle: .formSheet), animated: true)}
+        }
+        //.sheet(isPresented: $showModal){AddNeedView(nestedPresentationMode: self.presentationMode, titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address)}
         
     }
 }
@@ -186,21 +184,18 @@ struct ReportButton: View {
 }
 
 struct AddNeedButton: View {
-    @State var showModal = false
+    @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
-        Button(action: {self.showModal.toggle()}) {
-            Image("AddNeedSymbol")
-                .foregroundColor(Color(.systemOrange))
-                .imageScale(.large)
-                .font(.largeTitle)
-        }.sheet(isPresented: $showModal){AddNeedView()}
+        Button(action: {self.underlyingVC.presentViewInChildVC(AddNeedView(), modalPresentationStyle: .formSheet)}) {
+            Image("AddNeedSymbol").orange().font(.largeTitle).imageScale(.large)
+        }
     }
 }
 
 struct ProfileButton: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
-        Button(action: {self.underlyingVC.presentViewInChildVC(ProfileView(),modalPresentationStyle: .formSheet)}) {
+        Button(action: {self.underlyingVC.presentViewInChildVC(ProfileView(), modalPresentationStyle: .formSheet)}) {
             Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
         }
     }

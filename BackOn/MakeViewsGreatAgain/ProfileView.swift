@@ -10,26 +10,22 @@ import SwiftUI
 import GoogleSignIn
 
 struct ProfileView: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
-    @State var showModal = false
     @State var showActionSheet = false
-    @State var pickerMode: UIImagePickerController.SourceType = .photoLibrary
     @State var image: UIImage?
     
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
             .default(Text("Take a picture")) {
-                self.pickerMode = .camera
                 self.showActionSheet.toggle()
-                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .default(Text("Photo Library")) {
-                self.pickerMode = .photoLibrary
                 self.showActionSheet.toggle()
-                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: self.pickerMode).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .destructive(Text("Cancel"))
         ])
@@ -53,18 +49,20 @@ struct ProfileView: View {
                 Form {
                     Section(header: Text("Personal informations")) {
                         HStack {
-                            Text("Name: ")
-                                .foregroundColor(Color(.systemOrange))
-                            TextField("You haven't set a name yet", text: $name).multilineTextAlignment(.trailing).offset(y: 1)
+                            Text("Name: ").orange()
+                            TextField("You haven't set a name yet", text: $name)
+                                .disabled(!underlyingVC.isEditing)
+                                .multilineTextAlignment(.trailing).offset(y: 1)
                         }
                         HStack {
                             Text("Surname: ")
-                                .foregroundColor(Color(.systemOrange))
-                            TextField("You haven't set a surname yet", text: $surname).multilineTextAlignment(.trailing).offset(y: 1)
+                                .orange()
+                            TextField("You haven't set a surname yet", text: $surname)
+                                .disabled(!underlyingVC.isEditing)
+                                .multilineTextAlignment(.trailing).offset(y: 1)
                         }
                         HStack {
-                            Text("Mail: ")
-                                .foregroundColor(Color(.systemOrange))
+                            Text("Mail: ").orange()
                             Spacer()
                             Text(CoreDataController.loggedUser!.email)
                         }
@@ -76,8 +74,7 @@ struct ProfileView: View {
                                 print("Logging out from Google!")
                                 GIDSignIn.sharedInstance()?.disconnect()
                             }) {
-                                Text("Logout")
-                                    .foregroundColor(Color(.systemOrange))
+                                Text("Logout").orange()
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -87,12 +84,12 @@ struct ProfileView: View {
             }
             .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .actionSheet(isPresented: $showActionSheet){actionSheet}
-            .navigationBarTitle(Text("Your profile").foregroundColor(Color(.systemOrange)), displayMode: .inline)
+            .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
             .navigationBarItems(
-                leading: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
-                {Text("Cancel").foregroundColor(Color(.systemOrange))},
-                trailing: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
-                {Text("Save").foregroundColor(Color(.systemOrange))}
+                leading: Button(action: {self.underlyingVC.dismissVC()})
+                {Text("Cancel").orange()},
+                trailing: Button(action: {self.underlyingVC.toggleEditMode()})
+                {Text(underlyingVC.isEditing ? "Done" : "Edit").bold().orange()}
             )
         }
     }

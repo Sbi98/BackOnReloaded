@@ -192,7 +192,7 @@ struct SearchBar : UIViewRepresentable {
 }
 
 struct searchLocation: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     @Binding var selection: String
     @State var userLocationAddress: String = "Processing your current location..."
     

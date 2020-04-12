@@ -10,7 +10,7 @@ import SwiftUI
 import MapKit
 
 struct DetailedView: View {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task

@@ -15,9 +15,8 @@ class User: ObservableObject, CustomStringConvertible {
     var surname: String?
     var identity: String { return "\(name) \(surname ?? "")" }
     var photoURL: URL
-    var photo: UIImage?
+    @Published var photo: UIImage?
     @Published var profilePic: Image?
-    
     
     public var description: String {return "\(identity) - #\(_id)\n"}
 
@@ -35,6 +34,7 @@ class User: ObservableObject, CustomStringConvertible {
                 do {
                     guard let uiimage = try UIImage(data: Data(contentsOf: photoURL)) else { return }
                     self.profilePic = Image(uiImage: uiimage)
+                    self.photo = uiimage
                 } catch {}
             }
         }

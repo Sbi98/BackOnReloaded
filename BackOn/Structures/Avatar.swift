@@ -8,19 +8,33 @@
 
 import SwiftUI
 
+extension Image {
+    func avatar(size: CGFloat = 50) -> some View {
+        return self
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .foregroundColor(Color(.systemOrange))
+            .background(Color.white)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Color.white, lineWidth: 1))
+    }
+}
+
 struct Avatar: View {
     let image: Image
     let size: CGFloat
     
-    init(image: Image?, size: CGFloat = 50) {
-        self.image = image == nil ? Image(systemName: "questionmark.circle.fill") : image!
+    init(image: Image?, size: CGFloat = 50) {//Image(systemName: "questionmark.circle.fill")
+        self.image = image == nil ? Image("NobodyIcon") : image!.renderingMode(.original)
         self.size = size
     }
 
     var body: some View {
         image
-            .renderingMode(.original)
             .resizable()
+            .orange()
+            .scaledToFit()
             .frame(width: size, height: size)
             .background(Color.white)
             .clipShape(Circle())
