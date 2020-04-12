@@ -38,7 +38,7 @@ struct ProfileView: View {
                 HStack {
                     Spacer()
                     Button(action: {self.showActionSheet.toggle()}){
-                        Avatar(image: CoreDataController.loggedUser!.profilePic, size: 150)
+                        Avatar(image: image == nil ? CoreDataController.loggedUser!.profilePic : Image(uiImage: image!), size: 150)
                             .overlay(Circle().stroke(Color.white, lineWidth: 2))
                             .shadow(radius: 5)
                             .padding(.top)
@@ -90,6 +90,23 @@ struct ProfileView: View {
                 {Text("Cancel").orange()},
                 trailing: Button(action: {self.underlyingVC.toggleEditMode()})
                 {Text(underlyingVC.isEditing ? "Done" : "Edit").bold().orange()}
+                leading: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
+                {Text("Cancel").foregroundColor(Color(.systemOrange))},
+                trailing: Button(action: {
+                    self.underlyingVC.value.dismiss(animated: true)
+                    var base64String: String? = nil
+                    if(self.image != nil){
+                        let imageData = self.image!.pngData()
+                        base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
+                    }
+                    DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
+                        guard error == nil else {print(error!); return}
+                        DispatchQueue.main.async {
+                            
+                        }
+                    }
+                })
+                {Text("Save").foregroundColor(Color(.systemOrange))}
             )
         }
     }
