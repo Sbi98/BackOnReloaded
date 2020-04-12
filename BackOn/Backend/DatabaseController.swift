@@ -241,7 +241,7 @@ class DatabaseController {
             print("*** DB - \(#function) ***")
             var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id]
             if(newName != CoreDataController.loggedUser?.name) {parameters["name"] = newName}
-            if(newSurname != CoreDataController.loggedUser?.surname ?? "") {parameters["name"] = newName}
+            if(newSurname != CoreDataController.loggedUser?.surname ?? "") {parameters["surname"] = newSurname}
             if(newImage != nil) {parameters["photo"] = newImage}
             if(parameters.count < 2) {return}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
