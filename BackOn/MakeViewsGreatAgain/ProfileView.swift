@@ -10,7 +10,6 @@ import SwiftUI
 import GoogleSignIn
 
 struct ProfileView: View {
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
@@ -88,12 +87,8 @@ struct ProfileView: View {
             .navigationBarItems(
                 leading: Button(action: {self.underlyingVC.dismissVC()})
                 {Text("Cancel").orange()},
-                trailing: Button(action: {self.underlyingVC.toggleEditMode()})
-                {Text(underlyingVC.isEditing ? "Done" : "Edit").bold().orange()}
-                leading: Button(action: {self.underlyingVC.value.dismiss(animated: true)})
-                {Text("Cancel").foregroundColor(Color(.systemOrange))},
                 trailing: Button(action: {
-                    self.underlyingVC.value.dismiss(animated: true)
+                    self.underlyingVC.toggleEditMode()
                     var base64String: String? = nil
                     if(self.image != nil){
                         let imageData = self.image!.pngData()
@@ -102,11 +97,10 @@ struct ProfileView: View {
                     DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
                         guard error == nil else {print(error!); return}
                         DispatchQueue.main.async {
-                            
                         }
                     }
                 })
-                {Text("Save").foregroundColor(Color(.systemOrange))}
+                {Text(underlyingVC.isEditing ? "Done" : "Edit").bold().orange()}
             )
         }
     }
