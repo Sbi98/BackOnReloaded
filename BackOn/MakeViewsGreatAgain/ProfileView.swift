@@ -99,7 +99,7 @@ struct ProfileView: View {
                         DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
                             guard error == nil else {print(error!); return}
                             DispatchQueue.main.async {
-                                
+                                print("")
                             }
                         }
                     }
@@ -107,7 +107,7 @@ struct ProfileView: View {
                         DatabaseController.updateProfile(newName: self.name, newSurname: self.surname){ error in
                             guard error == nil else {print(error!); return}
                             DispatchQueue.main.async {
-                                
+                                print("")
                             }
                         }
                     }
