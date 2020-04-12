@@ -36,7 +36,7 @@ struct ProfileView: View {
             VStack (spacing: 0){
                 HStack {
                     Spacer()
-                    Button(action: {self.showActionSheet.toggle()}){
+                    Button(action: {if self.underlyingVC.isEditing{self.showActionSheet.toggle()}}){
                         Avatar(image: image == nil ? CoreDataController.loggedUser!.profilePic : Image(uiImage: image!), size: 150)
                             .overlay(Circle().stroke(Color.white, lineWidth: 2))
                             .shadow(radius: 5)
@@ -99,8 +99,7 @@ struct ProfileView: View {
                         DispatchQueue.main.async {
                         }
                     }
-                })
-                {Text(underlyingVC.isEditing ? "Done" : "Edit").bold().orange()}
+                }) {if underlyingVC.isEditing {Text("Done").bold().orange()} else {Text("Edit").orange()}}
             )
         }
     }
