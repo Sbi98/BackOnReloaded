@@ -197,7 +197,6 @@
 		2F57601B23F6B467001D97F6 /* Structures */ = {
 			isa = PBXGroup;
 			children = (
-				2F57601E23F6B467001D97F6 /* Avatar.swift */,
 				2F57601623F6A9A2001D97F6 /* Shared.swift */,
 				2F57603623F6B4D1001D97F6 /* Task.swift */,
 				2F57601C23F6B467001D97F6 /* User.swift */,
@@ -209,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				14728ED1242FF73500AA4E4A /* Server.swift */,
+				2F57601E23F6B467001D97F6 /* Avatar.swift */,
 				2F57602223F6B467001D97F6 /* CommitmentDetailedView.swift */,
 				2F57601D23F6B467001D97F6 /* UserPreview.swift */,
 				2F57602623F6B467001D97F6 /* CommitmentView.swift */,

@@ -18,11 +18,11 @@ struct DetailedView: View {
         VStack(alignment: .leading, spacing: 0){
             HStack {
                 if requiredBy == .RequestViews {
-                    Avatar(image: selectedTask.helperID == nil ? nil : self.shared.users[selectedTask.helperID!]?.profilePic)
+                    Avatar(selectedTask.helperID == nil ? nil : shared.users[selectedTask.helperID!])
                 } else if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
-                    Avatar(image: self.shared.discUsers[selectedTask.neederID]?.profilePic)
+                    Avatar(shared.discUsers[selectedTask.neederID])
                 } else {
-                    Avatar(image: self.shared.users[selectedTask.neederID]?.profilePic)
+                    Avatar(shared.users[selectedTask.neederID])
                 }
                 VStack(alignment: .leading){
                     if requiredBy == .RequestViews {

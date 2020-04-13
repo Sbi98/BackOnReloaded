@@ -23,14 +23,15 @@ class CoreDataController {
             guard error == nil else {fatalError("Unresolved error \(error!)")}
             context = persistentContainer!.newBackgroundContext()
             loggedUser = getLoggedUser()
-            //deviceToken = getDeviceToken()
+            deviceToken = getDeviceToken()
         })
     }
     
     static func saveContext() throws {
         if context!.hasChanges {
             try context!.save()
-        } else {print("Context haven't got any change!")}
+            print("*** CD - Context saved! ***")
+        } else {print("*** CD - Context hasn't got any change! ***")}
     }
     
     static func loadInShared() {
@@ -42,20 +43,27 @@ class CoreDataController {
         }
         for task in cachedTasks {
             if task.neederID == loggedUser!._id { // è una mia request
-                if task.date < today {
-                    if task.date < today.advanced(by: -259200) {
+                if task.date < today { // è scaduta
+                    if task.date < today.advanced(by: -259200) { // è scaduta da più di 3 giorni
                         deleteTask(task: task, save: false)
-                    } else {
+                    } else { // è scaduta da meno di 3 giorni
                         if task.address == "Locating..." {task.locate()}
                         DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredRequests[task._id] = task}
                     }
-                } else {
+                } else { // è attiva
                     if task.address == "Locating..." {task.locate()}
                     DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myRequests[task._id] = task}
                 }
             } else {
                 if task.helperID == loggedUser!._id { // è un mio task
-                    if task.date > today {
+                    if task.date < today { // è scaduto
+                        if task.date < today.advanced(by: -259200) { // è scaduto da più di 3 giorni
+                            deleteTask(task: task, save: false)
+                        } else { // è scaduto da meno di 3 giorni
+                            if task.address == "Locating..." {task.locate()}
+                            DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredTasks[task._id] = task}
+                        }
+                    } else { // è attivo
                         DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myTasks[task._id] = task}
                         if task.address == "Locating..." {task.locate()}
                         if task.mapSnap == nil {
@@ -64,8 +72,6 @@ class CoreDataController {
                                 task.mapSnap = snapshot.image
                             }
                         }
-                    } else {
-                        deleteTask(task: task, save: false)
                     }
                 } else {
                     print("\nloadInShared - inconsistent state for\n\(task)\n")
@@ -80,7 +86,7 @@ class CoreDataController {
     
     static func saveDeviceToken(deviceToken: String?){
         print("*** CD - \(#function) ***")
-        guard let deviceToken = deviceToken, getDeviceToken() == nil else {return}
+        guard let deviceToken = deviceToken, self.deviceToken == nil else {return} // prima era getDeviceToken() == nil
         let entity = NSEntityDescription.entity(forEntityName: "PDeviceToken", in: context!)
         let newToken = PDeviceToken(entity: entity!, insertInto: context)
         newToken.token = deviceToken
@@ -99,11 +105,10 @@ class CoreDataController {
             let array = try context!.fetch(fetchRequest)
             guard let temp = array.first else {print("Token not saved yet"); return nil}
             let token = temp.token
-            print("\nDeviceToken from CD is " + (token ?? "Token unavailable"))
+            print("DeviceToken from CD is " + (token ?? "Token unavailable"))
             return token
         } catch {print("\nError while getting device token: \(error.localizedDescription)\n");return nil}
     }
-
     
     static func signUp(user: User) {
         print("*** CD - \(#function) ***")
@@ -113,7 +118,7 @@ class CoreDataController {
         newUser.surname = user.surname
         newUser.email = user.email
         newUser.photoURL = user.photoURL
-        newUser.photoData = user.photo?.pngData()
+        newUser.photoData = user.photo?.jpegData(compressionQuality: 1)
         newUser.id = user._id
         do {
             try saveContext()
@@ -129,7 +134,13 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             guard let temp = array.first else {print("User not logged yet"); return nil}
-            let loggedUser = User(name: temp.name!, surname: temp.surname, email: temp.email!, photoURL: temp.photoURL!, _id: temp.id!, photo: UIImage(data: temp.photoData ?? Data()))
+            let loggedUser = User(
+                _id: temp.id!,
+                name: temp.name!,
+                surname: temp.surname,
+                email: temp.email!,
+                photoURL: temp.photoURL,
+                photo: temp.photoData == nil ? nil : UIImage(data: temp.photoData!))
             print("\nLogged user is \(loggedUser)")
             return loggedUser
         } catch {print("\nError while getting logged user: \(error.localizedDescription)\n");return nil}
@@ -156,7 +167,7 @@ class CoreDataController {
         newUser.surname = user.surname
         newUser.email = user.email
         newUser.photoURL = user.photoURL
-        newUser.photoData = user.photo?.pngData()
+        newUser.photoData = user.photo?.jpegData(compressionQuality: 1)
         newUser.id = user._id
         print("\n\(user)ready to save in memory\n")
         if save {
@@ -193,7 +204,14 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             for pUser in array {
-                cachedUsers.append(User(name: pUser.name!, surname: pUser.surname, email: pUser.email!, photoURL: pUser.photoURL!, _id: pUser.id!, photo: UIImage(data: pUser.photoData ?? Data())))
+                cachedUsers.append(User(
+                    _id: pUser.id!,
+                    name: pUser.name!,
+                    surname: pUser.surname,
+                    email: pUser.email!,
+                    photoURL: pUser.photoURL!,
+                    photo: pUser.photoData == nil ? nil : UIImage(data: pUser.photoData!))
+                )
             }
         } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
         return cachedUsers
@@ -266,11 +284,18 @@ class CoreDataController {
         do {
             let array = try context!.fetch(fetchRequest)
             for task in array {
-                let myTask = Task(neederID: task.neederID!, helperID: task.helperID, title: task.title!, descr: task.descr, date: task.date!, latitude: task.latitude, longitude: task.longitude, _id: task.id!, address: task.address, city: task.city)
-                if let mapSnap = task.mapSnap {
-                    myTask.mapSnap = UIImage(data: mapSnap)
-                }
-                cachedTasks.append(myTask)
+                cachedTasks.append(Task(
+                    neederID: task.neederID!,
+                    helperID: task.helperID,
+                    title: task.title!,
+                    descr: task.descr,
+                    date: task.date!,
+                    latitude: task.latitude,
+                    longitude: task.longitude,
+                    _id: task.id!,
+                    mapSnap: task.mapSnap == nil ? nil : UIImage(data: task.mapSnap!),
+                    address: task.address,
+                    city: task.city))
             }
         } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
         return cachedTasks

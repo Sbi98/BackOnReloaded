@@ -12,7 +12,7 @@ struct HomeView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
-        VStack (alignment: .leading, spacing: 15) {
+        VStack (alignment: .leading, spacing: 20) {
             HStack (alignment: .center, spacing: 10) {
                 Text("Hi \(CoreDataController.loggedUser!.name)!")
                     .font(.largeTitle)

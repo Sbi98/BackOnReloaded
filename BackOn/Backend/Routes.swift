@@ -1,5 +1,5 @@
 //
-//  s.swift
+//  Routes.swift
 //  BackOn
 //
 //  Created by Vincenzo Riccio on 28/03/2020.
@@ -9,13 +9,9 @@
 import Foundation
 
 struct ServerRoutes {
-    private static let baseURL = "http://192.168.1.11:3000/api"
+    private static let baseURL = "https://serverlessbackon.now.sh/api"
     static let signUp = {baseURL+"/signin.js"}()
-    //static let getUserByID = {baseURL+"/getUserByID.js"}()
-    //static let getBondByID = {baseURL+"/getBondByID.js"}()
     static let getMyBonds = {baseURL+"/getMyBonds.js"}()
-    //static let getMyTasks = {baseURL+"/getMyTasks.js"}()
-    //static let getMyRequests = {baseURL+"/getMyRequests.js"}()
     static let removeTask = {baseURL+"/cancelTask.js"}()
     static let removeRequest = {baseURL+"/deleteRequest.js"}()
     static let discover = {baseURL+"/discover.js"}()
@@ -23,5 +19,10 @@ struct ServerRoutes {
     static let addTask = {baseURL+"/addTask.js"}()
     static let reportTask = {baseURL+"/reportTask.js"}()
     static let updateProfile = {baseURL+"/updateProfile.js"}()
-    static let sendNotification = {baseURL + "/sendPush.js"}()
+    static let sendNotification = {baseURL+"/sendPush.js"}()
 }
+
+//static let getUserByID = {baseURL+"/getUserByID.js"}()
+//static let getBondByID = {baseURL+"/getBondByID.js"}()
+//static let getMyTasks = {baseURL+"/getMyTasks.js"}()
+//static let getMyRequests = {baseURL+"/getMyRequests.js"}()

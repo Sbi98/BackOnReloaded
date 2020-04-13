@@ -40,7 +40,7 @@ struct ProfileView: View {
                     Spacer()
                     Button(action: {if self.underlyingVC.isEditing{self.showActionSheet.toggle()}}){
                         Image(uiImage: profilePic).avatar(size: 150)
-                        }.buttonStyle(PlainButtonStyle()).padding()
+                    }.buttonStyle(PlainButtonStyle()).padding()
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
