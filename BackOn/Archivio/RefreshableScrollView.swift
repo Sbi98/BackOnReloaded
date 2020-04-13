@@ -2,7 +2,7 @@
 //  RefreshableScrollView.swift
 //  BackOn
 //
-//  Created by Giancarlo Sorrentino on 20/02/2020.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 20/02/2020.
 //  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 /*

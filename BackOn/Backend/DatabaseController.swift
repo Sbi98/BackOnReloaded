@@ -2,8 +2,8 @@
 //  DatabaseController.swift
 //  BackOn
 //
-//  Created by Giancarlo Sorrentino on 18/02/2020.
-//  Copyright © 2020 Giancarlo Sorrentino. All rights reserved.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 18/02/2020.
+//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import SwiftyJSON
 class DatabaseController {
     
     static func loadFromServer() {
-        refreshToken()
+        refreshSignIn()
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
             var shouldRequestETA = false
@@ -274,7 +274,7 @@ class DatabaseController {
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
     }
     
-    static func refreshToken(){
+    static func refreshSignIn(){
         do{
             print("*** DB - \(#function) ***")
             let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
