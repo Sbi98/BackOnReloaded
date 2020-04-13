@@ -18,6 +18,9 @@ struct ListView: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading) {
+                if mode == .DiscoverableViews && shared.myDiscoverables.isEmpty{
+                    NoDiscoverablesAroundYou() //Pin barrato, nessuno da aiutare
+                }
                 ForEach(shared.arrayFromSet(mode: mode), id: \._id) { current in
                     Button(action: {
                         self.selectedTask = current

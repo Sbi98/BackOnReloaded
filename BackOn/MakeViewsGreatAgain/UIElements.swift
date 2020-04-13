@@ -281,6 +281,22 @@ struct GenericButton: View {
     }
 }
 
+struct NoDiscoverablesAroundYou: View {
+    var body: some View{
+        VStack(alignment: .center){
+        Spacer()
+        Image(systemName: "mappin.slash")
+            .resizable()
+            .frame(width: 152, height: 205)
+            .imageScale(.large)
+            .font(.largeTitle)
+            .foregroundColor(Color(.systemGray))
+            Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
+        Spacer()
+        }.offset(y: -30)
+    }
+}
+
 struct ActivityIndicator: UIViewRepresentable {
     func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
         return UIActivityIndicatorView(style: .large)
