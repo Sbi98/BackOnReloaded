@@ -29,7 +29,7 @@ struct FullDiscoverView: View {
                 Text("List").tag(false)
                 Text("Map").tag(true)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
-            if !shared.canLoadAroundYouMap {
+            if !shared.canLoadAroundYouMap || !discoverTabController.mapMode && self.shared.myDiscoverables.isEmpty {
                 VStack(alignment: .center){
                 Spacer()
                 Image(systemName: "mappin.slash")
