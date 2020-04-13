@@ -16,35 +16,6 @@ enum RequiredBy {
     case AroundYouMap
 }
 
-class CustomHostingController<Content:View>: UIHostingController<AnyView> {
-    let hideStatusBar: Bool
-    
-    init(contentView: Content, hideStatusBar: Bool = false, modalPresentationStyle: UIModalPresentationStyle = .fullScreen) {
-        self.hideStatusBar = hideStatusBar
-        super.init(rootView: AnyView(EmptyView()))
-        self.modalPresentationStyle = modalPresentationStyle
-        self.rootView = AnyView(contentView.environmentObject(ViewControllerHolder(self)))
-    }
-    
-    @objc required dynamic init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    open override var prefersStatusBarHidden: Bool {
-        return hideStatusBar
-    }
-}
-
-class ViewControllerHolder: ObservableObject {
-    var value: UIViewController
-    init(_ viewController: UIViewController) {
-        self.value = viewController
-    }
-    func presentViewInChildVC<Content: View>(_ viewToPresent: Content, hideStatusBar: Bool = false, modalPresentationStyle: UIModalPresentationStyle = .fullScreen){
-        value.present(CustomHostingController(contentView: viewToPresent, hideStatusBar: hideStatusBar, modalPresentationStyle: modalPresentationStyle), animated: true, completion: nil)
-    }
-}
-
 extension View {
     var darkMode: Bool {
         get {
@@ -62,6 +33,18 @@ extension View {
     }
     static func isMainWindow() -> Bool {
         return (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow == String(describing: self)
+    }
+}
+
+extension Text {
+    func orange() -> Text {
+        return self.foregroundColor(Color(.systemOrange))
+    }
+}
+
+extension Image {
+    func orange() -> some View {
+        return self.foregroundColor(Color(.systemOrange))
     }
 }
 
