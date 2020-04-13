@@ -236,22 +236,31 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func updateProfile(newName: String, newSurname: String, newImage: String? = nil, completion: @escaping (ErrorString?)-> Void){
+    static func updateProfile(newName: String, newSurname: String, newImage: String? = nil, completion: @escaping (Int?, ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
             var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id]
-            if(newName != CoreDataController.loggedUser?.name) {parameters["name"] = newName}
-            if(newSurname != CoreDataController.loggedUser?.surname ?? "") {parameters["surname"] = newSurname}
+            if(newName != "") {
+                parameters["name"] = newName
+            } else {
+                parameters["name"] = CoreDataController.loggedUser!.name
+            }
+            if(newSurname != "") {
+                parameters["surname"] = newSurname
+            } else {
+                parameters["surname"] = CoreDataController.loggedUser!.surname
+            }
             if(newImage != nil) {parameters["photo"] = newImage}
-            if(parameters.count < 2) {return}
-            let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
+            let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
             URLSession.shared.dataTask(with: request) { data, response, error in
-                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
-                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
-                guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
-                completion(nil)
+                guard error == nil else {return completion(400, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(400, "Error in " + #function + ". Invalid response!")}
+                guard responseCode != 200 else {return completion(200, nil)}
+                guard responseCode != 401 else {return completion(401, nil)}
+                completion(responseCode, nil)
             }.resume()
-        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+            
+        } catch let error {completion(400, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
     ////  Non deve più esistere: sostituito con report bilaterale, stash a posteriori.

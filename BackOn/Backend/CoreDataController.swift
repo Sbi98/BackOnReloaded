@@ -185,6 +185,17 @@ class CoreDataController {
             }
         } catch {print("\nErrore recupero informazioni dal context \n \(error)\n")}
     }
+
+    static func updateUser(image: UIImage? = nil, name: String, surname: String, save: Bool = true) {
+        print("*** CD - \(#function) ***")
+        if(image != nil){
+            loggedUser?.photo=image!
+            loggedUser?.profilePic = Image(uiImage: image!)
+        }
+        loggedUser?.name = name
+        loggedUser?.surname = surname
+        
+    }
     
     static func getCachedUsers() -> [User] {
         print("*** CD - \(#function) ***")

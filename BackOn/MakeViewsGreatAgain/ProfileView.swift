@@ -16,6 +16,8 @@ struct ProfileView: View {
     @State var showActionSheet = false
     @State var image: UIImage?
     
+    @State var showingAlert = false
+    
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
             .default(Text("Take a picture")) {
@@ -84,6 +86,9 @@ struct ProfileView: View {
             .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .actionSheet(isPresented: $showActionSheet){actionSheet}
             .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("Error while updating profile"), message: Text("Image upload or DB error"), dismissButton: .default(Text("Got it!")))
+            }
             .navigationBarItems(
                 leading: Button(action: {self.underlyingVC.dismissVC()})
                 {Text("Cancel").orange()},
@@ -91,14 +96,27 @@ struct ProfileView: View {
                     self.underlyingVC.toggleEditMode()
                     var base64String: String? = nil
                     if(self.image != nil){
-                        let imageData = self.image!.pngData()
+            
+                        let imageData = self.image!.jpegData(compressionQuality: 0.20)
                         base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
+                        //print(base64String)
+                        
                     }
-                    DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ error in
-                        guard error == nil else {print(error!); return}
-                        DispatchQueue.main.async {
+                    DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ responseCode, error in
+                        guard error == nil, let resCode = responseCode else {print("Error while updating profile"); return}
+                        
+                        if resCode == 200 {
+                            CoreDataController.updateUser(image: self.image,name:  self.name,surname:  self.surname)
+                        } else if resCode == 401 {
+                            CoreDataController.updateUser(name:  self.name,surname:  self.surname)
+                            self.showingAlert=true
+                        } else {
+                            self.showingAlert=true
                         }
+                        
                     }
+                    
+                    
                 }) {if underlyingVC.isEditing {Text("Done").bold().orange()} else {Text("Edit").orange()}}
             )
         }
