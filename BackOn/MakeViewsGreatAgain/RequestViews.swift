@@ -20,7 +20,7 @@ struct RequestRow: View {
                     Spacer()
                     Text("Tap on")
                     Image("AddNeedSymbol").font(.title)
-                    Text("to add a request\n\(Souls.soulsDict["Tech Assistance"] ?? 3)")
+                    Text("to add a request")
                     Spacer()
                 }.font(.body).foregroundColor(Color(.systemGray))
             } else {
