@@ -95,7 +95,7 @@ struct ProfileView: View {
                 trailing: Button(action: {
                     self.underlyingVC.toggleEditMode()
                     //Se sono in edit mode e qualche parametro è cambiato...
-                    if self.underlyingVC.isEditing && (self.image != nil || self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname ?? ""){
+                    if !self.underlyingVC.isEditing && (self.image != nil || self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname ?? ""){
                         var base64String: String? = nil
                         if(self.image != nil){
                             //Se ho cambiato fotografia la comprimo e la rendo stringa in base64
@@ -109,7 +109,7 @@ struct ProfileView: View {
                                 //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
                                 CoreDataController.updateUser(name: self.name, surname: self.surname, image: self.image)
                             }
-                            if resCode != 200 {self.showAlert = true}
+                            if resCode != 200 {self.showAlert = true} //Errore nel caricamento dell'immagine o altri errori vari
                         }
                     }
                 }) {if underlyingVC.isEditing {Text("Done").bold().orange()} else {Text("Edit").orange()}}

@@ -192,6 +192,7 @@ class CoreDataController {
         if(image != nil){
             loggedUser?.photo=image!
             loggedUser?.profilePic = Image(uiImage: image!)
+            //Manca photoURL, da ottenere da request OPPURE aggiungere in getMyBonds il nuovo user
         }
         loggedUser?.name = name
         loggedUser?.surname = surname
