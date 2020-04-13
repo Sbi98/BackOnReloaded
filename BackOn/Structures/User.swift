@@ -17,7 +17,6 @@ class User: ObservableObject, CustomStringConvertible {
     var photoURL: URL
     @Published var photo: UIImage?
     @Published var profilePic: Image?
-    
     public var description: String {return "\(identity) - #\(_id)\n"}
 
     init(name: String, surname: String?, email: String, photoURL: URL, _id: String, photo: UIImage? = nil) {

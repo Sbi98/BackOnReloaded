@@ -31,7 +31,7 @@ struct AddNeedView: View {
                     if splitted.count == 3 { city = "\(splitted[2])"}
                     if city == nil { city = "Incorrect city" }
                     DatabaseController.addRequest (
-                        title: self.shared.requestCategories[self.titlePickerValue],
+                        title: Souls.categories[self.titlePickerValue],
                         description: self.requestDescription == "" ? nil : self.requestDescription,
                         address: self.address,
                         city: city!,
@@ -57,7 +57,7 @@ struct AddNeedView: View {
                     HStack {
                         Text("Title: ").orange()
                         Spacer()
-                        Text(titlePickerValue == -1 ? "Click to select your need" : self.shared.requestCategories[titlePickerValue])
+                        Text(titlePickerValue == -1 ? "Click to select your need" : Souls.categories[titlePickerValue])
                             .colorIf(titleNeeded, .systemRed, titlePickerValue == -1 ? .systemGray3 : .black)
                             .onTapGesture {withAnimation{
                                 self.titlePickerValue = 0
@@ -105,7 +105,7 @@ struct AddNeedView: View {
             .navigationBarTitle(Text("Add a need").orange(), displayMode: .inline)
             .navigationBarItems(leading: Button(action: {self.underlyingVC.dismissVC()}){Text("Cancel").orange()}, trailing: confirmButton)
         }
-        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.shared.requestCategories, selectedValue: self.$titlePickerValue))
+        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: Souls.categories, selectedValue: self.$titlePickerValue))
         .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
     }
 }

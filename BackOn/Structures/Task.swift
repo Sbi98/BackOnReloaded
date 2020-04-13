@@ -19,6 +19,7 @@ class Task: ObservableObject, CustomStringConvertible {
     var helperID: String?
     var helperReport: String?
     var neederReport: String?
+    var suitability: Double {return Souls.calculateSuitability(discoverable: self)}
     
     @Published var mapSnap: UIImage?
     @Published var etaText = "Calculating..."

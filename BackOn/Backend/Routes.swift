@@ -9,7 +9,7 @@
 import Foundation
 
 struct ServerRoutes {
-    private static let baseURL = "http://192.168.1.11:3000/api"
+    private static let baseURL = "https://serverlessbackon.now.sh/api"
     static let signUp = {baseURL+"/signin.js"}()
     //static let getUserByID = {baseURL+"/getUserByID.js"}()
     //static let getBondByID = {baseURL+"/getBondByID.js"}()
