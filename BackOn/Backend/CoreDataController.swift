@@ -186,7 +186,8 @@ class CoreDataController {
         } catch {print("\nErrore recupero informazioni dal context \n \(error)\n")}
     }
 
-    static func updateUser(image: UIImage? = nil, name: String, surname: String, save: Bool = true) {
+    //Caro vincio, non so se ci sono controlli sulla sincronia da effettuare, penso di sì, li lascio a te :)
+    static func updateUser(name: String, surname: String, image: UIImage? = nil) {
         print("*** CD - \(#function) ***")
         if(image != nil){
             loggedUser?.photo=image!
@@ -194,7 +195,6 @@ class CoreDataController {
         }
         loggedUser?.name = name
         loggedUser?.surname = surname
-        
     }
     
     static func getCachedUsers() -> [User] {

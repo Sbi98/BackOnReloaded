@@ -239,22 +239,14 @@ class DatabaseController {
     static func updateProfile(newName: String, newSurname: String, newImage: String? = nil, completion: @escaping (Int?, ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
-            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id]
-            if(newName != "") {
-                parameters["name"] = newName
-            } else {
-                parameters["name"] = CoreDataController.loggedUser!.name
-            }
-            if(newSurname != "") {
-                parameters["surname"] = newSurname
-            } else {
-                parameters["surname"] = CoreDataController.loggedUser!.surname
-            }
+            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname]
             if(newImage != nil) {parameters["photo"] = newImage}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(400, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(400, "Error in " + #function + ". Invalid response!")}
+                ///Gennaro suggeriva di lasciarla così, è per caso meglio solo
+                //return completion(responseCode, nil)
                 guard responseCode != 200 else {return completion(200, nil)}
                 guard responseCode != 401 else {return completion(401, nil)}
                 completion(responseCode, nil)
@@ -262,21 +254,6 @@ class DatabaseController {
             
         } catch let error {completion(400, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
-    
-    ////  Non deve più esistere: sostituito con report bilaterale, stash a posteriori.
-    //    static func stashTask(toStash: Task, report: String, completion: @escaping (ErrorString?)-> Void){
-    //        do {
-    //            print("*** DB - \(#function) ***")
-    //            let parameters: [String: Any] = ["_id" : toStash._id, "title" : toStash.title, "description" : toStash.descr ?? "" , "neederID" : toStash.neederID , "date" : serverDateFormatter(date: toStash.date), "latitude" : toStash.position.coordinate.latitude, "longitude" : toStash.position.coordinate.longitude , "helperID" : toStash.helperID ?? "Error! NO HELPER!", "report" : report]
-    //            let request = initJSONRequest(urlString: ServerRoutes.stashTask, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "PUT")
-    //            URLSession.shared.dataTask(with: request) { data, response, error in
-    //                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
-    //                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
-    //                guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
-    //                completion(nil)
-    //            }.resume()
-    //        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
-    //    } //Error handling missing, but should work
     
     private static func removeBond(toRemove: Task, isRequest: Bool, receiverID: String?, completion: @escaping (ErrorString?)-> Void) {
         do {
