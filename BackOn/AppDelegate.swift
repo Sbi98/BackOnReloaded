@@ -47,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         // Initialize sign-in
-        GIDSignIn.sharedInstance()?.clientID = "445586099169-q07rg5bbaa4p5ajhe3gfitikj35ige1h.apps.googleusercontent.com"
+        GIDSignIn.sharedInstance()?.clientID = "571455866380-8d58drp1d8ap0bkh3tc1c7b29arrfr5c.apps.googleusercontent.com"
         GIDSignIn.sharedInstance().delegate = self
         registerForPushNotifications()
         return true
