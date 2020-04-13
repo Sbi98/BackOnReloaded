@@ -44,12 +44,14 @@ extension Text {
     
 }
 
+
 extension Image {
     init(uiImage: UIImage?) {
         if uiImage == nil {
             self.init("NobodyIcon")
         } else {
             self.init(uiImage: uiImage!)
+            self = self.renderingMode(.original)
         }
     }
     func avatar(size: CGFloat = 50) -> some View {
@@ -58,7 +60,6 @@ extension Image {
             .orange()
             .scaledToFit()
             .frame(width: size, height: size)
-            .foregroundColor(Color(.systemOrange))
             .background(Color.white)
             .clipShape(Circle())
             .overlay(Circle().stroke(Color.white, lineWidth: 1))

@@ -77,7 +77,7 @@ struct RequestView: View {
                         .background(request.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
                         .cornerRadius(10)
                         .shadow(color: Color(.systemGray3), radius: 3)
-                    Avatar(image: (request.helperID == nil ? nil : self.shared.users[request.helperID!]?.profilePic), size: 75)
+                    Avatar(request.helperID == nil ? nil : self.shared.users[request.helperID!], size: 75)
                         .offset(y: -70)
                         .shadow(color: Color(.systemGray3), radius: 3)
                 }

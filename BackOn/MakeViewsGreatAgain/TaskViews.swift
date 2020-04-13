@@ -17,23 +17,23 @@ struct TaskPreview: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 if mode == .RequestViews {
-                    Avatar(image: task.helperID == nil ? nil : self.shared.users[task.helperID!]?.profilePic)
+                    Avatar(task.helperID == nil ? nil : shared.users[task.helperID!])
                 } else if mode == .DiscoverableViews {
-                    Avatar(image: self.shared.discUsers[task.neederID]?.profilePic)
+                    Avatar(shared.discUsers[task.neederID])
                 } else {
-                    Avatar(image: self.shared.users[task.neederID]?.profilePic)
+                    Avatar(shared.users[task.neederID])
                 }
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
-                        Text(task.helperID == nil ? "Nobody accepted" : self.shared.users[task.helperID!]?.identity ?? "Helper with bad id")
+                        Text(task.helperID == nil ? "Nobody accepted" : shared.users[task.helperID!]?.identity ?? "Helper not found")
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     } else if mode == .DiscoverableViews {
-                        Text(self.shared.discUsers[task.neederID]?.identity ?? "Needer with bad id")
+                        Text(shared.discUsers[task.neederID]?.identity ?? "Needer not found")
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     } else {
-                        Text(self.shared.users[task.neederID]?.identity ?? "Needer with bad id")
+                        Text(shared.users[task.neederID]?.identity ?? "Needer not found")
                             .font(.title) //c'era 26 di grandezza invece di 28
                             .lineLimit(1)
                     }
@@ -58,12 +58,12 @@ struct TaskPreview: View {
 }
 
 struct TaskView: View {
-    @State var showModal = false
     @ObservedObject var task: Task
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
-
+    @State var showModal = false
+    
     var body: some View {
-        Button(action: {self.showModal = true}) {
+        return Button(action: {self.showModal = true}) {
             ZStack (alignment: .bottom){
                 if task.mapSnap == nil {
                     Image("DefaultMap").resizable().blur(radius: 5).frame(width: 320, height: 350).scaledToFill()
@@ -72,14 +72,10 @@ struct TaskView: View {
                 }
                 VStack (spacing: 0){
                     ZStack {
-                        Image("cAnnotation")
-                            .foregroundColor(Color(.systemOrange))
-                            .offset(y: -5)
-                            .scaleEffect(0.97)
-                        Avatar(image: self.shared.users[task.neederID]?.profilePic)
-                            .offset(y: -9.65)
+                        Image("cAnnotation").orange().offset(y: -5).scaleEffect(0.97)
+                        Avatar(shared.users[task.neederID]).offset(y: -9.65)
                     }.scaleEffect(1.2)
-                    Text(self.shared.users[task.neederID]?.name ?? "Needer with bad id")
+                    Text(shared.users[task.neederID]?.name ?? "Needer not found")
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                         .font(.system(size: 20))
@@ -87,11 +83,11 @@ struct TaskView: View {
                 }
                 .offset(y: -160)
                 VStack (spacing: 5){
-                    Text(self.task.title)
+                    Text(task.title)
                         .fontWeight(.semibold)
                         .font(.system(size: 25))
                         .foregroundColor(.white)
-                    Text("\(self.task.date, formatter: customDateFormat)")
+                    Text("\(task.date, formatter: customDateFormat)")
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 10)
                         .frame(width: 320, alignment: .trailing)

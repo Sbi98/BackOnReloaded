@@ -73,7 +73,7 @@ class DatabaseController {
                     shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < 70.0 ? true : false
                 }
                 for task in tasks.values {
-                    if task.date < now && task.neederReport == nil && shared.myExpiredTasks[task._id] == nil{ // se è un task scaduto e non esisteva lo aggiunge
+                    if task.date < now && task.neederReport == nil && shared.myExpiredTasks[task._id] == nil { // se è un task scaduto e non esisteva lo aggiunge
                         task.locate()
                         CoreDataController.addTask(task: task, save: false)
                         shared.myExpiredTasks[task._id] = task
@@ -82,10 +82,9 @@ class DatabaseController {
                         if shouldRequestETA { task.requestETA() }
                         task.locate()
                         MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
-                            guard error == nil, let snapshot = snapshot else {print("Error while getting snapshot in getMyBonds");return}
-                            task.mapSnap = snapshot.image
+                            if error == nil && snapshot != nil { task.mapSnap = snapshot!.image }
+                            CoreDataController.addTask(task: task, save: false)
                         }
-                        CoreDataController.addTask(task: task, save: false)
                         shared.myTasks[task._id] = task
                     }
                 }
@@ -114,16 +113,27 @@ class DatabaseController {
                     let corrispondent = shared.users[user._id]
                     if corrispondent == nil {
                         shared.users[user._id] = user
-                        CoreDataController.addUser(user: user, save: false)
+                        // uso una dispatchqueue per dare il tempo di fare il download dell'immagine dell'utente
+                        DispatchQueue(label: "addUser", qos: .utility).asyncAfter(deadline: .now() + 3) {
+                            CoreDataController.addUser(user: user, save: false)
+                        }
                     } else {
-                        if corrispondent!.identity != user.identity || corrispondent!.photoURL != user.photoURL {
+                        if corrispondent!.identity != user.identity {
+                            corrispondent!.name = user.name
+                            corrispondent!.surname = user.surname
+                            if corrispondent!.photoURL != user.photoURL {
+                                corrispondent!.photoURL = user.photoURL
+                                corrispondent!.photo = user.photo
+                            }
                             CoreDataController.updateUser(user: user, save: false)
                         }
                     }
                 }
-                do {
-                    try CoreDataController.saveContext()
-                } catch {print("Error while saving context")}
+                DispatchQueue(label: "saveContext", qos: .utility).asyncAfter(deadline: .now() + 5) {
+                    do {
+                        try CoreDataController.saveContext()
+                    } catch {print("Error while saving context!")}
+                }
                 print("*** DB - getMyBonds finished ***")
             }
         }
@@ -140,7 +150,7 @@ class DatabaseController {
                 guard responseCode == 200 else {return completion(nil,"Response code != 200 in \(#function): \(responseCode)")}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in " + #function)}
                 let _id = jsonResponse["_id"].stringValue
-                completion(User(name: name, surname: surname, email: email, photoURL: photoURL, _id: _id), nil)
+                completion(User(_id: _id, name: name, surname: surname, email: email, photoURL: photoURL), nil)
             }.resume()
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
@@ -322,27 +332,26 @@ class DatabaseController {
         let myID = CoreDataController.loggedUser!._id
         for current: JSON in jsonArray {
             let neederID = current["neederID"].stringValue
+            let helperID = current["helperID"].string
+            let helperReport = current["helperReport"].string
+            let neederReport = current["neederReport"].string
+            guard (myID != neederID && myID != helperID) || (myID == neederID && helperReport == nil) || (myID == helperID && neederReport == nil) else {continue}
             let title = current["title"].stringValue
             let descr = current["description"].string
             let date = serverDateFormatter(date: current["date"].stringValue)
             let latitude =  current["latitude"].doubleValue
             let longitude = current["longitude"].doubleValue
             let _id = current["_id"].stringValue
-            let helperID = current["helperID"].string
-            let helperReport = current["helperReport"].string
-            let neederReport = current["neederReport"].string
-            guard (myID != neederID && myID != helperID) || (myID == neederID && helperReport == nil) || (myID == helperID && neederReport == nil) else {continue}
             taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr, date: date, latitude: latitude, longitude: longitude, _id: _id)
             let user = current["user"].arrayValue.first
-            if user != nil {
-                let user = user!
-                let userID = user["_id"].stringValue //Superfluo, che facciamo?
+            if let user = user {
+                let userID = user["_id"].stringValue
                 if userDict[userID] == nil {
                     let userName = user["name"].stringValue
                     let userSurname = user["surname"].string
                     let userEmail = user["email"].stringValue
-                    let userPhoto = URL(string: user["photo"].stringValue)!
-                    userDict[userID] = User(name: userName, surname: userSurname, email: userEmail, photoURL: userPhoto, _id: userID)
+                    let userPhotoURL = URL(string: user["photo"].stringValue)
+                    userDict[userID] = User(_id: userID, name: userName, surname: userSurname, email: userEmail, photoURL: userPhotoURL)
                 }
             }
         }

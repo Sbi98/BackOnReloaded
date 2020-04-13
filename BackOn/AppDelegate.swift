@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     let discoverTabController: DiscoverTabController = DiscoverTabController()
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        CoreDataController.initController() //inizializza CoreDataController e recupera l'utente loggato
+        CoreDataController.initController() //inizializza CoreDataController e recupera l'utente loggato e il deviceToken
         MapController.initController() //avvia la localizzazione
         CalendarController.initController() //controlla i permessi del calendario
         if CoreDataController.loggedUser == nil {
@@ -70,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // 1. Convert device token to string
+        print("Registering for remote notifications")
         let tokenParts = deviceToken.map { data -> String in
             return String(format: "%02.2hhx", data)
         }
@@ -87,13 +87,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
             guard error == nil && granted else { print("Permission for push notifications not granted!"); return }
-            DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
+            DispatchQueue.main.sync { UIApplication.shared.registerForRemoteNotifications() }
         }
     }
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        guard error == nil else {print("Sign error"); return}
+        guard error == nil else {print("Error with Google signup"); return}
         DispatchQueue.main.async { self.shared.mainWindow = "LoadingPageView" }
         // Perform any operations on signed in user here.
         //let userid = user.userid                  // For client-side use only!
@@ -105,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
             email: user.profile.email!,
             photoURL: user.profile.imageURL(withDimension: 200)!
         ){ loggedUser, error in
-            guard error == nil, let loggedUser = loggedUser else {print("Error with Google SignUp");return} //FAI L'ALERT!
+            guard error == nil, let loggedUser = loggedUser else {print("Error with Google signup on the DB");return} //FAI L'ALERT!
             CoreDataController.signUp(user: loggedUser)
             DispatchQueue.main.async { self.shared.mainWindow = "CustomTabView" }
             DatabaseController.loadFromServer()
