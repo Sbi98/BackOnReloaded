@@ -8,19 +8,6 @@
 
 import SwiftUI
 
-extension Image {
-    func avatar(size: CGFloat = 50) -> some View {
-        return self
-            .resizable()
-            .scaledToFit()
-            .frame(width: size, height: size)
-            .foregroundColor(Color(.systemOrange))
-            .background(Color.white)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white, lineWidth: 1))
-    }
-}
-
 struct Avatar: View {
     let image: Image
     let size: CGFloat
@@ -43,3 +30,4 @@ struct Avatar: View {
 //            le omre servono per quando non siamo nella mappa, da modificare
     }
 }
+

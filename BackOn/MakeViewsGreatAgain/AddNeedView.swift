@@ -7,7 +7,7 @@ struct AddNeedView: View {
     @State var titlePickerValue = -1
     @State var requestDescription = ""
     @State var showDatePicker = false
-    @State var selectedDate = Date()
+    @State var selectedDate = Date(timeIntervalSinceReferenceDate: 0)
     @State var toggleRepeat = false
     @State var address = "Click to insert the location"
     @State var showAddressCompleter = false
@@ -22,9 +22,7 @@ struct AddNeedView: View {
             self.titleNeeded = self.titlePickerValue == -1
             self.dateNeeded = self.selectedDate < Date()
             if !(self.locationNeeded || self.titleNeeded || self.dateNeeded) {
-                DispatchQueue.main.async {
-                    self.underlyingVC.dismissVC()
-                }
+                DispatchQueue.main.async { self.underlyingVC.dismissVC() }
                 MapController.addressToCoordinates(self.address) { result, error in
                     guard error == nil, let result = result else {return}
                     let splitted = self.address.split(separator: ",")
@@ -58,71 +56,68 @@ struct AddNeedView: View {
                 Section(header: Text("Need informations")) {
                     HStack {
                         Text("Title: ").orange()
+                        Spacer()
                         Text(titlePickerValue == -1 ? "Click to select your need" : self.shared.requestCategories[titlePickerValue])
-                            .onTapGesture {
+                            .colorIf(titleNeeded, .systemRed, titlePickerValue == -1 ? .systemGray3 : .black)
+                            .onTapGesture {withAnimation{
                                 self.titlePickerValue = 0
-                                withAnimation{self.showTitlePicker.toggle()}
+                                self.showTitlePicker.toggle()
                                 self.titleNeeded = false
                                 self.underlyingVC.setEditMode(true)
-                            }
-                        if titleNeeded {
-                            Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
-                        }
+                            }}
                     }
                     HStack {
                         Text("Description: ").orange()
-                        TextField("Insert a description (optional)", text: self.$requestDescription).offset(y: 1)
+                        TextField("Insert a description (optional)", text: self.$requestDescription).multilineTextAlignment(.trailing).offset(y: 1)
                     }
                 }
+                if titleNeeded {Section(header: Text("You must insert a title!").colorIf(true, .systemRed)){EmptyView()}}
                 Section(header: Text("Time")) {
                     HStack{
                         Text("Date: ").orange()
-                        Text("\(selectedDate, formatter: customDateFormat)")
-                            .onTapGesture{withAnimation{
+                        Spacer()
+                        Text(selectedDate == Date(timeIntervalSinceReferenceDate: 0) ? "Click to insert a date" : "\(selectedDate, formatter: customDateFormat)")
+                            .colorIf(dateNeeded, .systemRed, selectedDate == Date(timeIntervalSinceReferenceDate: 0) ? .systemGray3 : .black)
+                            .onTapGesture {withAnimation{
                                 self.showDatePicker.toggle()
                                 self.dateNeeded = false
                                 self.underlyingVC.setEditMode(true)
                             }}
-                        if dateNeeded {
-                            Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
-                        }
                     }
-                    /*
-                     Toggle(isOn: $toggleRepeat) {
-                     Text("Repeat each week at the same hour")
-                     }
-                     */
                 }
                 Section(header: Text("Location")) {
                     HStack{
                         Text("Place: ").orange()
+                        Spacer()
                         Text(self.address)
-                            .onTapGesture{
+                            .colorIf(locationNeeded, .systemRed, address == "Click to insert the location" ? .systemGray3 : .black)
+                            .onTapGesture {withAnimation{
                                 self.showAddressCompleter = true
                                 self.locationNeeded = false
                                 self.underlyingVC.setEditMode(true)
-                            }
-                        if locationNeeded {
-                            Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
-                        }
+                            }}
                     }
                 }
-                /*
-                 Section(header: Text("Need informations")) {
-                 Toggle(isOn: $toggleVerified) {
-                 Text("Do you want only verified helpers?")
-                 }
-                 }
-                 */
             }
             .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
             .frame(width: UIScreen.main.bounds.width, alignment: .leading)
-            .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.shared.requestCategories, selectedValue: self.$titlePickerValue))
-            .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
             .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
             .navigationBarTitle(Text("Add a need").orange(), displayMode: .inline)
             .navigationBarItems(leading: Button(action: {self.underlyingVC.dismissVC()}){Text("Cancel").orange()}, trailing: confirmButton)
         }
+        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.shared.requestCategories, selectedValue: self.$titlePickerValue))
+        .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
     }
 }
 
+/*
+if locationNeeded {
+    Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
+}
+Toggle(isOn: $toggleRepeat) {
+Text("Repeat each week at the same hour")
+}
+Section(header: Text("Need informations")) {
+   Toggle(isOn: $toggleVerified) { Text("Do you want only verified helpers?") }
+}
+*/

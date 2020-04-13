@@ -78,9 +78,9 @@ class CoreDataController {
         } catch {print("\nError in loadFromCoreData while saving context\n")}
     }
     
-    static func saveDeviceToken(deviceToken: String){
+    static func saveDeviceToken(deviceToken: String?){
         print("*** CD - \(#function) ***")
-        guard deviceToken != "" && getDeviceToken() == nil else {return}
+        guard let deviceToken = deviceToken, getDeviceToken() == nil else {return}
         let entity = NSEntityDescription.entity(forEntityName: "PDeviceToken", in: context!)
         let newToken = PDeviceToken(entity: entity!, insertInto: context)
         newToken.token = deviceToken
@@ -177,25 +177,13 @@ class CoreDataController {
             guard let cachedUser = array.first else {return}
             cachedUser.setValue(user.name, forKey: "name")
             cachedUser.setValue(user.surname, forKey: "surname")
-            cachedUser.setValue(user.photo?.pngData(), forKey: "photoData")
+            cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")
             cachedUser.setValue(user.photoURL, forKey: "photoURL")
             if save {
                 try saveContext()
                 print("\nSaving context from \(#function)\n")
             }
         } catch {print("\nErrore recupero informazioni dal context \n \(error)\n")}
-    }
-
-    //Caro vincio, non so se ci sono controlli sulla sincronia da effettuare, penso di sì, li lascio a te :)
-    static func updateUser(name: String, surname: String, image: UIImage? = nil) {
-        print("*** CD - \(#function) ***")
-        if(image != nil){
-            loggedUser?.photo=image!
-            loggedUser?.profilePic = Image(uiImage: image!)
-            //Manca photoURL, da ottenere da request OPPURE aggiungere in getMyBonds il nuovo user
-        }
-        loggedUser?.name = name
-        loggedUser?.surname = surname
     }
     
     static func getCachedUsers() -> [User] {

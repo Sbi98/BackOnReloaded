@@ -123,10 +123,8 @@ struct AskAgainButton: View {
             isLarge: true,
             topText: "Ask again"
         ) {
-            UIViewController.main?.children.last?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddNeedView(titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address), modalPresentationStyle: .formSheet), animated: true)}
+            UIViewController.main?.presentedViewController?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddNeedView(titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1, requestDescription: self.request.descr ?? "", address: self.request.address), modalPresentationStyle: .formSheet, preventModalDismiss: true), animated: true)}
         }
-        //.sheet(isPresented: $showModal){AddNeedView(nestedPresentationMode: self.presentationMode, titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1 ,requestDescription: self.request.descr ?? "",address: self.request.address)}
-        
     }
 }
 

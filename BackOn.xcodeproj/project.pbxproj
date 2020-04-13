@@ -17,6 +17,7 @@
 		14457B3A23FEF2F500B617FF /* NeedDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14457B3923FEF2F500B617FF /* NeedDetailedView.swift */; };
 		145AE030243354C4006A8C0F /* GetNextCommitments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 145AE02F243354C4006A8C0F /* GetNextCommitments.swift */; };
 		1468EB702417ABD40065E0EF /* RequestViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1468EB6F2417ABD40065E0EF /* RequestViews.swift */; };
+		146BFEB02444AD8B00C249EC /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 146BFEAF2444AD8B00C249EC /* Extensions.swift */; };
 		146E5FE924129E7400DE1180 /* TaskViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 146E5FE824129E7400DE1180 /* TaskViews.swift */; };
 		14728ED2242FF73500AA4E4A /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14728ED1242FF73500AA4E4A /* Server.swift */; };
 		14728ED4242FF87700AA4E4A /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14728ED3242FF87700AA4E4A /* Routes.swift */; };
@@ -66,6 +67,7 @@
 		14457B3923FEF2F500B617FF /* NeedDetailedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeedDetailedView.swift; sourceTree = "<group>"; };
 		145AE02F243354C4006A8C0F /* GetNextCommitments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetNextCommitments.swift; sourceTree = "<group>"; };
 		1468EB6F2417ABD40065E0EF /* RequestViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestViews.swift; sourceTree = "<group>"; };
+		146BFEAF2444AD8B00C249EC /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		146E5FE824129E7400DE1180 /* TaskViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViews.swift; sourceTree = "<group>"; };
 		14728ED1242FF73500AA4E4A /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		14728ED3242FF87700AA4E4A /* Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routes.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				2F57600423F686F8001D97F6 /* LaunchScreen.storyboard */,
 				2F575FF623F686F7001D97F6 /* AppDelegate.swift */,
 				2F575FF823F686F7001D97F6 /* SceneDelegate.swift */,
+				146BFEAF2444AD8B00C249EC /* Extensions.swift */,
 				14A490F824439125009DE923 /* UIKitInterface.swift */,
 				2F57601823F6B403001D97F6 /* Backend */,
 				14A77D25240ED03100BCBF80 /* MakeViewsGreatAgain */,
@@ -409,6 +412,7 @@
 				2F57601723F6A9A2001D97F6 /* Shared.swift in Sources */,
 				14BBE73E2410005800C68D93 /* CustomTabView.swift in Sources */,
 				81A0C4B923F9C6F00065CC87 /* DiscoverDetailedViewOLD.swift in Sources */,
+				146BFEB02444AD8B00C249EC /* Extensions.swift in Sources */,
 				2F57602923F6B467001D97F6 /* Avatar.swift in Sources */,
 				1418E0D823FEEB7300C2B166 /* NeedView.swift in Sources */,
 				2F57603223F6B495001D97F6 /* UIElements.swift in Sources */,

@@ -13,7 +13,7 @@ import MapKit
 
 struct myOverlay: View {
     @Binding var isPresented: Bool
-    let opacity: Double = 0.7
+    let opacity: Double = 0.6
     let alignment: Alignment = .bottom
     let toOverlay: AnyView
     

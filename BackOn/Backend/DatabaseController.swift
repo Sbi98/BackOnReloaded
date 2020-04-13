@@ -126,7 +126,7 @@ class DatabaseController {
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["name": name, "surname": surname ?? "", "email" : email, "photo": "\(photoURL)", "deviceToken": CoreDataController.deviceToken ?? ""]
+            let parameters: [String: Any?] = ["name": name, "surname": surname, "email" : email, "photo": "\(photoURL)", "deviceToken": CoreDataController.deviceToken]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -184,7 +184,7 @@ class DatabaseController {
     static func addRequest(title: String, description: String?, address: String, city: String, date: Date, coordinates: CLLocationCoordinate2D, completion: @escaping (Task?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: Any] = ["title": title, "description": description ?? "" , "neederID" : CoreDataController.loggedUser!._id, "date": serverDateFormatter(date: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]
+            let parameters: [String: Any?] = ["title": title, "description": description, "neederID" : CoreDataController.loggedUser!._id, "date": serverDateFormatter(date: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]
             let request = initJSONRequest(urlString: ServerRoutes.addRequest, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -236,12 +236,12 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func updateProfile(newName: String, newSurname: String, newImage: String? = nil, completion: @escaping (Int?, ErrorString?)-> Void){
+    static func updateProfile(newName: String, newSurname: String, newImageEncoded: String? = nil, completion: @escaping (Int, ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
             var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname]
-            if(newImage != nil) {parameters["photo"] = newImage}
-            let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
+            if(newImageEncoded != nil) {parameters["photo"] = newImageEncoded}
+            let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(400, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(400, "Error in " + #function + ". Invalid response!")}
@@ -277,8 +277,8 @@ class DatabaseController {
     static func refreshToken(){
         do{
             print("*** DB - \(#function) ***")
-            let parameters: [String: String] = ["deviceToken": CoreDataController.deviceToken ?? "", "_id": CoreDataController.loggedUser!._id]
-            let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
+            let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
+            let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
@@ -295,7 +295,7 @@ class DatabaseController {
             print("*** DB - \(#function) ***")
             print ("Receiver ID: \(receiverID)")
             let parameters: [String: String] = ["receiverID": receiverID, "title": title, "body": body]
-            let request = initJSONRequest(urlString: ServerRoutes.sendNotification, body: try JSONSerialization.data(withJSONObject: parameters), httpMethod: "POST")
+            let request = initJSONRequest(urlString: ServerRoutes.sendNotification, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
@@ -320,17 +320,17 @@ class DatabaseController {
             let helperReport = current["helperReport"].string
             let neederReport = current["neederReport"].string
             guard (myID != neederID && myID != helperID) || (myID == neederID && helperReport == nil) || (myID == helperID && neederReport == nil) else {continue}
-            taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr == "" ? nil : descr, date: date, latitude: latitude, longitude: longitude, _id: _id)
+            taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr, date: date, latitude: latitude, longitude: longitude, _id: _id)
             let user = current["user"].arrayValue.first
             if user != nil {
                 let user = user!
                 let userID = user["_id"].stringValue //Superfluo, che facciamo?
                 if userDict[userID] == nil {
                     let userName = user["name"].stringValue
-                    let userSurname = user["surname"].stringValue
+                    let userSurname = user["surname"].string
                     let userEmail = user["email"].stringValue
                     let userPhoto = URL(string: user["photo"].stringValue)!
-                    userDict[userID] = User(name: userName, surname: userSurname == "" ? nil : userSurname, email: userEmail, photoURL: userPhoto, _id: userID)
+                    userDict[userID] = User(name: userName, surname: userSurname, email: userEmail, photoURL: userPhoto, _id: userID)
                 }
             }
         }

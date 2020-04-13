@@ -16,38 +16,6 @@ enum RequiredBy {
     case AroundYouMap
 }
 
-extension View {
-    var darkMode: Bool {
-        get {
-            return UIScreen.main.traitCollection.userInterfaceStyle == .dark
-        }
-    }
-    func myoverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
-        return self.overlay(myOverlay(isPresented: isPresented, toOverlay: AnyView(toOverlay)))
-    }
-    static func show() {
-        (UIApplication.shared.delegate as! AppDelegate).shared.activeView = String(describing: self)
-    }
-    static func isActive() -> Bool {
-        return (UIApplication.shared.delegate as! AppDelegate).shared.activeView == String(describing: self)
-    }
-    static func isMainWindow() -> Bool {
-        return (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow == String(describing: self)
-    }
-}
-
-extension Text {
-    func orange() -> Text {
-        return self.foregroundColor(Color(.systemOrange))
-    }
-}
-
-extension Image {
-    func orange() -> some View {
-        return self.foregroundColor(Color(.systemOrange))
-    }
-}
-
 struct MainView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della mainWindow alla View
     var body: some View {

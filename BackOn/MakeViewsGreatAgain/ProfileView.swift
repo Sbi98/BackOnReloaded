@@ -13,20 +13,20 @@ struct ProfileView: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
+    @State var profilePic: UIImage? = CoreDataController.loggedUser!.photo
+    @State var nameNeeded = false
     @State var showActionSheet = false
     @State var showAlert = false
-    @State var image: UIImage?
-    
     
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
             .default(Text("Take a picture")) {
                 self.showActionSheet.toggle()
-                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .default(Text("Photo Library")) {
                 self.showActionSheet.toggle()
-                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$image, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
             .destructive(Text("Cancel"))
         ])
@@ -39,26 +39,25 @@ struct ProfileView: View {
                 HStack {
                     Spacer()
                     Button(action: {if self.underlyingVC.isEditing{self.showActionSheet.toggle()}}){
-                        Avatar(image: image == nil ? CoreDataController.loggedUser!.profilePic : Image(uiImage: image!), size: 150)
-                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                            .shadow(radius: 5)
-                            .padding(.top)
-                            .padding()
-                    }.buttonStyle(PlainButtonStyle())
+                        Image(uiImage: profilePic).avatar(size: 150)
+                        }.buttonStyle(PlainButtonStyle()).padding()
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
                     Section(header: Text("Personal informations")) {
                         HStack {
                             Text("Name: ").orange()
-                            TextField("You haven't set a name yet", text: $name)
+                            TextField("Name field is requred!", text: $name)
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
+                            if name == "Name field is required" {
+                                Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
+                            }
                         }
                         HStack {
                             Text("Surname: ")
                                 .orange()
-                            TextField("You haven't set a surname yet", text: $surname)
+                            TextField("", text: $surname)
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
                         }
@@ -95,24 +94,21 @@ struct ProfileView: View {
                 trailing: Button(action: {
                     self.underlyingVC.toggleEditMode()
                     //Se sono in edit mode e qualche parametro è cambiato...
-                    if !self.underlyingVC.isEditing && (self.image != nil || self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname ?? ""){
-                        var base64String: String? = nil
-                        if(self.image != nil){
-                            //Se ho cambiato fotografia la comprimo e la rendo stringa in base64
-                            let imageData = self.image!.jpegData(compressionQuality: 0.20)
-                            base64String = imageData!.base64EncodedString(options: .lineLength64Characters)
-                        }
-                        DatabaseController.updateProfile(newName: self.name, newSurname: self.surname, newImage: base64String){ responseCode, error in
-                            guard error == nil, let resCode = responseCode else {print("Error while updating profile"); return}
-                            if resCode != 400{
-                                //200: Tutto bene, che sia caricamento dell'immagine e/o nome/cognome
-                                //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
-                                CoreDataController.updateUser(name: self.name, surname: self.surname, image: self.image)
-                            }
-                            if resCode != 200 {self.showAlert = true} //Errore nel caricamento dell'immagine o altri errori vari
-                        }
+                    guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo) else {return}
+                    guard self.name != "" else {return} //alert che il nome non può essere vuoto
+                    DatabaseController.updateProfile(
+                        newName: self.name,
+                        newSurname: self.surname,
+                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters)
+                    ){ responseCode, error in
+                        guard error == nil else {print("Error while updating profile"); return}
+                        //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
+                        CoreDataController.loggedUser!.name = self.name
+                        CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
+                        if responseCode != 200 {self.showAlert = true} //Errore nel caricamento dell'immagine o altri errori vari
+                        else {CoreDataController.loggedUser!.photo = self.profilePic}
                     }
-                }) {if underlyingVC.isEditing {Text("Done").bold().orange()} else {Text("Edit").orange()}}
+                }) { Text.ofEditButton(underlyingVC.isEditing) }
             )
         }
     }
