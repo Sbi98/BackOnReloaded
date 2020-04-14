@@ -2,8 +2,8 @@
 //  UIElements.swift
 //  BackOn
 //
-//  Created by Vincenzo Riccio on 12/02/2020.
-//  Copyright © 2020 Vincenzo Riccio. All rights reserved.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 12/02/2020.
+//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 
 import SwiftUI
@@ -129,7 +129,7 @@ struct AskAgainButton: View {
             isLarge: true,
             topText: "Ask again"
         ) {
-            UIViewController.main?.presentedViewController?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddNeedView(titlePickerValue: self.shared.requestCategories.firstIndex(of: self.request.title) ?? -1, requestDescription: self.request.descr ?? "", address: self.request.address), modalPresentationStyle: .formSheet, preventModalDismiss: true), animated: true)}
+            UIViewController.main?.presentedViewController?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddNeedView(titlePickerValue: Souls.categories.firstIndex(of: self.request.title) ?? -1, requestDescription: self.request.descr ?? "", address: self.request.address), modalPresentationStyle: .formSheet, preventModalDismiss: true), animated: true)}
         }
     }
 }
@@ -284,6 +284,22 @@ struct GenericButton: View {
             .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct NoDiscoverablesAroundYou: View {
+    var body: some View{
+        VStack(alignment: .center){
+        Spacer()
+        Image(systemName: "mappin.slash")
+            .resizable()
+            .frame(width: 152, height: 205)
+            .imageScale(.large)
+            .font(.largeTitle)
+            .foregroundColor(Color(.systemGray))
+            Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
+        Spacer()
+        }.offset(y: -30)
     }
 }
 

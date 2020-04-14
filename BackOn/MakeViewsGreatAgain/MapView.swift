@@ -2,7 +2,7 @@
 //  MapView.swift
 //  BackOn
 //
-//  Created by Giancarlo Sorrentino on 25/02/2020.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 25/02/2020.
 //  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 

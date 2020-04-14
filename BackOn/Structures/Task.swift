@@ -2,8 +2,8 @@
 //  Committment.swift
 //  BackOn
 //
-//  Created by Vincenzo Riccio on 11/02/2020.
-//  Copyright © 2020 Vincenzo Riccio. All rights reserved.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 11/02/2020.
+//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 
 import CoreLocation
@@ -19,6 +19,7 @@ class Task: ObservableObject, CustomStringConvertible {
     var helperID: String?
     var helperReport: String?
     var neederReport: String?
+    var suitability: Double {return Souls.calculateSuitability(discoverable: self)}
     
     @Published var waitingForServerResponse = false
     @Published var etaText = "Calculating..."

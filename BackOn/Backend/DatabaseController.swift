@@ -2,8 +2,8 @@
 //  DatabaseController.swift
 //  BackOn
 //
-//  Created by Giancarlo Sorrentino on 18/02/2020.
-//  Copyright © 2020 Giancarlo Sorrentino. All rights reserved.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 18/02/2020.
+//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,13 @@ import SwiftyJSON
 class DatabaseController {
     
     static func loadFromServer() {
-        refreshToken()
+        refreshSignIn(){ caregiver, housewife, runner, smartAssistant, error in
+            guard error == nil else{print(error!); return}
+            for requestType in Array(Souls.weights.keys){
+                let weights = Souls.weights[requestType]!
+                Souls.setValue(category: requestType, newValue: caregiver! * weights.0 + housewife! * weights.1 + runner! * weights.2 + smartAssistant! * weights.3)
+            }
+        }
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
             var shouldRequestETA = false
@@ -306,7 +312,7 @@ class DatabaseController {
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
     }
     
-    static func refreshToken(){
+    static func refreshSignIn(completion: @escaping (CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
         do{
             print("*** DB - \(#function) ***")
             let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
@@ -315,6 +321,12 @@ class DatabaseController {
                 guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
+                guard let data = data, let jsonResponse = try? JSON(data: data) else {return }
+                let caregiver = jsonResponse["caregiver"].doubleValue
+                let housewife = jsonResponse["housewife"].doubleValue
+                let runner = jsonResponse["runner"].doubleValue
+                let smartAssistant = jsonResponse["smartassistant"].doubleValue
+                completion(caregiver, housewife, runner, smartAssistant, nil)
             }.resume()
         } catch{
             print("Error in " + #function + ". The error is:\n" + error.localizedDescription)

@@ -30,6 +30,8 @@ struct AddNeedView: View {
                     if splitted.count == 2 { city = "\(splitted[1])"} //+2 se riaggiungi CAP e Stato
                     if splitted.count == 3 { city = "\(splitted[2])"}
                     if city == nil { city = "Incorrect city" }
+                    DatabaseController.addRequest (
+                        title: Souls.categories[self.titlePickerValue],
                     let request = Request(neederID: CoreDataController.loggedUser!._id, title: self.shared.requestCategories[self.titlePickerValue], descr: self.requestDescription == "" ? nil : self.requestDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude, _id: "waitingForServerResponse", address: self.address, city: city)
                     DispatchQueue.main.async { request.waitingForServerResponse = true; self.shared.myRequests[request._id] = request }
                     DatabaseController.addRequest(request: request) { id, error in
@@ -74,7 +76,7 @@ struct AddNeedView: View {
                     HStack {
                         Text("Title: ").orange()
                         Spacer()
-                        Text(titlePickerValue == -1 ? "Click to select your need" : self.shared.requestCategories[titlePickerValue])
+                        Text(titlePickerValue == -1 ? "Click to select your need" : Souls.categories[titlePickerValue])
                             .colorIf(titleNeeded, .systemRed, titlePickerValue == -1 ? .systemGray3 : .black)
                             .onTapGesture {withAnimation{
                                 self.titlePickerValue = 0
@@ -122,7 +124,7 @@ struct AddNeedView: View {
             .navigationBarTitle(Text("Add a need").orange(), displayMode: .inline)
             .navigationBarItems(leading: Button(action: {self.underlyingVC.dismissVC()}){Text("Cancel").orange()}, trailing: confirmButton)
         }
-        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: self.shared.requestCategories, selectedValue: self.$titlePickerValue))
+        .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: Souls.categories, selectedValue: self.$titlePickerValue))
         .myoverlay(isPresented: self.$showDatePicker, toOverlay: DatePickerGUI(selectedDate: self.$selectedDate))
     }
 }

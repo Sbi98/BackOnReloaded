@@ -2,8 +2,8 @@
 //  Extensions.swift
 //  BackOn
 //
-//  Created by Vincenzo Riccio on 13/04/2020.
-//  Copyright © 2020 Emmanuel Tesauro. All rights reserved.
+//  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 13/04/2020.
+//  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
 //
 
 import Foundation
