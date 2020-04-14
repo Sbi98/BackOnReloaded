@@ -45,7 +45,6 @@ extension Text {
     
 }
 
-
 extension Image {
     init(uiImage: UIImage?) {
         if uiImage == nil {
@@ -69,4 +68,3 @@ extension Image {
         return self.foregroundColor(Color(.systemOrange))
     }
 }
-

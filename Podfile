@@ -7,6 +7,7 @@ target 'BackOn' do
 
   # Pods for BackOn
 pod 'GoogleSignIn'
+pod 'TOCropViewController'
 pod 'SwiftyJSON', '~> 4.0'
 
 end

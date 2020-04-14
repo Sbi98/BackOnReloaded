@@ -61,6 +61,9 @@ class ViewControllerHolder: ObservableObject {
     ){
         value.present(CustomHostingController(contentView: viewToPresent, hideStatusBar: hideStatusBar, modalPresentationStyle: modalPresentationStyle, preventModalDismiss: preventModalDismiss), animated: true, completion: nil)
     }
+    func present(_ viewControllerToPresent: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+        value.present(viewControllerToPresent, animated: animated, completion: completion)
+    }
     func dismissVC() {
         value.dismiss(animated: true, completion: nil)
     }

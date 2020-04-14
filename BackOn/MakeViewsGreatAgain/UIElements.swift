@@ -10,6 +10,7 @@ import SwiftUI
 import MapKit
 import UIKit
 import GoogleSignIn
+import TOCropViewController
 
 let defaultButtonDimensions = (width: CGFloat(155.52), height: CGFloat(48))
 
@@ -322,7 +323,7 @@ struct ActivityIndicator: UIViewRepresentable {
         uiView.startAnimating()
     }
 }
- 
+
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     let source: UIImagePickerController.SourceType
@@ -331,18 +332,30 @@ struct ImagePicker: UIViewControllerRepresentable {
         return Coordinator(image: $image)
     }
     
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate, TOCropViewControllerDelegate {
         @Binding var image: UIImage?
         init(image: Binding<UIImage?>) {
             self._image = image
         }
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
-            image = selectedImage
-            picker.dismiss(animated: true, completion: nil)
+            guard let selectedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
+            let cropController = TOCropViewController(croppingStyle: .default, image: selectedImage)
+            cropController.delegate = self
+            cropController.aspectRatioPreset = .presetSquare
+            cropController.aspectRatioLockEnabled = true
+            cropController.resetAspectRatioEnabled = false
+            cropController.aspectRatioPickerButtonHidden = true
+            picker.pushViewController(cropController, animated: true)
         }
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true, completion: nil)
+            picker.dismiss(animated: true)
+        }
+        public func cropViewController(_ cropViewController: TOCropViewController, didCropTo image: UIImage, with cropRect: CGRect, angle: Int) {
+            self.image = image
+            cropViewController.dismiss(animated: true)
+        }
+        public func cropViewController(_ cropViewController: TOCropViewController, didFinishCancelled cancelled: Bool) {
+            cropViewController.dismiss(animated: true)
         }
     }
     
@@ -350,8 +363,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
         picker.imageExportPreset = .compatible
-        picker.setNeedsStatusBarAppearanceUpdate()
-        picker.allowsEditing = true
+        picker.allowsEditing = false
         picker.view.tintColor = .systemOrange
         if source != .camera {
             picker.sourceType = .photoLibrary
