@@ -29,20 +29,8 @@ struct FullDiscoverView: View {
                 Text("List").tag(false)
                 Text("Map").tag(true)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
-            if !shared.canLoadAroundYouMap || !discoverTabController.mapMode && self.shared.myDiscoverables.isEmpty {
+            if !shared.canLoadAroundYouMap || !discoverTabController.mapMode && shared.myDiscoverables.isEmpty {
                 NoDiscoverablesAroundYou() //Pin barrato, nessuno da aiutare
-            if !shared.canLoadAroundYouMap || shared.myDiscoverables.isEmpty {
-                VStack(alignment: .center){
-                Spacer()
-                Image(systemName: "mappin.slash")
-                    .resizable()
-                    .frame(width: 152, height: 205)
-                    .imageScale(.large)
-                    .font(.largeTitle)
-                    .foregroundColor(Color(.systemGray))
-                    Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
-                Spacer()
-                }.offset(y: -30)
             } else {
                 if discoverTabController.mapMode {
                     discoverTabController.aroundYouMap == nil ? MapView(mode: .AroundYouMap) : discoverTabController.aroundYouMap

@@ -30,9 +30,7 @@ struct AddNeedView: View {
                     if splitted.count == 2 { city = "\(splitted[1])"} //+2 se riaggiungi CAP e Stato
                     if splitted.count == 3 { city = "\(splitted[2])"}
                     if city == nil { city = "Incorrect city" }
-                    DatabaseController.addRequest (
-                        title: Souls.categories[self.titlePickerValue],
-                    let request = Request(neederID: CoreDataController.loggedUser!._id, title: self.shared.requestCategories[self.titlePickerValue], descr: self.requestDescription == "" ? nil : self.requestDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude, _id: "waitingForServerResponse", address: self.address, city: city)
+                    let request = Request(neederID: CoreDataController.loggedUser!._id, title: Souls.categories[self.titlePickerValue], descr: self.requestDescription == "" ? nil : self.requestDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude, _id: "waitingForServerResponse", address: self.address, city: city)
                     DispatchQueue.main.async { request.waitingForServerResponse = true; self.shared.myRequests[request._id] = request }
                     DatabaseController.addRequest(request: request) { id, error in
                         if error == nil, let id = id {
