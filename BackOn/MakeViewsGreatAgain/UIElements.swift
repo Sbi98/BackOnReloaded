@@ -74,8 +74,8 @@ struct DoItButton: View {
                 }
                 if user != nil {
                     CoreDataController.addUser(user: user!)
+                    let _ = CalendarController.addTask(task: self.task, needer: user!)
                 }
-                let _ = CalendarController.addTask(task: self.task, needer: user!)
             }
         }
     }
@@ -291,15 +291,15 @@ struct GenericButton: View {
 struct NoDiscoverablesAroundYou: View {
     var body: some View{
         VStack(alignment: .center){
-        Spacer()
-        Image(systemName: "mappin.slash")
-            .resizable()
-            .frame(width: 152, height: 205)
-            .imageScale(.large)
-            .font(.largeTitle)
-            .foregroundColor(Color(.systemGray))
-            Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
-        Spacer()
+            Spacer()
+            Image(systemName: "mappin.slash")
+                .resizable()
+                .frame(width: 152, height: 205)
+                .imageScale(.large)
+                .font(.largeTitle)
+                .foregroundColor(Color(.systemGray))
+                Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
+            Spacer()
         }.offset(y: -30)
     }
 }
