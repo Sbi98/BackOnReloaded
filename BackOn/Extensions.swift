@@ -12,13 +12,14 @@ import UIKit
 
 
 extension View {
-    var darkMode: Bool {
-        get {
-            return UIScreen.main.traitCollection.userInterfaceStyle == .dark
-        }
-    }
     func myoverlay<Content:View>(isPresented: Binding<Bool>, toOverlay: Content) -> some View {
-        return self.overlay(myOverlay(isPresented: isPresented, toOverlay: AnyView(toOverlay)))
+        return self.overlay(myOverlay(isPresented: isPresented, toOverlay: toOverlay))
+    }
+    func loadingOverlay(isPresented: Binding<Bool>, opacity: Double = 0.6) -> some View {
+        return self.overlay(myOverlay(isPresented: isPresented, toOverlay: ActivityIndicator(color: .white), alignment: .center, opacity: opacity))
+    }
+    func blackOverlayIf(_ show: Binding<Bool>, opacity: Double = 0.6) -> some View {
+        return self.overlay(myOverlay(isPresented: show, toOverlay: EmptyView(), alignment: .center, opacity: opacity))
     }
     static func show() {
         (UIApplication.shared.delegate as! AppDelegate).shared.activeView = String(describing: self)

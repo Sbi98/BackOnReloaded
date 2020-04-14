@@ -47,13 +47,13 @@ class DatabaseController {
                 let shared = (UIApplication.shared.delegate as! AppDelegate).shared
                 for taskid in shared.myTasks.keys { //cancella (anche da CoreData) tutti i task non più presenti nella risposta del server
                     if tasks[taskid] == nil {
-                        CoreDataController.deleteTask(task: shared.myTasks[taskid]!, save: false)
+                        CoreDataController.deleteBond(shared.myTasks[taskid]!, save: false)
                         shared.myTasks[taskid] = nil
                     }
                 }
                 for requestid in shared.myRequests.keys { //cancella (anche da CoreData) tutte le request non più presenti nella risposta del server
                     if requests[requestid] == nil {
-                        CoreDataController.deleteTask(task: shared.myRequests[requestid]!, save: false)
+                        CoreDataController.deleteBond(shared.myRequests[requestid]!, save: false)
                         shared.myRequests[requestid] = nil
                     }
                 }
@@ -69,15 +69,21 @@ class DatabaseController {
                 for task in tasks.values {
                     if task.date < now && task.neederReport == nil && shared.myExpiredTasks[task._id] == nil { // se è un task scaduto e non esisteva lo aggiunge
                         task.locate()
-                        CoreDataController.addTask(task: task, save: false)
+                        CoreDataController.addBond(task, save: false)
                         shared.myExpiredTasks[task._id] = task
                     }
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
                         if shouldRequestETA { task.requestETA() }
                         task.locate()
-                        MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
-                            if error == nil && snapshot != nil { task.mapSnap = snapshot!.image }
-                            CoreDataController.addTask(task: task, save: false)
+                        MapController.getSnapshot(location: task.position.coordinate, style: .dark){ snapshot, error in
+                            if error == nil, let snapshot = snapshot { DispatchQueue.main.async{task.darkMapSnap = snapshot.image} }
+                        }
+                        MapController.getSnapshot(location: task.position.coordinate, style: .light){ snapshot, error in
+                            if error == nil, let snapshot = snapshot { DispatchQueue.main.async{task.lightMapSnap = snapshot.image} }
+                        }
+                        // uso una dispatchqueue per dare il tempo di fare il download dello snapshot
+                        DispatchQueue(label: "addTask", qos: .utility).asyncAfter(deadline: .now() + 3) {
+                            CoreDataController.addBond(task, save: false)
                         }
                         shared.myTasks[task._id] = task
                     }
@@ -86,19 +92,19 @@ class DatabaseController {
                     if request.date < now { // se è una richiesta scaduta e non esisteva la aggiunge
                         if shared.myExpiredRequests[request._id] == nil && request.helperReport == nil {
                             request.locate()
-                            CoreDataController.addTask(task: request, save: false)
+                            CoreDataController.addBond(request, save: false)
                             shared.myExpiredRequests[request._id] = request
                         }
                     } else {
                         let corrispondent = shared.myRequests[request._id]
                         if corrispondent == nil { // se non esisteva la aggiunge
                             request.locate()
-                            CoreDataController.addTask(task: request, save: false)
+                            CoreDataController.addBond(request, save: false)
                             shared.myRequests[request._id] = request
                         } else {
                             if corrispondent!.helperID != request.helperID { // se esisteva ma l'helper è diverso lo aggiorna
                                 corrispondent!.helperID = request.helperID
-                                CoreDataController.updateRequest(request: request, save: false)
+                                CoreDataController.updateRequest(request, save: false)
                             }
                         }
                     }
@@ -191,7 +197,23 @@ class DatabaseController {
         } catch let error {completion(nil, nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func addRequest(title: String, description: String?, address: String, city: String, date: Date, coordinates: CLLocationCoordinate2D, completion: @escaping (Task?, ErrorString?)-> Void) {
+    static func addRequest(request: Request, completion: @escaping (String?, ErrorString?)-> Void) { // (id, error)
+        do {
+            print("*** DB - \(#function) ***")
+            let parameters: [String: Any?] = ["title": request.title, "description": request.descr, "neederID" : CoreDataController.loggedUser!._id, "date": serverDateFormatter(date: request.date), "latitude": request.position.coordinate.latitude , "longitude": request.position.coordinate.longitude]
+            let request = initJSONRequest(urlString: ServerRoutes.addRequest, body: try JSONSerialization.data(withJSONObject: parameters))
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(nil,"Error in " + #function + ". Invalid response!")}
+                guard responseCode == 200 else {return completion(nil,"Response code != 200 in \(#function): \(responseCode)")}
+                guard let data = data, let jsonResponse = try? JSON(data: data) else {return completion(nil, "Error with returned data in " + #function)}
+                let _id = jsonResponse["_id"].stringValue
+                completion(_id, nil)
+            }.resume()
+        } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+    } //Error handling missing, but should work
+    
+    static func addRequestOLD(title: String, description: String?, address: String, city: String, date: Date, coordinates: CLLocationCoordinate2D, completion: @escaping (Task?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
             let parameters: [String: Any?] = ["title": title, "description": description, "neederID" : CoreDataController.loggedUser!._id, "date": serverDateFormatter(date: date), "latitude": coordinates.latitude , "longitude": coordinates.longitude]

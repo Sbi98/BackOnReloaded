@@ -2,6 +2,7 @@ import CoreLocation
 import MapKit
 import SwiftUI
 
+
 class MapController {
     private static let locationManager = CLLocationManager()
     private static let delegate = LocationManagerDelegate(action: updateLocation(lastLocation:))
@@ -17,12 +18,13 @@ class MapController {
         }
     }
     
-    static func getSnapshot(location: CLLocationCoordinate2D, width: CGFloat = 320, height: CGFloat = 350, completion: @escaping (MKMapSnapshotter.Snapshot?, String?)-> Void) { //(snapshot, error) -> Void
+    static func getSnapshot(location: CLLocationCoordinate2D, style: UIUserInterfaceStyle, width: CGFloat = 320, height: CGFloat = 350, completion: @escaping (MKMapSnapshotter.Snapshot?, String?)-> Void) { //(snapshot, error) -> Void
         let mapSnapshotOptions = MKMapSnapshotter.Options()
         let mapSpan = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
         let region = MKCoordinateRegion(center: location, span: mapSpan)
         mapSnapshotOptions.region = region
         mapSnapshotOptions.size = CGSize(width: width, height: height)
+        mapSnapshotOptions.traitCollection = UITraitCollection(userInterfaceStyle: style)
         MKMapSnapshotter(options: mapSnapshotOptions).start { (snapshot:MKMapSnapshotter.Snapshot?, error:Error?) in
             completion(snapshot,error?.localizedDescription)
         }

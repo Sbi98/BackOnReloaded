@@ -15,26 +15,29 @@ class Task: ObservableObject, CustomStringConvertible {
     let descr: String?
     let date: Date
     let position: CLLocation
-    let _id: String
+    var _id: String
     var helperID: String?
     var helperReport: String?
     var neederReport: String?
     
-    @Published var mapSnap: UIImage?
+    @Published var waitingForServerResponse = false
     @Published var etaText = "Calculating..."
     @Published var address = "Locating..."
     @Published var city = "Locating..."
+    @Published var lightMapSnap: UIImage?
+    @Published var darkMapSnap: UIImage?
     
     public var description: String {return "    Request  #\(_id)\n         of  #\(neederID)\naccepted by  #\(helperID ?? "nobody")\n"}
     
-    init(neederID: String, helperID: String? = nil, title: String, descr: String? = nil, date: Date, latitude: Double, longitude: Double, _id: String, mapSnap: UIImage? = nil, address: String? = nil, city: String? = nil) {
+    init(neederID: String, helperID: String? = nil, title: String, descr: String? = nil, date: Date, latitude: Double, longitude: Double, _id: String, lightMapSnap: UIImage? = nil, darkMapSnap: UIImage? = nil, address: String? = nil, city: String? = nil) {
         self.neederID = neederID
         self.helperID = helperID
         self.title = title
         self.descr = descr
         self.date = date
         self._id = _id
-        self.mapSnap = mapSnap
+        self.lightMapSnap = lightMapSnap
+        self.darkMapSnap = darkMapSnap
         if address != nil { self.address = address! }
         if city != nil { self.city = city! }
         self.position = CLLocation(latitude: latitude, longitude: longitude)

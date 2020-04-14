@@ -39,22 +39,28 @@ struct CloseButton: View {
 
 struct DoItButton: View {
     @Environment(\.presentationMode) var presentationMode
-    let task: Task
+    @ObservedObject var task: Task
     var body: some View {
         GenericButton(
             isFilled: true,
             topText: "I'll do it"
         ) {
             let neederID = self.task.neederID
-            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss(); self.task.waitingForServerResponse = true }
             DatabaseController.addTask(toAccept: self.task){ error in
                 guard error == nil else {print(error!); return}
+                DispatchQueue.main.async { self.task.waitingForServerResponse = false }
                 var user: User?
                 self.task.helperID = CoreDataController.loggedUser!._id
-                MapController.getSnapshot(location: self.task.position.coordinate){ snapshot, error in
-                    guard error == nil, let snapshot = snapshot else {CoreDataController.addTask(task: self.task);return}
-                    self.task.mapSnap = snapshot.image
-                    CoreDataController.addTask(task: self.task)
+                MapController.getSnapshot(location: self.task.position.coordinate, style: .dark){ snapshot, error in
+                    if error == nil, let snapshot = snapshot { DispatchQueue.main.async{self.task.darkMapSnap = snapshot.image} }
+                }
+                MapController.getSnapshot(location: self.task.position.coordinate, style: .light){ snapshot, error in
+                    if error == nil, let snapshot = snapshot { DispatchQueue.main.async{self.task.lightMapSnap = snapshot.image} }
+                }
+                // uso una dispatchqueue per dare il tempo di fare il download dello snapshot
+                DispatchQueue(label: "addTask", qos: .utility).asyncAfter(deadline: .now() + 3) {
+                    CoreDataController.addBond(self.task)
                 }
                 DispatchQueue.main.sync {
                     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
@@ -76,18 +82,18 @@ struct DoItButton: View {
 
 struct CantDoItButton: View {
     @Environment(\.presentationMode) var presentationMode
-    
-    let task: Task
+    @ObservedObject var task: Task
     var body: some View {
         GenericButton(
             isFilled: true,
             topText: "Can't do it"
         ) {
-            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss(); self.task.waitingForServerResponse = true }
             DatabaseController.removeTask(toRemove: self.task){ error in
+                DispatchQueue.main.async { self.task.waitingForServerResponse = false}
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil }
-                CoreDataController.deleteTask(task: self.task)
+                CoreDataController.deleteBond(self.task)
             }
             let _ = CalendarController.remove(self.task)
         }
@@ -96,18 +102,18 @@ struct CantDoItButton: View {
 
 struct DontNeedAnymoreButton: View {
     @Environment(\.presentationMode) var presentationMode
-    let request: Task
+    let request: Request
     var body: some View {
         GenericButton(
             isFilled: true,
             isLarge: true,
             topText: "Don't need anymore"
         ) {
-            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss(); self.request.waitingForServerResponse = true  }
             DatabaseController.removeRequest(toRemove: self.request){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil }
-                CoreDataController.deleteTask(task: self.request)
+                CoreDataController.deleteBond(self.request)
                 let _ = CalendarController.remove(self.request)
             }
         }
@@ -137,7 +143,7 @@ struct ThankButton: View {
             isFilled: true,
             topText: helperToReport ? "Thank you" : "I feel better, thank you!"
         ) {
-            CoreDataController.deleteTask(task: self.task)
+            CoreDataController.deleteBond(self.task)
             DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
@@ -153,7 +159,7 @@ struct ReportButton: View {
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
             .default(Text("The person didn't show up")) {
-                CoreDataController.deleteTask(task: self.task)
+                CoreDataController.deleteBond(self.task)
                 DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
@@ -161,7 +167,7 @@ struct ReportButton: View {
                 }
             },
             .default(Text("The person had bad manners")) {
-                CoreDataController.deleteTask(task: self.task)
+                CoreDataController.deleteBond(self.task)
                 DatabaseController.reportTask(task: self.task, report: "Bad manners", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
@@ -282,8 +288,18 @@ struct GenericButton: View {
 }
 
 struct ActivityIndicator: UIViewRepresentable {
+    let style: UIActivityIndicatorView.Style
+    let color: UIColor
+    
+    init(style: UIActivityIndicatorView.Style = .large, color: UIColor = .secondaryLabel) {
+        self.style = style
+        self.color = color
+    }
+    
     func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
-        return UIActivityIndicatorView(style: .large)
+        let indicator = UIActivityIndicatorView(style: style)
+        indicator.color = color
+        return indicator
     }
     
     func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {

@@ -58,7 +58,7 @@ class Shared: ObservableObject {
         return Array(myDiscoverables.values)
     }
     
-    func arrayFromSet(mode: RequiredBy, expiredSet: Bool = false) -> [Task] {
+    func arrayFromSet(mode: RequiredBy, expiredSet: Bool = false) -> [Bond] {
         var toReturn: [Task]
         if mode == .TaskViews {
             toReturn = expiredSet ? expiredTasksArray() : tasksArray()

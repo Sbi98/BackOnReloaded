@@ -36,46 +36,50 @@ class CoreDataController {
     
     static func loadInShared() {
         let cachedUsers = getCachedUsers()
-        let cachedTasks = getCachedTasks()
+        let cachedBonds = getCachedBonds()
         let today = Date()
         for user in cachedUsers {
             DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.users[user._id] = user}
         }
-        for task in cachedTasks {
-            if task.neederID == loggedUser!._id { // è una mia request
-                if task.date < today { // è scaduta
-                    if task.date < today.advanced(by: -259200) { // è scaduta da più di 3 giorni
-                        deleteTask(task: task, save: false)
+        for bond in cachedBonds {
+            if bond.neederID == loggedUser!._id { // è una mia request
+                if bond.date < today { // è scaduta
+                    if bond.date < today.advanced(by: -259200) { // è scaduta da più di 3 giorni
+                        deleteBond(bond, save: false)
                     } else { // è scaduta da meno di 3 giorni
-                        if task.address == "Locating..." {task.locate()}
-                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredRequests[task._id] = task}
+                        if bond.address == "Locating..." {bond.locate()}
+                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredRequests[bond._id] = bond}
                     }
                 } else { // è attiva
-                    if task.address == "Locating..." {task.locate()}
-                    DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myRequests[task._id] = task}
+                    if bond.address == "Locating..." {bond.locate()}
+                    DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myRequests[bond._id] = bond}
                 }
             } else {
-                if task.helperID == loggedUser!._id { // è un mio task
-                    if task.date < today { // è scaduto
-                        if task.date < today.advanced(by: -259200) { // è scaduto da più di 3 giorni
-                            deleteTask(task: task, save: false)
+                if bond.helperID == loggedUser!._id { // è un mio task
+                    if bond.date < today { // è scaduto
+                        if bond.date < today.advanced(by: -259200) { // è scaduto da più di 3 giorni
+                            deleteBond(bond, save: false)
                         } else { // è scaduto da meno di 3 giorni
-                            if task.address == "Locating..." {task.locate()}
-                            DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredTasks[task._id] = task}
+                            if bond.address == "Locating..." {bond.locate()}
+                            DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myExpiredTasks[bond._id] = bond}
                         }
                     } else { // è attivo
-                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myTasks[task._id] = task}
-                        if task.address == "Locating..." {task.locate()}
-                        if task.mapSnap == nil {
-                            MapController.getSnapshot(location: task.position.coordinate){ snapshot, error in
-                                guard error == nil, let snapshot = snapshot else {print("Error while getting snapshot in loadInShared");return}
-                                task.mapSnap = snapshot.image
+                        DispatchQueue.main.async {(UIApplication.shared.delegate as! AppDelegate).shared.myTasks[bond._id] = bond}
+                        if bond.address == "Locating..." {bond.locate()}
+                        if bond.lightMapSnap == nil || bond.darkMapSnap == nil {
+                            MapController.getSnapshot(location: bond.position.coordinate, style: .dark){ snapshot, error in
+                                guard error == nil, let snapshot = snapshot else {print("Error while getting dark snapshot in loadInShared");return}
+                                DispatchQueue.main.async {bond.darkMapSnap = snapshot.image}
+                            }
+                            MapController.getSnapshot(location: bond.position.coordinate, style: .light){ snapshot, error in
+                                guard error == nil, let snapshot = snapshot else {print("Error while getting light snapshot in loadInShared");return}
+                                DispatchQueue.main.async {bond.lightMapSnap = snapshot.image}
                             }
                         }
                     }
                 } else {
-                    print("\nloadInShared - inconsistent state for\n\(task)\n")
-                    deleteTask(task: task, save: false)
+                    print("\nloadInShared - inconsistent state for\n\(bond)\n")
+                    deleteBond(bond, save: false)
                 }
             }
         }
@@ -235,31 +239,32 @@ class CoreDataController {
         } catch {print("\nError while deleting logged user: \(error.localizedDescription)\n");return}
     }
     
-    static func addTask(task: Task, save: Bool = true) {
+    static func addBond(_ bond: Bond, save: Bool = true) {
         print("*** CD - \(#function) ***")
         let entity = NSEntityDescription.entity(forEntityName: "PTasks", in: context!)
         let newTask = PTasks(entity: entity!, insertInto: context)
-        newTask.id = task._id
-        newTask.title = task.title
-        newTask.descr = task.descr
-        newTask.date = task.date
-        newTask.address = task.address
-        newTask.city = task.city
-        newTask.latitude = task.position.coordinate.latitude
-        newTask.longitude = task.position.coordinate.longitude
-        newTask.helperID = task.helperID
-        newTask.neederID = task.neederID
-        newTask.mapSnap = task.mapSnap?.pngData()
-        print("\n\(task)ready to save in memory\n")
+        newTask.id = bond._id
+        newTask.title = bond.title
+        newTask.descr = bond.descr
+        newTask.date = bond.date
+        newTask.address = bond.address
+        newTask.city = bond.city
+        newTask.latitude = bond.position.coordinate.latitude
+        newTask.longitude = bond.position.coordinate.longitude
+        newTask.helperID = bond.helperID
+        newTask.neederID = bond.neederID
+        newTask.lightMapSnap = bond.lightMapSnap?.pngData()
+        newTask.darkMapSnap = bond.darkMapSnap?.pngData()
+        print("\n\(bond)ready to save in memory\n")
         if save {
             do {
                 try saveContext()
                 print("Saved in memory")
-            } catch {print("\nError while saving \(task) in memory! The error is:\n\(error)\n");return}
+            } catch {print("\nError while saving \(bond) in memory! The error is:\n\(error)\n");return}
         }
     }
     
-    static func updateRequest(request: Task, save: Bool = true) {
+    static func updateRequest(_ request: Request, save: Bool = true) {
         print("*** CD - \(#function) ***")
         let fetchRequest: NSFetchRequest<PTasks> = PTasks.fetchRequest()
         do {
@@ -277,46 +282,48 @@ class CoreDataController {
         }
     }
     
-    static func getCachedTasks() -> [Task] {
+    static func getCachedBonds() -> [Bond] {
         print("*** CD - \(#function) ***")
-        var cachedTasks: [Task] = []
+        var cachedBonds: [Bond] = []
         let fetchRequest: NSFetchRequest<PTasks> = PTasks.fetchRequest()
         do {
             let array = try context!.fetch(fetchRequest)
-            for task in array {
-                cachedTasks.append(Task(
-                    neederID: task.neederID!,
-                    helperID: task.helperID,
-                    title: task.title!,
-                    descr: task.descr,
-                    date: task.date!,
-                    latitude: task.latitude,
-                    longitude: task.longitude,
-                    _id: task.id!,
-                    mapSnap: task.mapSnap == nil ? nil : UIImage(data: task.mapSnap!),
-                    address: task.address,
-                    city: task.city))
+            for bond in array {
+                cachedBonds.append(Bond(
+                    neederID: bond.neederID!,
+                    helperID: bond.helperID,
+                    title: bond.title!,
+                    descr: bond.descr,
+                    date: bond.date!,
+                    latitude: bond.latitude,
+                    longitude: bond.longitude,
+                    _id: bond.id!,
+                    lightMapSnap: bond.lightMapSnap == nil ? nil : UIImage(data: bond.lightMapSnap!),
+                    darkMapSnap: bond.darkMapSnap == nil ? nil : UIImage(data: bond.darkMapSnap!),
+                    address: bond.address,
+                    city: bond.city)
+                )
             }
         } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
-        return cachedTasks
+        return cachedBonds
     }
     
-    static func deleteTask(task: Task, save: Bool = true) {
+    static func deleteBond(_ bond: Bond, save: Bool = true) {
         print("*** CD - \(#function) ***")
         let fetchRequest: NSFetchRequest<PTasks> = PTasks.fetchRequest()
         do {
             let array = try context!.fetch(fetchRequest)
-            for pTask in array {
-                if pTask.id! == task._id {
-                    print("\n\(task)ready to be deleted from memory\n")
-                    context!.delete(pTask)
+            for pBond in array {
+                if pBond.id! == bond._id {
+                    print("\n\(bond)ready to be deleted from memory\n")
+                    context!.delete(pBond)
                 }
             }
             if save {
                 try saveContext()
-                print("Deleted from memory\n")
+                print("\(bond)deleted from memory\n")
             }
-        } catch {print("\nError while deleting logged user: \(error.localizedDescription)\n");return}
+        } catch {print("\nError while deleting bond: \(error.localizedDescription)\n")}
     }
 
 }

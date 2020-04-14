@@ -13,20 +13,27 @@ import MapKit
 
 struct myOverlay: View {
     @Binding var isPresented: Bool
-    let opacity: Double = 0.6
-    let alignment: Alignment = .bottom
+    let opacity: Double
+    let alignment: Alignment
     let toOverlay: AnyView
     
+    init<Content: View>(isPresented: Binding<Bool>, toOverlay: Content, alignment: Alignment = .bottom, opacity: Double = 0.6) {
+        self._isPresented = isPresented
+        self.toOverlay = AnyView(toOverlay)
+        self.alignment = alignment
+        self.opacity = opacity
+    }
+    
     var body: some View {
-        VStack {
+        GeometryReader { geometry in
             if self.isPresented {
                 Color
                     .black
-                    .opacity(opacity)
-                    .edgesIgnoringSafeArea(.all)
+                    .opacity(self.opacity)
                     .onTapGesture{withAnimation{self.isPresented = false}}
-                    .overlay(toOverlay, alignment: alignment)
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    .overlay(self.toOverlay, alignment: self.alignment)
+                    .edgesIgnoringSafeArea(.all)
+                    .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
                     .animation(.easeInOut)
             } else {
                 EmptyView()

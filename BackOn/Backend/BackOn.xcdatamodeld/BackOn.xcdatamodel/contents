@@ -14,13 +14,14 @@
     <entity name="PTasks" representedClassName="PTasks" syncable="YES" codeGenerationType="class">
         <attribute name="address" optional="YES" attributeType="String"/>
         <attribute name="city" optional="YES" attributeType="String"/>
+        <attribute name="darkMapSnap" optional="YES" attributeType="Binary"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descr" optional="YES" attributeType="String"/>
         <attribute name="helperID" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="lightMapSnap" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="mapSnap" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="neederID" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
     </entity>
@@ -35,7 +36,7 @@
     <elements>
         <element name="PDeviceToken" positionX="-468" positionY="171" width="128" height="58"/>
         <element name="PLoggedUser" positionX="-45" positionY="36" width="128" height="133"/>
-        <element name="PTasks" positionX="-671.9765625" positionY="20.36328125" width="128" height="208"/>
+        <element name="PTasks" positionX="-671.9765625" positionY="20.36328125" width="128" height="223"/>
         <element name="PUsers" positionX="-269.03125" positionY="291.82421875" width="150.8984375" height="133"/>
     </elements>
 </model>

@@ -53,22 +53,28 @@ struct TaskPreview: View {
                     .foregroundColor(.secondary)
                     .font(.body)
             }.offset(y: 1)
-        }.padding(12)
+        }
+        .padding(12)
+        .background(task.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1))))
+        .loadingOverlay(isPresented: $task.waitingForServerResponse)
+        .cornerRadius(10)
     }
 }
 
 struct TaskView: View {
+    @Environment(\.colorScheme) var colorScheme
     @ObservedObject var task: Task
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     @State var showModal = false
     
     var body: some View {
-        return Button(action: {self.showModal = true}) {
+        Button(action: {self.showModal = true}) {
             ZStack (alignment: .bottom){
-                if task.mapSnap == nil {
-                    Image("DefaultMap").resizable().blur(radius: 5).frame(width: 320, height: 350).scaledToFill()
+                if task.lightMapSnap != nil && task.darkMapSnap != nil {
+                    if colorScheme == .dark {Image(uiImage: task.darkMapSnap!).resizable().frame(width: 320, height: 350).scaledToFill()}
+                    else {Image(uiImage: task.lightMapSnap!).resizable().frame(width: 320, height: 350).scaledToFill()}
                 } else {
-                    Image(uiImage: task.mapSnap!).resizable().frame(width: 320, height: 350).scaledToFill()
+                    Image("DefaultMap").resizable().blur(radius: 5).frame(width: 320, height: 350).scaledToFill()
                 }
                 VStack (spacing: 0){
                     ZStack {
@@ -98,6 +104,7 @@ struct TaskView: View {
                 .cornerRadius(10)
             }
             .frame(width: 320, height: 350)
+            .loadingOverlay(isPresented: $task.waitingForServerResponse)
             .cornerRadius(10)
             .shadow(radius: 5)
         }

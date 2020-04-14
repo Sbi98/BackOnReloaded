@@ -30,18 +30,35 @@ struct AddNeedView: View {
                     if splitted.count == 2 { city = "\(splitted[1])"} //+2 se riaggiungi CAP e Stato
                     if splitted.count == 3 { city = "\(splitted[2])"}
                     if city == nil { city = "Incorrect city" }
-                    DatabaseController.addRequest (
+                    let request = Request(neederID: CoreDataController.loggedUser!._id, title: self.shared.requestCategories[self.titlePickerValue], descr: self.requestDescription == "" ? nil : self.requestDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude, _id: "waitingForServerResponse", address: self.address, city: city)
+                    DispatchQueue.main.async { request.waitingForServerResponse = true; self.shared.myRequests[request._id] = request }
+                    DatabaseController.addRequest(request: request) { id, error in
+                        if error == nil, let id = id {
+                            DispatchQueue.main.sync {
+                                self.shared.myRequests["waitingForServerResponse"] = nil
+                                request.waitingForServerResponse = false
+                                request._id = id
+                                self.shared.myRequests[id] = request
+                            }
+                            CoreDataController.addBond(request)
+                            let _ = CalendarController.addRequest(request: request)
+                        } else {
+                            DispatchQueue.main.async { request.waitingForServerResponse = false; self.shared.myRequests["waitingForServerResponse"] = nil }
+                        }
+                    }
+                    /*DatabaseController.addRequest (
                         title: self.shared.requestCategories[self.titlePickerValue],
                         description: self.requestDescription == "" ? nil : self.requestDescription,
                         address: self.address,
                         city: city!,
-                        date: self.selectedDate, coordinates: result
+                        date: self.selectedDate,
+                        coordinates: result
                     ){ newRequest, error in
                         guard error == nil, let request = newRequest else {print("Error while adding the request"); return}
                         DispatchQueue.main.async { self.shared.myRequests[request._id] = request }
                         CoreDataController.addTask(task: request)
                         let _ = CalendarController.addRequest(request: request)
-                    }
+                    }*/
                 }
             }
         }) {

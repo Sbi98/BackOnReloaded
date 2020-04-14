@@ -13,6 +13,7 @@ import GoogleSignIn
 import UserNotifications
 
 typealias ErrorString = String
+typealias Bond = Task
 typealias Request = Task
 typealias ExpiredRequest = Task
 typealias Discoverable = Task
