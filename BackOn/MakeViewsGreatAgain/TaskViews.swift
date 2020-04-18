@@ -26,36 +26,30 @@ struct TaskPreview: View {
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
                         Text(task.helperID == nil ? "Nobody accepted" : shared.users[task.helperID!]?.identity ?? "Helper not found")
-                            .font(.title) //c'era 26 di grandezza invece di 28
-                            .lineLimit(1)
                     } else if mode == .DiscoverableViews {
                         Text(shared.discUsers[task.neederID]?.identity ?? "Needer not found")
-                            .font(.title) //c'era 26 di grandezza invece di 28
-                            .lineLimit(1)
                     } else {
                         Text(shared.users[task.neederID]?.identity ?? "Needer not found")
-                            .font(.title) //c'era 26 di grandezza invece di 28
-                            .lineLimit(1)
                     }
-                    Text(task.title)
-                        .font(.subheadline)
-                        .fontWeight(.light)
-                }.padding(.leading, 5).offset(y: -1)
+                    Text(task.title).font(.subheadline).fontWeight(.light)
+                }
+                .font(.title) //c'era 26 di grandezza invece di 28
+                .lineLimit(1)
+                .tint(.white)
+                .padding(.leading, 5)
+                .offset(y: -1)
                 Spacer()
             }
             Spacer()
             HStack {
                 Text(task.city)
-                    .foregroundColor(.secondary)
-                    .font(.body)
                 Spacer()
                 Text("\(task.date, formatter: customDateFormat)")
-                    .foregroundColor(.secondary)
-                    .font(.body)
-            }.offset(y: 1)
+            }.font(.body).tint(.secondary).offset(y: 1)
         }
         .padding(12)
-        .background(task.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1))))
+        .backgroundIf(task.isExpired(), .expiredTask, .task)
+//        .background(task.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1))))
         .loadingOverlay(isPresented: $task.waitingForServerResponse)
         .cornerRadius(10)
     }
@@ -94,19 +88,19 @@ struct TaskView: View {
                         .font(.system(size: 25))
                         .foregroundColor(.white)
                     Text("\(task.date, formatter: customDateFormat)")
-                        .foregroundColor(.secondary)
+                        .tint(.taskGray)
                         .padding(.horizontal, 10)
                         .frame(width: 320, alignment: .trailing)
                         .offset(y: 1)
                 }
                 .frame(width: 320, height: 75)
-                .background(task.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
+                .backgroundIf(task.isExpired(), .expiredTask, .task)
                 .cornerRadius(10)
             }
             .frame(width: 320, height: 350)
             .loadingOverlay(isPresented: $task.waitingForServerResponse)
             .cornerRadius(10)
-            .shadow(radius: 5)
+            .shadow(color: Color(.systemGray3), radius: 3)
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: self.$showModal) {DetailedView(requiredBy: .TaskViews, selectedTask: self.task)}

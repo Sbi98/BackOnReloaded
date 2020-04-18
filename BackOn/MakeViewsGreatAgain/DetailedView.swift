@@ -14,8 +14,11 @@ struct DetailedView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     let requiredBy: RequiredBy
     @ObservedObject var selectedTask: Task
+    @State var showBusyDetail = false
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 0){
+        let isExpired = selectedTask.isExpired()
+        return VStack(alignment: .leading, spacing: 0){
             HStack {
                 if requiredBy == .RequestViews {
                     Avatar(selectedTask.helperID == nil ? nil : shared.users[selectedTask.helperID!])
@@ -28,54 +31,43 @@ struct DetailedView: View {
                     if requiredBy == .RequestViews {
                         Text(selectedTask.helperID == nil ? "Nobody accepted" : self.shared.users[selectedTask.helperID!]?.identity ?? "Helper with bad id")
                             .fontWeight(.medium)
-                            .font(.title)
-                            .animation(.easeOut(duration: 0))
                     } else if requiredBy == .DiscoverableViews  || requiredBy == .AroundYouMap {
                         Text(self.shared.discUsers[selectedTask.neederID]?.identity ?? "Needer with bad id")
                             .fontWeight(.medium)
-                            .font(.title)
-                            .animation(.easeOut(duration: 0))
                     } else {
                         Text(self.shared.users[selectedTask.neederID]?.identity ?? "Needer with bad id")
                             .fontWeight(.medium)
-                            .font(.title)
-                            .animation(.easeOut(duration: 0))
                     }
-                    Text(selectedTask.title)
-                        .font(.body)
-                        .animation(.easeOut(duration: 0))
-                }.padding(.horizontal)
+                    Text(selectedTask.title).font(.body)
+                }.font(.title).padding(.horizontal)
                 Spacer()
                 CloseButton()
             }
-            .frame(height: 54)
+            .frame(height: 55)
             .padding()
-            .background(selectedTask.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1)))
+            .backgroundIf(isExpired, .expiredTask, .detailedTaskHeaderBG)
             if requiredBy != .AroundYouMap {
                 MapView(mode: requiredBy, selectedTask: selectedTask)
             }
-            
             VStack(alignment: .leading, spacing: 20) {
                 Divider().hidden()
                 if selectedTask.descr != nil {
                     Text(selectedTask.descr!)
                         .fixedSize(horizontal: false, vertical: true)
                         .font(.system(size: 19))
-                        .animation(.easeOut(duration: 0))
                 }
-                
                 HStack {
                     if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
                         DirectionsButton(selectedTask: selectedTask)
                         Spacer()
                         DoItButton(task: selectedTask)
                     } else if requiredBy == .RequestViews {
-                        if selectedTask.isExpired() {
+                        if isExpired {
                             if selectedTask.helperID == nil {
                                 Spacer()
                                 AskAgainButton(request: selectedTask)
                                 Spacer()
-                            }else{
+                            } else {
                                 ThankButton(helperToReport: true, task: selectedTask)
                                 Spacer()
                                 ReportButton(helperToReport: true, task: selectedTask)
@@ -86,7 +78,7 @@ struct DetailedView: View {
                             Spacer()
                         }
                     } else {
-                        if selectedTask.isExpired(){
+                        if isExpired {
                             ThankButton(helperToReport: false, task: selectedTask)
                             Spacer()
                             ReportButton(helperToReport: false, task: selectedTask)
@@ -102,22 +94,30 @@ struct DetailedView: View {
                     Text("Address")
                         .foregroundColor(.secondary)
                         .font(.body)
-                        .animation(.easeOut(duration: 0))
                     Divider()
                     Text(selectedTask.address)
-                        .animation(.easeOut(duration: 0))
                 }
                 
                 VStack(alignment: .leading, spacing: 5) { //Scheduled date section
                     Text("Scheduled Date")
                         .foregroundColor(.secondary)
                         .font(.body)
-                        .animation(.easeOut(duration: 0))
                     Divider()
-                    Text("\(self.selectedTask.date, formatter: customDateFormat)")
-                        .animation(.easeOut(duration: 0))
+                    HStack {
+                        if showBusyDetail {
+                            Text("You seem busy, check the calendar").tint(.yellow).onTapGesture{self.showBusyDetail.toggle()}
+                        } else {
+                            Text("\(self.selectedTask.date, formatter: customDateFormat)")
+                        }
+                        if (requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap) && CalendarController.isBusy(when: selectedTask.date) {
+                            if !showBusyDetail {
+                                Image(systemName: "exclamationmark.triangle").tint(.yellow).onTapGesture{self.showBusyDetail.toggle()}
+                            }
+                        }
+                        Spacer()
+                    }
                 }
             }.padding(.horizontal, 20)
-        }
+        }.animation(.easeOut(duration: 0))
     }
 }

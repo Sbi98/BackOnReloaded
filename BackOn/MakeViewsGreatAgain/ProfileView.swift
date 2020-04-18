@@ -20,11 +20,11 @@ struct ProfileView: View {
     
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
-            .default(Text("Take a picture")) {
+            .default(Text("Take a picture").orange()) {
                 self.showActionSheet.toggle()
                 self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
-            .default(Text("Photo Library")) {
+            .default(Text("Photo Library").orange()) {
                 self.showActionSheet.toggle()
                 self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
             },
@@ -40,6 +40,9 @@ struct ProfileView: View {
                     Spacer()
                     Button(action: {if self.underlyingVC.isEditing{self.showActionSheet.toggle()}}){
                         Image(uiImage: profilePic).avatar(size: 150)
+                            .overlayIf(.constant(self.underlyingVC.isEditing), toOverlay: Text("Edit").font(.subheadline).frame(width: 150, height: 30).tint(.white).background(Color.black.opacity(0.7)), alignment: .bottom)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.white, lineWidth: 1))
                     }.buttonStyle(PlainButtonStyle()).padding()
                     Spacer()
                 }.background(Color(.systemGray6))
@@ -50,9 +53,6 @@ struct ProfileView: View {
                             TextField("Name field is requred!", text: $name)
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
-                            if name == "Name field is required" {
-                                Image(systemName: "exclamationmark.circle.fill").foregroundColor(Color(.systemRed))
-                            }
                         }
                         HStack {
                             Text("Surname: ")
@@ -82,7 +82,7 @@ struct ProfileView: View {
                     }
                 }
             }
-            .onTapGesture {UIApplication.shared.windows.first!.endEditing(true)}
+            .onTapGesture {self.underlyingVC.value.view.endEditing(true)}
             .actionSheet(isPresented: $showActionSheet){actionSheet}
             .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
             .alert(isPresented: $showAlert) {
@@ -92,6 +92,7 @@ struct ProfileView: View {
                 leading: Button(action: {self.underlyingVC.dismissVC()})
                 {Text("Cancel").orange()},
                 trailing: Button(action: {
+                    guard self.name != "" else {return}
                     self.underlyingVC.toggleEditMode()
                     //Se sono in edit mode e qualche parametro è cambiato...
                     guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo) else {return}

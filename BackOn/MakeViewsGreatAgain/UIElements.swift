@@ -226,12 +226,23 @@ struct ElementPickerGUI: View {
 
 struct DatePickerGUI: View {
     @Binding var selectedDate: Date
+    @Binding var showBusyWarning: Bool
     
     var body: some View {
-        DatePicker("",selection: self.$selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-            .labelsHidden()
-            .frame(width: UIScreen.main.bounds.width, height: 250)
-            .background(Color.primary.colorInvert())
+        let dateBinding: Binding<Date> = Binding(
+            get: {self.selectedDate},
+            set: { newDate in
+                self.selectedDate = newDate
+                self.showBusyWarning = CalendarController.isBusy(when: newDate)
+            }
+        )
+        return VStack (spacing: 0){
+            DatePicker("",selection: dateBinding, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                .labelsHidden()
+                .frame(width: UIScreen.main.bounds.width)
+            if showBusyWarning { Text("You seem busy, check the calendar").tint(.yellow).offset(y: -5)}
+            Spacer()
+        }.frame(width: UIScreen.main.bounds.width, height: 260).background(Color.primary.colorInvert())
     }
 }
 

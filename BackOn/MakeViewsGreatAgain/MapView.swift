@@ -56,7 +56,7 @@ class MapCoordinator: NSObject, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         guard let location = userLocation.location else { return }
-        if location.horizontalAccuracy < 70.0 {
+        if location.horizontalAccuracy < MapController.horizontalAccuracy {
             let myLocation = MKPointAnnotation()
             myLocation.coordinate = location.coordinate
             myLocation.title = "You"

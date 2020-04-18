@@ -22,7 +22,7 @@ struct RequestRow: View {
                     Image("AddNeedSymbol").font(.title)
                     Text("to add a request")
                     Spacer()
-                }.font(.body).foregroundColor(Color(.systemGray))
+                }.font(.body).tint(.gray)
             } else {
                 Button(action: {withAnimation{RequestsListView.show()}}) {
                     HStack {
@@ -32,7 +32,7 @@ struct RequestRow: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.headline)
-                            .foregroundColor(Color(.systemOrange))
+                            .orange()
                     }.padding(.horizontal, 20)
                 }.buttonStyle(PlainButtonStyle())
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -57,30 +57,33 @@ struct RequestView: View {
     @State var showModal = false
     
     var body: some View {
-        Button(action: {self.showModal = true}) {
+        let isExpired = request.isExpired()
+        let hasHelper = request.helperID != nil
+        return Button(action: {self.showModal = true}) {
             VStack {
                 ZStack {
                     VStack(spacing: 3){
-                        Text(request.helperID == nil ? "Nobody accepted" : self.shared.users[request.helperID!]?.identity ?? "Helper with bad id")
+                        Text(hasHelper ? self.shared.users[request.helperID!]?.identity ?? "Helper with bad id" : "Nobody accepted")
                             .fontWeight(.semibold)
                             .font(.system(size: 23))
-                            .foregroundColor(.white)
                         Text(request.title)
                             .font(.body)
-                            .foregroundColor(.white)
                         Text("\(request.date, formatter: customDateFormat)")
-                            .foregroundColor(Color.secondary)
+                            .tint(.taskGray)
                             .padding(.horizontal, 10)
                             .frame(width: 320, alignment: .trailing)
                     }
+                    .tintIf(hasHelper || isExpired, .white)
                     .offset(y: 10)
                     .frame(width: 320, height: 110)
-                    .background(request.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))))
+                    .backgroundIf(isExpired, .expiredTask, hasHelper ? .task : .white)
+                    .overlayIf(.constant(!hasHelper && !isExpired), toOverlay: RoundedRectangle(cornerRadius: 10).stroke(Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)), lineWidth: 3))
                     .loadingOverlay(isPresented: $request.waitingForServerResponse)
                     .cornerRadius(10)
                     .shadow(color: Color(.systemGray3), radius: 3)
-                    Avatar(request.helperID == nil ? nil : self.shared.users[request.helperID!], size: 75)
-                        .blackOverlayIf($request.waitingForServerResponse).clipShape(Circle())
+                    Avatar(hasHelper ? self.shared.users[request.helperID!] : nil, size: 75)
+                        .blackOverlayIf($request.waitingForServerResponse)
+                        .clipShape(Circle())
                         .offset(y: -70)
                         .shadow(color: Color(.systemGray3), radius: 3)
                 }
@@ -98,7 +101,7 @@ struct RequestsListView: View {
             Button(action: {withAnimation{HomeView.show()}}) {
                 HStack(spacing: 15) {
                     Image(systemName: "chevron.left")
-                        .font(.headline).foregroundColor(Color(.systemOrange))
+                        .font(.headline).orange()
                     Text("Your requests")
                         .fontWeight(.bold)
                         .font(.title)
