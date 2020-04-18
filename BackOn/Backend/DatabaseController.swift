@@ -13,8 +13,10 @@ import SwiftyJSON
 class DatabaseController {
     
     static func loadFromServer() {
-        refreshSignIn(){ caregiver, housewife, runner, smartAssistant, error in
+        refreshSignIn(){ name, surname, photoURL, caregiver, housewife, runner, smartAssistant, error in
             guard error == nil else{print(error!); return}
+            updateLoggedUserInfo(name: name, surname: surname, photoURL: photoURL)
+            CoreDataController.updateUser(user: CoreDataController.loggedUser!)
             for requestType in Array(Souls.weights.keys){
                 let weights = Souls.weights[requestType]!
                 Souls.setValue(category: requestType, newValue: caregiver! * weights.0 + housewife! * weights.1 + runner! * weights.2 + smartAssistant! * weights.3)
@@ -141,6 +143,25 @@ class DatabaseController {
                     } catch {print("Error while saving context!")}
                 }
                 print("*** DB - getMyBonds finished ***")
+            }
+        }
+    }
+    
+    static func updateLoggedUserInfo(name: String?, surname:String?, photoURL: String?){
+        let loggedUser = CoreDataController.loggedUser!
+        if(name != nil){
+            loggedUser.name = name!
+        }
+        if(name != nil){
+            loggedUser.surname = surname!
+        }
+        if(photoURL != nil){
+            let url = URL(string: photoURL!)
+            DispatchQueue(label: "loadProfilePic", qos: .utility).async {
+                do {
+                    guard photoURL != nil, let uiimage = try UIImage(data: Data(contentsOf: url!)) else { return }
+                    DispatchQueue.main.async { loggedUser.photo = uiimage }
+                } catch {}
             }
         }
     }
@@ -312,7 +333,7 @@ class DatabaseController {
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
     }
     
-    static func refreshSignIn(completion: @escaping (CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
+    static func refreshSignIn(completion: @escaping (String?, String?, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
         do{
             print("*** DB - \(#function) ***")
             let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
@@ -322,11 +343,14 @@ class DatabaseController {
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return }
+                let name = jsonResponse["name"].string
+                let surname = jsonResponse["surname"].string
+                let photoURL = jsonResponse["photo"].string
                 let caregiver = jsonResponse["caregiver"].doubleValue
                 let housewife = jsonResponse["housewife"].doubleValue
                 let runner = jsonResponse["runner"].doubleValue
                 let smartAssistant = jsonResponse["smartassistant"].doubleValue
-                completion(caregiver, housewife, runner, smartAssistant, nil)
+                completion(name, surname, photoURL, caregiver, housewife, runner, smartAssistant, nil)
             }.resume()
         } catch{
             print("Error in " + #function + ". The error is:\n" + error.localizedDescription)

@@ -193,6 +193,7 @@ class CoreDataController {
             cachedUser.setValue(user.name, forKey: "name")
             cachedUser.setValue(user.surname, forKey: "surname")
             cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")
+            print("aggiorno \(user.photoURL!)")
             cachedUser.setValue(user.photoURL, forKey: "photoURL")
             if save {
                 try saveContext()
