@@ -105,6 +105,11 @@ struct ProfileView: View {
                         CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
                         if responseCode != 200 {self.showAlert = true} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
                         else {CoreDataController.loggedUser!.photo = self.profilePic}
+                        if responseCode != 200 {self.showAlert = true} //Errore nel caricamento dell'immagine o altri errori vari
+                        else {
+                            CoreDataController.loggedUser!.photo = self.profilePic
+                            CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
+                        }
                     }
                 })
                 {Text.ofEditButton(underlyingVC.isEditing)}

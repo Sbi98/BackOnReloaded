@@ -193,6 +193,27 @@ class CoreDataController {
             cachedUser.setValue(user.name, forKey: "name")
             cachedUser.setValue(user.surname, forKey: "surname")
             cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")
+            print("aggiorno \(user.photoURL!)")
+            cachedUser.setValue(user.photoURL, forKey: "photoURL")
+            if save {
+                try saveContext()
+                print("\nSaving context from \(#function)\n")
+            }
+        } catch {print("\nErrore recupero informazioni dal context \n \(error)\n")}
+    }
+    
+    static func updateLoggedUser(user: User, save: Bool = true) {
+        print("*** CD - \(#function) ***")
+        let fetchRequest: NSFetchRequest<PLoggedUser> = PLoggedUser.fetchRequest()
+        do {
+            fetchRequest.predicate = NSPredicate(format: "id = %@", user._id)
+            fetchRequest.returnsObjectsAsFaults = false
+            let array = try context!.fetch(fetchRequest)
+            guard let cachedUser = array.first else {return}
+            cachedUser.setValue(user.name, forKey: "name")
+            cachedUser.setValue(user.surname, forKey: "surname")
+            cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")
+            print("aggiorno \(user.photoURL!)")
             cachedUser.setValue(user.photoURL, forKey: "photoURL")
             if save {
                 try saveContext()
