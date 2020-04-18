@@ -16,7 +16,7 @@ class DatabaseController {
         refreshSignIn(){ name, surname, photoURL, caregiver, housewife, runner, smartAssistant, error in
             guard error == nil else{print(error!); return}
             updateLoggedUserInfo(name: name, surname: surname, photoURL: photoURL)
-            CoreDataController.updateUser(user: CoreDataController.loggedUser!)
+            CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
             for requestType in Array(Souls.weights.keys){
                 let weights = Souls.weights[requestType]!
                 Souls.setValue(category: requestType, newValue: caregiver! * weights.0 + housewife! * weights.1 + runner! * weights.2 + smartAssistant! * weights.3)
@@ -149,10 +149,8 @@ class DatabaseController {
     
     static func updateLoggedUserInfo(name: String?, surname:String?, photoURL: String?){
         let loggedUser = CoreDataController.loggedUser!
-        if(name != nil){
-            loggedUser.name = name!
-        }
-        if(name != nil){
+        loggedUser.name = name!
+        if(surname != nil){
             loggedUser.surname = surname!
         }
         if(photoURL != nil){

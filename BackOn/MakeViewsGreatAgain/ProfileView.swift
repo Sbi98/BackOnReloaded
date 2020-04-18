@@ -109,7 +109,7 @@ struct ProfileView: View {
                         if responseCode != 200 {self.showAlert = true} //Errore nel caricamento dell'immagine o altri errori vari
                         else {
                             CoreDataController.loggedUser!.photo = self.profilePic
-                            CoreDataController.updateUser(user: CoreDataController.loggedUser!)
+                            CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
                         }
                     }
                 }) { Text.ofEditButton(underlyingVC.isEditing) }
