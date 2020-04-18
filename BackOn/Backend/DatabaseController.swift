@@ -283,13 +283,8 @@ class DatabaseController {
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(400, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion(400, "Error in " + #function + ". Invalid response!")}
-                ///Gennaro suggeriva di lasciarla così, è per caso meglio solo
-                //return completion(responseCode, nil)
-                guard responseCode != 200 else {return completion(200, nil)}
-                guard responseCode != 401 else {return completion(401, nil)}
-                completion(responseCode, nil)
+                completion(responseCode, responseCode == 400 ? "Server function returned 400" : nil)
             }.resume()
-            
         } catch let error {completion(400, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     

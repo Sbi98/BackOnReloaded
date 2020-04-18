@@ -15,32 +15,31 @@ struct ProfileView: View {
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
     @State var profilePic: UIImage? = CoreDataController.loggedUser!.photo
     @State var nameNeeded = false
-    @State var showActionSheet = false
     @State var showAlert = false
     
-    var actionSheet: ActionSheet {
-        ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
-            .default(Text("Take a picture").orange()) {
-                self.showActionSheet.toggle()
-                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
-            },
-            .default(Text("Photo Library").orange()) {
-                self.showActionSheet.toggle()
-                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
-            },
-            .destructive(Text("Cancel"))
-        ])
-    }
-    
     var body: some View {
+        let optionMenu = UIAlertController(title: nil, message: "Choose Option", preferredStyle: .actionSheet)
+        optionMenu.view.tintColor = .systemOrange
+        let camera = UIAlertAction(title: "Take a picture", style: .default, handler: {_ in
+            self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+        })
+        let photoLibrary = UIAlertAction(title: "Choose from library", style: .default, handler: {_ in
+            self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+        })
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+        cancel.setValue(UIColor.systemRed, forKey: "titleTextColor")
+        optionMenu.addAction(camera)
+        optionMenu.addAction(photoLibrary)
+        optionMenu.addAction(cancel)
+        let editPhotoOverlay = Text("Edit").font(.subheadline).frame(width: 150, height: 30).tint(.white).background(Color.black.opacity(0.7))
         UITableView.appearance().backgroundColor = .systemGray6
         return NavigationView {
             VStack (spacing: 0){
                 HStack {
                     Spacer()
-                    Button(action: {if self.underlyingVC.isEditing{self.showActionSheet.toggle()}}){
+                    Button(action: {if self.underlyingVC.isEditing{self.underlyingVC.present(optionMenu)}}){
                         Image(uiImage: profilePic).avatar(size: 150)
-                            .overlayIf(.constant(self.underlyingVC.isEditing), toOverlay: Text("Edit").font(.subheadline).frame(width: 150, height: 30).tint(.white).background(Color.black.opacity(0.7)), alignment: .bottom)
+                            .overlayIf(.constant(self.underlyingVC.isEditing), toOverlay: editPhotoOverlay, alignment: .bottom)
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.white, lineWidth: 1))
                     }.buttonStyle(PlainButtonStyle()).padding()
@@ -69,21 +68,20 @@ struct ProfileView: View {
                     }
                     
                     Section(header: EmptyView()) {
-                        HStack {
-                            Button(action: {
-                                print("Logging out from Google!")
-                                GIDSignIn.sharedInstance()?.disconnect()
-                            }) {
+                        Button(action: {
+                            print("Logging out from Google!")
+                            GIDSignIn.sharedInstance()?.disconnect()
+                        }) {
+                            HStack {
                                 Text("Logout").orange()
+                                Spacer()
+                                Image(systemName: "chevron.right").tint(.primary)
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right")
                         }
                     }
                 }
             }
             .onTapGesture {self.underlyingVC.value.view.endEditing(true)}
-            .actionSheet(isPresented: $showActionSheet){actionSheet}
             .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Error while updating profile"), message: Text("Check your connection and try again later"), dismissButton: .default(Text("Got it!")))
@@ -102,21 +100,30 @@ struct ProfileView: View {
                         newSurname: self.surname,
                         newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters)
                     ){ responseCode, error in
-                        guard error == nil else {print("Error while updating profile"); return}
-                        //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
+                        guard error == nil else {self.showAlert = true; print("Error while updating profile"); return}
                         CoreDataController.loggedUser!.name = self.name
                         CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
-                        if responseCode != 200 {self.showAlert = true} //Errore nel caricamento dell'immagine o altri errori vari
+                        if responseCode != 200 {self.showAlert = true} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
                         else {CoreDataController.loggedUser!.photo = self.profilePic}
                     }
-                }) { Text.ofEditButton(underlyingVC.isEditing) }
+                })
+                {Text.ofEditButton(underlyingVC.isEditing)}
             )
-        }
+        }//.actionSheet(isPresented: $showActionSheet){actionSheet}
     }
 }
 
-struct ProfileView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileView()
-    }
-}
+//    @State var showActionSheet = false
+//    var actionSheet: ActionSheet {
+//        ActionSheet(title: Text("Upload a profile pic"), message: Text("Choose Option"), buttons: [
+//            .default(Text("Take a picture").orange()) {
+//                self.showActionSheet.toggle()
+//                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .camera).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+//            },
+//            .default(Text("Photo Library").orange()) {
+//                self.showActionSheet.toggle()
+//                self.underlyingVC.presentViewInChildVC(ImagePicker(image: self.$profilePic, source: .photoLibrary).edgesIgnoringSafeArea(.all), hideStatusBar: true)
+//            },
+//            .destructive(Text("Cancel"))
+//        ])
+//    }
