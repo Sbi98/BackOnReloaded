@@ -51,11 +51,7 @@ class Souls{
     
     static func calculateSuitability(discoverable: Task) -> Double{
         if let currentLocation = MapController.lastLocation{
-//            if discoverable.title == "Study Support" || discoverable.title == "Tech Assistance"{
-//            print("\nDiscoverable name and needer: \(discoverable.title) \(discoverable.neederID) Num: \(soulsDict[discoverable.title]!)Den: \((atan(0.3 * discoverable.position.distance(from: currentLocation)/1000 + 0.45)))")
-//            print(soulsDict[discoverable.title]!/(atan(0.3 * discoverable.position.distance(from: currentLocation)/1000 + 0.45)))
-//            }
-            return soulsDict[discoverable.title]!/(atan(0.3 * discoverable.position.distance(from: currentLocation)/1000 + 0.45))*(0.5 + 1/sqrt(0.5 * discoverable.date.distance(to: Date())/86400 + 0.25))
+            return (soulsDict[discoverable.title]!+1)/(atan(0.3 * discoverable.position.distance(from: currentLocation)/1000 + 0.45))*(0.5 + 1/sqrt(-0.5 * discoverable.date.distance(to: Date())/86400 + 0.25))
         } else{
             return soulsDict[discoverable.title]!
         }
