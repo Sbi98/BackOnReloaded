@@ -19,7 +19,7 @@ struct DetailedView: View {
     var body: some View {
         let isExpired = selectedTask.isExpired()
         return VStack(alignment: .leading, spacing: 0){
-            HStack {
+            HStack (spacing: 0) {
                 if requiredBy == .RequestViews {
                     Avatar(selectedTask.helperID == nil ? nil : shared.users[selectedTask.helperID!])
                 } else if requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap {
@@ -27,7 +27,7 @@ struct DetailedView: View {
                 } else {
                     Avatar(shared.users[selectedTask.neederID])
                 }
-                VStack(alignment: .leading){
+                VStack(alignment: .leading) {
                     if requiredBy == .RequestViews {
                         Text(selectedTask.helperID == nil ? "Nobody accepted" : self.shared.users[selectedTask.helperID!]?.identity ?? "Helper with bad id")
                             .fontWeight(.medium)

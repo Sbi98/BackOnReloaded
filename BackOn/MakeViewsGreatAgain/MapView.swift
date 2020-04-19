@@ -112,8 +112,6 @@ struct MapView: UIViewRepresentable {
             }
             discoverTabController.baseMKMap = mapView
             return mapView
-        default:
-            return mapView
         }
     }
     

@@ -17,12 +17,12 @@ struct FullDiscoverView: View {
     var body: some View {
         VStack (alignment: .center) {
             HStack{
-            Text("Around you")
-                .fontWeight(.bold)
-                .font(.title)
-                .frame(alignment: .leading)
-                .padding(.leading)
-                .offset(y: 2)
+                Text("Around you")
+                    .fontWeight(.bold)
+                    .font(.title)
+                    .frame(alignment: .leading)
+                    .padding(.leading)
+                    .offset(y: 2)
                 Spacer()
             }
             Picker(selection: $discoverTabController.mapMode, label: Text("Select")) {
@@ -33,7 +33,7 @@ struct FullDiscoverView: View {
                 NoDiscoverablesAroundYou() //Pin barrato, nessuno da aiutare
             } else {
                 if discoverTabController.mapMode {
-                    discoverTabController.aroundYouMap == nil ? MapView(mode: .AroundYouMap) : discoverTabController.aroundYouMap
+                    MapView(mode: .AroundYouMap)
                 } else {
                     ListView(mode: .DiscoverableViews)
                 }
@@ -63,7 +63,6 @@ class DiscoverTabController: ObservableObject {
     @Published var showModal = false
     @Published var selectedTask: Task?
     @Published var baseMKMap: MKMapView?
-    @Published var aroundYouMap: MapView?
     @Published var mapMode = true {
         didSet {
             if oldValue == true && self.mapMode == false {

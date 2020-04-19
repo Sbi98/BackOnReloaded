@@ -47,7 +47,13 @@ struct DoItButton: View {
             topText: "I'll do it"
         ) {
             let neederID = self.task.neederID
-            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss(); self.task.waitingForServerResponse = true }
+            DispatchQueue.main.async {
+                self.presentationMode.wrappedValue.dismiss()
+                self.task.waitingForServerResponse = true
+                let discController = (UIApplication.shared.delegate as! AppDelegate).discoverTabController
+                discController.showSheet = false
+                if let annotation = discController.baseMKMap?.selectedAnnotations.first { discController.baseMKMap?.removeAnnotation(annotation) }
+            }
             DatabaseController.addTask(toAccept: self.task){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async { self.task.waitingForServerResponse = false }

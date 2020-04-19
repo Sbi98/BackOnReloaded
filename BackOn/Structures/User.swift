@@ -53,3 +53,12 @@ struct Avatar: View {
 }
 
 let userNotFound = User(_id: "", name: "User not found", surname: nil, email: "", photoURL: nil)
+
+/*
+static func == (lhs: User, rhs: User) -> Bool {
+    return
+        lhs._id == rhs._id &&
+        lhs.photoURL == rhs.photoURL &&
+        lhs.identity == rhs.identity
+}
+*/
