@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AddNeedView: View {
+struct AddRequestView: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     let shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
@@ -142,7 +142,7 @@ struct AddNeedView: View {
             .onTapGesture {self.underlyingVC.value.view.endEditing(true)}
             .frame(width: UIScreen.main.bounds.width, alignment: .leading)
             .sheet(isPresented: self.$showAddressCompleter){searchLocation(selection: self.$address)}
-            .navigationBarTitle(Text("Add a need").orange(), displayMode: .inline)
+            .navigationBarTitle(Text("Add a request").orange(), displayMode: .inline)
             .navigationBarItems(leading: Button(action: {self.underlyingVC.dismissVC()}){Text("Cancel").orange()}, trailing: confirmButton)
         }
         .myoverlay(isPresented: self.$showTitlePicker, toOverlay: ElementPickerGUI(pickerElements: Souls.categories, selectedValue: self.$titlePickerValue))

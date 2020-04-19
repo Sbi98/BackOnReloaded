@@ -14,7 +14,9 @@ struct TaskPreview: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        let isExpired = task.isExpired()
+        let hasHelper = task.helperID != nil
+        return VStack(alignment: .leading, spacing: 0) {
             HStack {
                 if mode == .RequestViews {
                     Avatar(task.helperID == nil ? nil : shared.users[task.helperID!])
@@ -35,7 +37,7 @@ struct TaskPreview: View {
                 }
                 .font(.title) //c'era 26 di grandezza invece di 28
                 .lineLimit(1)
-                .tint(.white)
+                .tintIf(mode == .RequestViews && !hasHelper, .orange, .white)
                 .padding(.leading, 5)
                 .offset(y: -1)
                 Spacer()
@@ -48,8 +50,8 @@ struct TaskPreview: View {
             }.font(.body).tint(.secondary).offset(y: 1)
         }
         .padding(12)
-        .backgroundIf(task.isExpired(), .expiredTask, .task)
-//        .background(task.isExpired() ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color(UIColor(#colorLiteral(red: 0.9450980392, green: 0.8392156863, blue: 0.6705882353, alpha: 1))))
+        .backgroundIf(isExpired, .expiredTask, mode == .RequestViews && !hasHelper ? .white : .task)
+        .overlayIf(.constant(mode == .RequestViews && !hasHelper && !isExpired), toOverlay: RoundedRectangle(cornerRadius: 10).stroke(Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)), lineWidth: 3))
         .loadingOverlay(isPresented: $task.waitingForServerResponse)
         .cornerRadius(10)
     }

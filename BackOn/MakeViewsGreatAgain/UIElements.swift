@@ -136,7 +136,7 @@ struct AskAgainButton: View {
             isLarge: true,
             topText: "Ask again"
         ) {
-            UIViewController.main?.presentedViewController?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddNeedView(titlePickerValue: Souls.categories.firstIndex(of: self.request.title) ?? -1, requestDescription: self.request.descr ?? "", address: self.request.address), modalPresentationStyle: .formSheet, preventModalDismiss: true), animated: true)}
+            UIViewController.main?.presentedViewController?.dismiss(animated: true) { UIViewController.main?.present(CustomHostingController(contentView: AddRequestView(titlePickerValue: Souls.categories.firstIndex(of: self.request.title) ?? -1, requestDescription: self.request.descr ?? "", address: self.request.address), modalPresentationStyle: .formSheet, preventModalDismiss: true), animated: true)}
         }
     }
 }
@@ -197,7 +197,7 @@ struct ReportButton: View {
 struct AddNeedButton: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
-        Button(action: {self.underlyingVC.presentViewInChildVC(AddNeedView(), modalPresentationStyle: .formSheet)}) {
+        Button(action: {self.underlyingVC.presentViewInChildVC(AddRequestView(), modalPresentationStyle: .formSheet)}) {
             Image("AddNeedSymbol").orange().font(.largeTitle).imageScale(.large)
         }
     }
@@ -207,7 +207,7 @@ struct ProfileButton: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     var body: some View {
         Button(action: {self.underlyingVC.presentViewInChildVC(ProfileView(), modalPresentationStyle: .formSheet)}) {
-            Image(systemName: "person.crop.circle").foregroundColor(Color(.systemOrange)).font(.largeTitle)
+            Image(systemName: "person.crop.circle").orange().font(.largeTitle)
         }
     }
 }
