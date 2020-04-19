@@ -66,20 +66,17 @@ struct ProfileView: View {
                             Text(CoreDataController.loggedUser!.email)
                         }
                     }
-                    
-                    Section(header: EmptyView()) {
-                        Button(action: {
-                            print("Logging out from Google!")
-                            GIDSignIn.sharedInstance()?.disconnect()
-                        }) {
-                            HStack {
-                                Text("Logout").orange()
-                                Spacer()
-                                Image(systemName: "chevron.right").tint(.primary)
-                            }
-                        }
+                    HStack {
+                        Text("Logout").orange()
+                        Spacer()
+                        Image(systemName: "chevron.right").tint(.primary)
+                    }.onTapGesture {
+                        self.underlyingVC.dismissVC()
+                        print("Logging out from Google!")
+                        GIDSignIn.sharedInstance()?.disconnect()
                     }
                 }
+                
             }
             .onTapGesture {self.underlyingVC.value.view.endEditing(true)}
             .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
