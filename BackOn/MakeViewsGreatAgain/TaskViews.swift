@@ -37,7 +37,7 @@ struct TaskPreview: View {
                 }
                 .font(.title) //c'era 26 di grandezza invece di 28
                 .lineLimit(1)
-                .tintIf(mode == .RequestViews && !hasHelper, .orange, .white)
+                .tintIf(mode == .RequestViews && !hasHelper, .task, .white) //usa l'arancione del BG dei task per il testo delle request non accettate
                 .padding(.leading, 5)
                 .offset(y: -1)
                 Spacer()
