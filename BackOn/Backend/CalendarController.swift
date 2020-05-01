@@ -96,6 +96,12 @@ class CalendarController {
     static func isBusy(when date: Date) -> Bool { //controlla che non ho impegni in [data-10min:data+10min]
         let predicate = eventStore.predicateForEvents(withStart: date.addingTimeInterval(-600), end: date.addingTimeInterval(600), calendars: nil)
         let events = eventStore.events(matching: predicate)
-        return !events.isEmpty
+        guard !events.isEmpty else { return false }
+        for event in events {
+            if !event.isAllDay {
+                return true
+            }
+        }
+        return false
     }
 }
