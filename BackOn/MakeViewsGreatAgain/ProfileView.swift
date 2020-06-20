@@ -70,7 +70,9 @@ struct ProfileView: View {
                         Text("Logout").orange()
                         Spacer()
                         Image(systemName: "chevron.right").tint(.primary)
-                    }.onTapGesture {
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
                         self.underlyingVC.dismissVC()
                         print("Logging out from Google!")
                         DatabaseController.logout(){ error in
