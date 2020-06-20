@@ -85,8 +85,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
         // Save changes in the application's managed object context when the application transitions to the background.
         //(UIApplication.shared.delegate as? AppDelegate)?.saveContext()
-        guard CoreDataController.loggedUser != nil else {return}
+        guard CoreDataController.loggedUser != nil && !(UIApplication.shared.delegate as! AppDelegate).shared.openingMaps else {
+            (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps = false ; return}
         print("*** Svuoto i dizionari Discover ***")
+        
         (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]
         (UIApplication.shared.delegate as! AppDelegate).shared.discUsers = [:]
     }

@@ -55,6 +55,7 @@ class MapController {
     
     static func openInMaps(commitment: Task) {
         let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+        shared.openingMaps = true
         let request = MKDirections.Request()
         if lastLocation != nil {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: lastLocation!.coordinate))
