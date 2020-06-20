@@ -73,7 +73,13 @@ struct ProfileView: View {
                     }.onTapGesture {
                         self.underlyingVC.dismissVC()
                         print("Logging out from Google!")
-                        GIDSignIn.sharedInstance()?.disconnect()
+                        DatabaseController.logout(){ error in
+                            guard error == nil else{print(error!); return}
+                            GIDSignIn.sharedInstance()?.disconnect()
+                            CoreDataController.deleteAll()
+                            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView" }
+                        }
+                        
                     }
                 }
                 
@@ -92,6 +98,8 @@ struct ProfileView: View {
                     //Se sono in edit mode e qualche parametro è cambiato...
                     guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo) else {return}
                     guard self.name != "" else {return} //alert che il nome non può essere vuoto
+                    self.name = self.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                    self.surname = self.surname.trimmingCharacters(in: .whitespacesAndNewlines)
                     DatabaseController.updateProfile(
                         newName: self.name,
                         newSurname: self.surname,

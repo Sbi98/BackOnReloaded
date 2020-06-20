@@ -113,12 +113,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
         }
     }
     
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
+   /* func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
         print("\n*** User signed out from Google ***\n")
-        CoreDataController.deleteLoggedUser()
-        DispatchQueue.main.async { self.shared.mainWindow = "LoginPageView" }
-    }
+            }*/
     
 }
 

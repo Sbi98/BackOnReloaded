@@ -180,6 +180,20 @@ class DatabaseController {
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
     
+    static func logout(completion: @escaping (ErrorString?)-> Void){
+        do {
+            print("*** DB - \(#function) ***")
+            let parameters: [String: Any?] = ["_id": CoreDataController.loggedUser!._id, "logoutToken" : CoreDataController.deviceToken]
+            let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters))
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {return completion("Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {return completion("Error in " + #function + ". Invalid response!")}
+                guard responseCode == 200 else {return completion("Response code != 200 in \(#function): \(responseCode)")}
+                completion(nil)
+            }.resume()
+        } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
+    }
+    
     
     static func getMyBonds(completion: @escaping ([String:Task]?, [String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
