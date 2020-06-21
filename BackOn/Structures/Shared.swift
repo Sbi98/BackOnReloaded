@@ -20,7 +20,7 @@ class Shared: ObservableObject {
     @Published var myExpiredRequests: [String:Task] = [:]
     @Published var users: [String:User] = [:]
     @Published var discUsers: [String:User] = [:]
-    @Published var openingMaps = false
+    @Published var openingMaps: Date?
 
     func requestTasksETA() {
         for task in myTasks.values {
