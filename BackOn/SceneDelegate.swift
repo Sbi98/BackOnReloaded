@@ -35,7 +35,8 @@ struct MainView: View {
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    var isReadyToUpdate = false
+    var hasGoneInBg = false
+    @Environment(\.presentationMode) var presentationMode
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -68,10 +69,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-        guard isReadyToUpdate else {return}
-        DatabaseController.loadFromServer()
-        isReadyToUpdate = false
         UIApplication.shared.applicationIconBadgeNumber = 0
+        guard hasGoneInBg else {return}
+        DatabaseController.loadFromServer()
+        hasGoneInBg = false
+        
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
@@ -86,22 +88,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save changes in the application's managed object context when the application transitions to the background.
         //(UIApplication.shared.delegate as? AppDelegate)?.saveContext()
         UIApplication.shared.applicationIconBadgeNumber = 0
-        guard CoreDataController.loggedUser != nil && !(UIApplication.shared.delegate as! AppDelegate).shared.openingMaps else {
-            (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps = false ; return}
-        print("*** Svuoto i dizionari Discover ***")
-        
-        (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]
-        (UIApplication.shared.delegate as! AppDelegate).shared.discUsers = [:]
+        guard CoreDataController.loggedUser != nil && (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps == nil else {return}
+        print("*** Preparo al background ***")
+        prepareToBackground()
+
     }
     
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
         guard scene.activationState == .background && CoreDataController.loggedUser != nil else {return}
-        isReadyToUpdate = true
+        hasGoneInBg = (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps?.timeIntervalSinceNow ?? 0 < -10
+        if hasGoneInBg {prepareToBackground()}
+        hasGoneInBg = hasGoneInBg || (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps == nil
+        (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps = nil
     }
-
+    
+    func prepareToBackground(){
+        UIViewController.main?.presentedViewController?.dismiss(animated: false)
+        (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]
+        (UIApplication.shared.delegate as! AppDelegate).shared.discUsers = [:]
+        (UIApplication.shared.delegate as! AppDelegate).discoverTabController.showSheet = false
+    }
 }
+
 
 
 // Chiedo l'autorizzazione per le notifiche di tipo ALERT, BADGE E NOTIFICATION SOUND
