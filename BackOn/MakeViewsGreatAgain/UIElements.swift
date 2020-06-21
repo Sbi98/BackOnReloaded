@@ -306,7 +306,7 @@ struct GenericButton: View {
 }
 
 struct NoDiscoverablesAroundYou: View {
-    var body: some View{
+    var body: some View {
         VStack(alignment: .center){
             Spacer()
             Image(systemName: "mappin.slash")
@@ -395,3 +395,15 @@ struct ImagePicker: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {}
 }
 
+struct SizedDivider: View {
+    let width: CGFloat
+    let height: CGFloat
+    
+    init(height: CGFloat, width: CGFloat = UIScreen.main.bounds.width) {
+        self.height = height
+        self.width = width
+    }
+    var body: some View {
+        Rectangle().frame(width: width, height: height).hidden()
+    }
+}

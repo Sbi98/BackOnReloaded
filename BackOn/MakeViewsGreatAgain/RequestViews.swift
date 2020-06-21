@@ -73,7 +73,7 @@ struct RequestView: View {
                             .padding(.horizontal, 10)
                             .frame(width: 320, alignment: .trailing)
                     }
-                    .tintIf(!hasHelper, .task, .white) //usa l'arancione del BG dei task per il testo delle request non accettate
+                    .tintIf(!hasHelper && !isExpired, .task, .white) //usa l'arancione del BG dei task per il testo delle request non accettate e attive
                     .offset(y: 10)
                     .frame(width: 320, height: 110)
                     .backgroundIf(isExpired, .expiredTask, hasHelper ? .task : .white)

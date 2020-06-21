@@ -11,7 +11,6 @@ import CoreLocation
 import SwiftyJSON
 
 class DatabaseController {
-    
     static func loadFromServer() {
         refreshSignIn(){ name, surname, photoURL, caregiver, housewife, runner, smartAssistant, error in
             guard error == nil else{print(error!); return}
@@ -48,7 +47,7 @@ class DatabaseController {
             print("*** DB - discover finished ***")
         }
         getMyBonds(){ tasks, requests, users, error in
-            guard error == nil, let tasks = tasks, let requests = requests, let users = users else {print(error!);return} //FAI L'ALERT!
+            guard error == nil, let tasks = tasks, let requests = requests, let users = users else {print(error!); return} //FAI L'ALERT!
             var shouldRequestETA = false
             let now = Date()
             DispatchQueue.main.async {
