@@ -35,8 +35,7 @@ struct MainView: View {
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    var hasGoneInBg = false
-    @Environment(\.presentationMode) var presentationMode
+    var hasGoneInBG = false
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -69,9 +68,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
         UIApplication.shared.applicationIconBadgeNumber = 0
-        guard hasGoneInBg else {return}
+        guard hasGoneInBG else {return}
         DatabaseController.loadFromServer()
-        hasGoneInBg = false
+        hasGoneInBG = false
         
     }
     
@@ -97,14 +96,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
         guard scene.activationState == .background && CoreDataController.loggedUser != nil else {return}
-        hasGoneInBg = (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps?.timeIntervalSinceNow ?? 0 < -10
-        if hasGoneInBg {prepareToBackground()}
-        hasGoneInBg = hasGoneInBg || (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps == nil
+        hasGoneInBG = (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps?.timeIntervalSinceNow ?? 0 < -120
+        if hasGoneInBG {prepareToBackground()}
+        hasGoneInBG = hasGoneInBG || (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps == nil
         (UIApplication.shared.delegate as! AppDelegate).shared.openingMaps = nil
     }
     
     func prepareToBackground(){
-        UIViewController.main?.presentedViewController?.dismiss(animated: false)
+        if (window!.rootViewController?.children.first as? UITabBarController)?.selectedIndex == 1{
+            window?.rootViewController?.dismiss(animated: true)
+        }
         (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]
         (UIApplication.shared.delegate as! AppDelegate).shared.discUsers = [:]
         (UIApplication.shared.delegate as! AppDelegate).discoverTabController.showSheet = false
