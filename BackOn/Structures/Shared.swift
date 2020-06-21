@@ -12,6 +12,7 @@ class Shared: ObservableObject {
     @Published var activeView = "HomeView"
     @Published var mainWindow = "CustomTabView"
     @Published var canLoadAroundYouMap = false
+    @Published var profileUpdated = false
     @Published var myTasks: [String:Task] = [:]
     @Published var myExpiredTasks: [String:Task] = [:]
     @Published var myDiscoverables: [String:Task] = [:]
