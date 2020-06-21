@@ -19,7 +19,15 @@ struct TaskPreview: View {
         return VStack(alignment: .leading, spacing: 0) {
             HStack {
                 if mode == .RequestViews {
-                    Avatar(task.helperID == nil ? nil : shared.users[task.helperID!])
+                    if !hasHelper {
+                        if isExpired {
+                            Avatar(nil)
+                        } else {
+                            Avatar(nil).overlay(Circle().stroke(Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)), lineWidth: 1))
+                        }
+                    } else {
+                        Avatar(shared.users[task.helperID!])
+                    }
                 } else if mode == .DiscoverableViews {
                     Avatar(shared.discUsers[task.neederID])
                 } else {
@@ -27,7 +35,7 @@ struct TaskPreview: View {
                 }
                 VStack(alignment: .leading) {
                     if mode == .RequestViews {
-                        Text(task.helperID == nil ? "Nobody accepted" : shared.users[task.helperID!]?.identity ?? "Helper not found")
+                        Text(!hasHelper ? "Nobody accepted" : shared.users[task.helperID!]?.identity ?? "Helper not found")
                     } else if mode == .DiscoverableViews {
                         Text(shared.discUsers[task.neederID]?.identity ?? "Needer not found")
                     } else {
@@ -37,7 +45,7 @@ struct TaskPreview: View {
                 }
                 .font(.title) //c'era 26 di grandezza invece di 28
                 .lineLimit(1)
-                .tintIf(mode == .RequestViews && !hasHelper, .task, .white) //usa l'arancione del BG dei task per il testo delle request non accettate
+                .tintIf(mode == .RequestViews && !hasHelper && !isExpired, .task, .white) //usa l'arancione del BG dei task per il testo delle request non accettate
                 .padding(.leading, 5)
                 .offset(y: -1)
                 Spacer()
