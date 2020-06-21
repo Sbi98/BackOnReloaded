@@ -46,7 +46,7 @@ struct ProfileView: View {
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
-                    Section(header: Text("Personal informations")) {
+                    Section(header: Text("Personal informations")) { //BISOGNA AGGIUNGERE L?ALERT COME NELLA ADD NEED SE IL NOME È VUOTO
                         HStack {
                             Text("Name: ").orange()
                             TextField("Name field is requred!", text: $name)
@@ -76,7 +76,7 @@ struct ProfileView: View {
                         self.underlyingVC.dismissVC()
                         print("Logging out from Google!")
                         DatabaseController.logout(){ error in
-                            guard error == nil else{print(error!); return}
+                            guard error == nil else {print(error!); return}
                             GIDSignIn.sharedInstance()?.disconnect()
                             CoreDataController.deleteAll()
                             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView" }
@@ -95,7 +95,6 @@ struct ProfileView: View {
                 leading: Button(action: {self.underlyingVC.dismissVC()})
                 {Text("Cancel").orange()},
                 trailing: Button(action: {
-                    guard self.name != "" else {return}
                     self.underlyingVC.toggleEditMode()
                     //Se sono in edit mode e qualche parametro è cambiato...
                     guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo) else {return}
@@ -113,6 +112,7 @@ struct ProfileView: View {
                         if responseCode == 200 {CoreDataController.loggedUser!.photo = self.profilePic}
                         else {self.showAlert = true} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
                         CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
+                        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.profileUpdated.toggle() }
                     }
                 })
                 {Text.ofEditButton(underlyingVC.isEditing)}

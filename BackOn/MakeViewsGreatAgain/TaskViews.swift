@@ -81,7 +81,7 @@ struct TaskView: View {
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                         .font(.system(size: 20))
-                        .background(Rectangle().cornerRadius(20).scaleEffect(1.1).foregroundColor(Color(.systemOrange)))
+                        .background(Rectangle().cornerRadius(20).scaleEffect(1.1).orange())
                 }
                 .offset(y: -160)
                 VStack (spacing: 5){
@@ -134,7 +134,7 @@ struct TaskRow: View {
                 }
                 .font(.body)
                 .tint(.gray)
-                SizedDivider(height: 85)
+                SizedDivider(height: 83)
             } else {
                 Button(action: {withAnimation{TasksListView.show()}}) {
                     HStack {
