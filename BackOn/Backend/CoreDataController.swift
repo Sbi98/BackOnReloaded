@@ -345,26 +345,25 @@ class CoreDataController {
         } catch {print("\nError while deleting bond: \(error.localizedDescription)\n")}
     }
 
-    static func deleteAll(){
+    static func deleteAll() {
         print("*** CD - \(#function) ***")
         deleteAllData(entity: "PLoggedUser")
         deleteAllData(entity: "PTasks")
         deleteAllData(entity: "PUsers")
-        print("*****Everything worked just fine!*****")
+        print("Everything deleted from CD")
     }
-    private static func deleteAllData(entity: String){
+    
+    private static func deleteAllData(entity: String) {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
         fetchRequest.returnsObjectsAsFaults = false
         do{
             let results = try context!.fetch(fetchRequest)
-            for managedObject in results{
+            for managedObject in results {
                 let managedObjectData:NSManagedObject = managedObject as! NSManagedObject
                 context!.delete(managedObjectData)
             }
             try saveContext()
-        } catch let error as NSError {
-            print("Detele all data in \(entity) error : \(error) \(error.userInfo)")
-        }
+        } catch {print("Error while deleting all data in \(entity): \(error)")}
     }
 
     

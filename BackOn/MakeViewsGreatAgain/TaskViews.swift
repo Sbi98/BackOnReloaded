@@ -115,15 +115,15 @@ struct TaskRow: View {
     var body: some View {
         VStack {
             if shared.myTasks.isEmpty && shared.myExpiredTasks.isEmpty {
-                Spacer()
+                SizedDivider(height: 50)
                 Image(systemName: "zzz")
                     .resizable()
                     .frame(width: 140, height: 170)
                     .imageScale(.large)
                     .font(.largeTitle)
-                    .foregroundColor(Color(.systemGray))
-                Rectangle().hidden().frame(height: 50)
-                Text("It seems that you don't have anyone to help").foregroundColor(Color(.systemGray))
+                    .tint(.gray)
+                SizedDivider(height: 40)
+                Text("It seems that you don't have anyone to help").tint(.gray)
                 Divider().hidden()
                 HStack(spacing: 7) {
                     Spacer()
@@ -131,7 +131,10 @@ struct TaskRow: View {
                     Image("DiscoverSymbol").imageScale(.large).font(.title)
                     Text("to find who needs you")
                     Spacer()
-                }.font(.body).foregroundColor(Color(.systemGray))
+                }
+                .font(.body)
+                .tint(.gray)
+                SizedDivider(height: 85)
             } else {
                 Button(action: {withAnimation{TasksListView.show()}}) {
                     HStack {
@@ -141,7 +144,7 @@ struct TaskRow: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.headline)
-                            .foregroundColor(Color(UIColor.systemOrange))
+                            .orange()
                     }.padding(.horizontal, 20)
                 }.buttonStyle(PlainButtonStyle())
                 
