@@ -134,7 +134,7 @@ struct TaskRow: View {
                 }
                 .font(.body)
                 .tint(.gray)
-                SizedDivider(height: 85)
+                SizedDivider(height: 83)
             } else {
                 Button(action: {withAnimation{TasksListView.show()}}) {
                     HStack {
