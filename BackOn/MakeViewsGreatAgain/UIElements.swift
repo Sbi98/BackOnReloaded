@@ -270,7 +270,7 @@ struct DirectionsButton: View {
                 }
             }
             .frame(width: defaultButtonDimensions.width, height: defaultButtonDimensions.height)
-            .background(isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
+            .background(isFilled ? Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
     }
@@ -301,7 +301,7 @@ struct GenericButton: View {
     var dimensions: (width: CGFloat, height: CGFloat) = defaultButtonDimensions
     var isFilled: Bool
     var isLarge: Bool = false
-    var color: UIColor = #colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)
+    var color: Color = Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9)
     var topText: String
     var bottomText: String? = nil
     var action: () -> Void
@@ -312,16 +312,16 @@ struct GenericButton: View {
                 Text(topText)
                     .fontWeight(.semibold)
                     .font(.body)
-                    .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                    .foregroundColor(!isFilled ? color : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 if bottomText != nil {
                     Text(bottomText!)
                         .font(.subheadline)
-                        .foregroundColor(!isFilled ? Color(color) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                        .foregroundColor(!isFilled ? color : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
                 }
             }
             .frame(width: isLarge ? dimensions.width*2 : dimensions.width, height: dimensions.height)
-            .background(isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(color) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
+            .background(isFilled ? color : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? color : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
     }
 }
