@@ -103,7 +103,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func prepareToBackground(){
-        if (window!.rootViewController?.children.first as? UITabBarController)?.selectedIndex == 1{
+        if (window?.rootViewController?.children.first as? UITabBarController)?.selectedIndex == 1 {
             window?.rootViewController?.dismiss(animated: true)
         }
         (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables = [:]

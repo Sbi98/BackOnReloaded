@@ -40,6 +40,7 @@ enum Palette {
     case expiredTask
     case taskGray
     case detailedTaskHeaderBG
+    case detailedTaskHeaderBGBACKUP
     case button
     case yellow
     case orange
@@ -61,6 +62,8 @@ fileprivate func getColor(_ color: Palette) -> Color {
     case .expiredTask:
         return Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1))
     case .detailedTaskHeaderBG: //dovrà avvicinarsi al caso .task
+        return Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9)
+    case .detailedTaskHeaderBGBACKUP: //dovrà avvicinarsi al caso .task
         return Color(#colorLiteral(red: 0.9294117647, green: 0.8392156863, blue: 0.6901960784, alpha: 1))
     case .button:
         return Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))

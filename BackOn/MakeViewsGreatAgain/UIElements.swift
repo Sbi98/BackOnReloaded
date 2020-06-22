@@ -32,7 +32,7 @@ struct CloseButton: View {
                 HomeView.show()
             }
         }){
-            Image(systemName: "xmark.circle.fill").font(.largeTitle).foregroundColor(Color(.systemGray))
+            Image(systemName: "xmark.circle.fill").font(.largeTitle).tint(.white).opacity(0.9)
         }.buttonStyle(PlainButtonStyle())
     }
 }
@@ -275,6 +275,27 @@ struct DirectionsButton: View {
         }.buttonStyle(PlainButtonStyle())
     }
 }
+
+struct CallButton: View {
+    var body: some View {
+        Button(action: {
+            guard let number = URL(string: "tel://" + "0123456789") else { return }
+            UIApplication.shared.open(number)
+        }) {
+            HStack {
+                Image(systemName: "phone.fill")
+                Text("Call")
+                    .fontWeight(.semibold)
+                    .font(.body)
+            }
+            .foregroundColor(Color(.systemGreen))
+            .frame(width: defaultButtonDimensions.width*2, height: defaultButtonDimensions.height)
+            .background(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(.systemGreen), lineWidth: 1))
+        }.buttonStyle(PlainButtonStyle())
+    }
+}
+
 
 struct GenericButton: View {
     var dimensions: (width: CGFloat, height: CGFloat) = defaultButtonDimensions
