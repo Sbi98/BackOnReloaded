@@ -39,7 +39,7 @@ struct DetailedView: View {
                             .fontWeight(.medium)
                     }
                     Text(selectedTask.title).font(.body)
-                }.font(.title).padding(.horizontal)
+                }.font(.title).tint(.white).padding(.horizontal)
                 Spacer()
                 CloseButton()
             }
@@ -117,6 +117,13 @@ struct DetailedView: View {
                         Spacer()
                     }
                 }
+                
+                HStack {
+                    Spacer()
+                    CallButton()
+                    Spacer()
+                }
+                
             }.padding(.horizontal, 20)
         }.animation(.easeOut(duration: 0))
     }
