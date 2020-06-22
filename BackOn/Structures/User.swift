@@ -15,16 +15,18 @@ class User: ObservableObject, CustomStringConvertible {
     var surname: String?
     var identity: String { return "\(name) \(surname ?? "")" }
     var photoURL: URL?
+    var phoneNumber: String?
     @Published var photo: UIImage?
     
     public var description: String {return "\(identity) - #\(_id)\n"}
 
-    init(_id: String, name: String, surname: String?, email: String, photoURL: URL?, photo: UIImage? = nil) {
+    init(_id: String, name: String, surname: String?, email: String, photoURL: URL?, photo: UIImage? = nil, phoneNumber: String? = nil) {
         self._id = _id
         self.name = name
         self.surname = surname
         self.email = email
         self.photoURL = photoURL
+        self.phoneNumber = phoneNumber
         if photo != nil {
             self.photo = photo!
         } else {

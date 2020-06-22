@@ -12,9 +12,9 @@ import SwiftyJSON
 
 class DatabaseController {
     static func loadFromServer() {
-        refreshSignIn(){ name, surname, photoURL, caregiver, housewife, runner, smartAssistant, error in
+        refreshSignIn(){ name, surname, photoURL, phoneNumber, caregiver, housewife, runner, smartAssistant, error in
             guard error == nil else{print(error!); return}
-            updateLoggedUserInfo(name: name, surname: surname, photoURL: photoURL)
+            updateLoggedUserInfo(name: name, surname: surname, photoURL: photoURL, phoneNumber: phoneNumber)
             CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
             for requestType in Array(Souls.weights.keys){
                 let weights = Souls.weights[requestType]!
@@ -146,7 +146,7 @@ class DatabaseController {
         }
     }
     
-    static func updateLoggedUserInfo(name: String?, surname:String?, photoURL: String?){
+    static func updateLoggedUserInfo(name: String?, surname:String?, photoURL: String?, phoneNumber: String?){
         let loggedUser = CoreDataController.loggedUser!
         loggedUser.name = name!
         if(surname != nil){
@@ -161,6 +161,7 @@ class DatabaseController {
                 } catch {}
             }
         }
+        if let phoneNumber = phoneNumber {loggedUser.phoneNumber = phoneNumber}
     }
     
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
@@ -306,10 +307,10 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func updateProfile(newName: String, newSurname: String, newImageEncoded: String? = nil, completion: @escaping (Int, ErrorString?)-> Void){
+    static func updateProfile(newName: String, newSurname: String, newImageEncoded: String? = nil, newPhoneNumber: String, completion: @escaping (Int, ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
-            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname]
+            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname, "phoneNumber": newPhoneNumber]
             if(newImageEncoded != nil) {parameters["photo"] = newImageEncoded}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
@@ -339,7 +340,7 @@ class DatabaseController {
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
     }
     
-    static func refreshSignIn(completion: @escaping (String?, String?, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
+    static func refreshSignIn(completion: @escaping (String?, String?, String?, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
         do{
             print("*** DB - \(#function) ***")
             let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
@@ -352,11 +353,12 @@ class DatabaseController {
                 let name = jsonResponse["name"].string
                 let surname = jsonResponse["surname"].string
                 let photoURL = jsonResponse["photo"].string
+                let phoneNumber = jsonResponse["phoneNumber"].string
                 let caregiver = jsonResponse["caregiver"].doubleValue
                 let housewife = jsonResponse["housewife"].doubleValue
                 let runner = jsonResponse["runner"].doubleValue
                 let smartAssistant = jsonResponse["smartassistant"].doubleValue
-                completion(name, surname, photoURL, caregiver, housewife, runner, smartAssistant, nil)
+                completion(name, surname, photoURL, phoneNumber, caregiver, housewife, runner, smartAssistant, nil)
             }.resume()
         } catch{
             print("Error in " + #function + ". The error is:\n" + error.localizedDescription)
@@ -403,7 +405,8 @@ class DatabaseController {
                     let userSurname = user["surname"].string
                     let userEmail = user["email"].stringValue
                     let userPhotoURL = URL(string: user["photo"].stringValue)
-                    userDict[userID] = User(_id: userID, name: userName, surname: userSurname, email: userEmail, photoURL: userPhotoURL)
+                    let userPhoneNumber = user["phoneNumber"].string
+                    userDict[userID] = User(_id: userID, name: userName, surname: userSurname, email: userEmail, photoURL: userPhotoURL, phoneNumber: userPhoneNumber)
                 }
             }
         }
