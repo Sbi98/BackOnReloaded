@@ -144,7 +144,9 @@ class CoreDataController {
                 surname: temp.surname,
                 email: temp.email!,
                 photoURL: temp.photoURL,
-                photo: temp.photoData == nil ? nil : UIImage(data: temp.photoData!))
+                photo: temp.photoData == nil ? nil : UIImage(data: temp.photoData!),
+                phoneNumber: temp.phoneNumber
+            )
             print("\nLogged user is \(loggedUser)")
             return loggedUser
         } catch {print("\nError while getting logged user: \(error.localizedDescription)\n");return nil}
@@ -173,6 +175,7 @@ class CoreDataController {
         newUser.photoURL = user.photoURL
         newUser.photoData = user.photo?.jpegData(compressionQuality: 1)
         newUser.id = user._id
+        newUser.phoneNumber = user.phoneNumber
         print("\n\(user)ready to save in memory\n")
         if save {
             do {
@@ -193,8 +196,8 @@ class CoreDataController {
             cachedUser.setValue(user.name, forKey: "name")
             cachedUser.setValue(user.surname, forKey: "surname")
             cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")
-            print("aggiorno \(user.photoURL!)")
             cachedUser.setValue(user.photoURL, forKey: "photoURL")
+            cachedUser.setValue(user.phoneNumber, forKey: "phoneNumber")
             if save {
                 try saveContext()
                 print("\nSaving context from \(#function)\n")
@@ -214,6 +217,7 @@ class CoreDataController {
             if cachedUser.surname != user.surname {cachedUser.setValue(user.surname, forKey: "surname")}
             if cachedUser.photoData != user.photo?.jpegData(compressionQuality: 1) {cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")}
             if cachedUser.photoURL != user.photoURL {cachedUser.setValue(user.photoURL, forKey: "photoURL")}
+            if let phoneNumber = cachedUser.phoneNumber, phoneNumber != user.phoneNumber {cachedUser.setValue(user.phoneNumber, forKey: "phoneNumber")}
             if save {
                 try saveContext()
             }
@@ -233,8 +237,9 @@ class CoreDataController {
                     surname: pUser.surname,
                     email: pUser.email!,
                     photoURL: pUser.photoURL!,
-                    photo: pUser.photoData == nil ? nil : UIImage(data: pUser.photoData!))
-                )
+                    photo: pUser.photoData == nil ? nil : UIImage(data: pUser.photoData!),
+                    phoneNumber: pUser.phoneNumber
+                ))
             }
         } catch {print("\nError while getting cached tasks: \(error.localizedDescription)\n")}
         return cachedUsers

@@ -13,6 +13,7 @@ struct ProfileView: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
+    @State var phoneNumber = CoreDataController.loggedUser!.phoneNumber ?? ""
     @State var profilePic: UIImage? = CoreDataController.loggedUser!.photo
     @State var nameNeeded = false
     @State var showAlert = false
@@ -48,7 +49,8 @@ struct ProfileView: View {
                 Form {
                     Section(header: Text("Personal informations")) { //BISOGNA AGGIUNGERE L?ALERT COME NELLA ADD NEED SE IL NOME È VUOTO
                         HStack {
-                            Text("Name: ").orange()
+                            Text("Name: ")
+                                .orange()
                             TextField("Name field is requred!", text: $name)
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
@@ -57,6 +59,13 @@ struct ProfileView: View {
                             Text("Surname: ")
                                 .orange()
                             TextField("", text: $surname)
+                                .disabled(!underlyingVC.isEditing)
+                                .multilineTextAlignment(.trailing).offset(y: 1)
+                        }
+                        HStack {
+                            Text("Phone: ")
+                                .orange()
+                            TextField("", text: $phoneNumber)
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
                         }
@@ -104,7 +113,8 @@ struct ProfileView: View {
                     DatabaseController.updateProfile(
                         newName: self.name,
                         newSurname: self.surname,
-                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters)
+                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters),
+                        newPhoneNumber: self.phoneNumber
                     ){ responseCode, error in
                         guard error == nil else {self.showAlert = true; print("Error while updating profile"); return}
                         CoreDataController.loggedUser!.name = self.name

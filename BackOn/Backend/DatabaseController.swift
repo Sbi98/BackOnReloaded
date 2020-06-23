@@ -147,11 +147,14 @@ class DatabaseController {
     }
     
     static func updateLoggedUserInfo(name: String?, surname:String?, photoURL: String?, phoneNumber: String?){
+        //NON DEVONO ESSERE TUTTI OPTIONAL!
         let loggedUser = CoreDataController.loggedUser!
         loggedUser.name = name!
-        if(surname != nil){
+        if(surname != nil){ //SE VIENE TOLTO IL COGNOME NON VIENE AGGIORNATO!
             loggedUser.surname = surname!
         }
+        //SOLUZIONE
+        //loggedUser.surname = surname
         if(photoURL != nil){
             let url = URL(string: photoURL!)
             DispatchQueue(label: "loadProfilePic", qos: .utility).async {
@@ -161,7 +164,32 @@ class DatabaseController {
                 } catch {}
             }
         }
-        if let phoneNumber = phoneNumber {loggedUser.phoneNumber = phoneNumber}
+        if let phoneNumber = phoneNumber {loggedUser.phoneNumber = phoneNumber} //SE VIENE TOLTO IL NUMERO NON VIENE AGGIORNATO!
+        //loggedUser.phoneNumber = phoneNumber
+    }
+    
+    static func refreshSignIn(completion: @escaping (String?, String?, String?, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
+        //RIVEDI
+        do {
+            print("*** DB - \(#function) ***")
+            let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
+            let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
+                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
+                guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
+                guard let data = data, let jsonResponse = try? JSON(data: data) else {return}
+                let name = jsonResponse["name"].string
+                let surname = jsonResponse["surname"].string
+                let photoURL = jsonResponse["photo"].string
+                let phoneNumber = jsonResponse["phoneNumber"].string
+                let caregiver = jsonResponse["caregiver"].doubleValue
+                let housewife = jsonResponse["housewife"].doubleValue
+                let runner = jsonResponse["runner"].doubleValue
+                let smartAssistant = jsonResponse["smartassistant"].doubleValue
+                completion(name, surname, photoURL, phoneNumber, caregiver, housewife, runner, smartAssistant, nil)
+            }.resume()
+        } catch {print("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
@@ -193,7 +221,6 @@ class DatabaseController {
             }.resume()
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
-    
     
     static func getMyBonds(completion: @escaping ([String:Task]?, [String:Task]?, [String:User]?, ErrorString?)-> Void) {
         do {
@@ -307,11 +334,11 @@ class DatabaseController {
         } catch let error {completion("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
     
-    static func updateProfile(newName: String, newSurname: String, newImageEncoded: String? = nil, newPhoneNumber: String, completion: @escaping (Int, ErrorString?)-> Void){
+    static func updateProfile(newName: String, newSurname: String, newPhoneNumber: String,  newImageEncoded: String? = nil, completion: @escaping (Int, ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
             var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname, "phoneNumber": newPhoneNumber]
-            if(newImageEncoded != nil) {parameters["photo"] = newImageEncoded}
+            if (newImageEncoded != nil) {parameters["photo"] = newImageEncoded}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(400, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -340,30 +367,6 @@ class DatabaseController {
         //Apro la connessione, ottengo la data, se diversa faccio la richiesta altrimenti chiudo
     }
     
-    static func refreshSignIn(completion: @escaping (String?, String?, String?, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
-        do{
-            print("*** DB - \(#function) ***")
-            let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
-            let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                guard error == nil else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
-                guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
-                guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
-                guard let data = data, let jsonResponse = try? JSON(data: data) else {return }
-                let name = jsonResponse["name"].string
-                let surname = jsonResponse["surname"].string
-                let photoURL = jsonResponse["photo"].string
-                let phoneNumber = jsonResponse["phoneNumber"].string
-                let caregiver = jsonResponse["caregiver"].doubleValue
-                let housewife = jsonResponse["housewife"].doubleValue
-                let runner = jsonResponse["runner"].doubleValue
-                let smartAssistant = jsonResponse["smartassistant"].doubleValue
-                completion(name, surname, photoURL, phoneNumber, caregiver, housewife, runner, smartAssistant, nil)
-            }.resume()
-        } catch{
-            print("Error in " + #function + ". The error is:\n" + error.localizedDescription)
-        }
-    }
     
     private static func sendPushNotification(receiverID: String? ,title: String, body: String){
         guard let receiverID = receiverID else {return}
