@@ -277,9 +277,11 @@ struct DirectionsButton: View {
 }
 
 struct CallButton: View {
+    var phoneNumber: String?
+    var date: Date
     var body: some View {
         Button(action: {
-            guard let number = URL(string: "tel://" + "0123456789") else { return }
+            guard let phoneNumber = self.phoneNumber, let number = URL(string: "tel://" + phoneNumber) else { return }
             UIApplication.shared.open(number)
         }) {
             HStack {
@@ -292,7 +294,7 @@ struct CallButton: View {
             .frame(width: defaultButtonDimensions.width*2, height: defaultButtonDimensions.height)
             .background(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(.systemGreen), lineWidth: 1))
-        }.buttonStyle(PlainButtonStyle())
+        }.buttonStyle(PlainButtonStyle()).disabled(self.phoneNumber != nil && date.timeIntervalSinceNow > 18000)
     }
 }
 

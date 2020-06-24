@@ -117,14 +117,21 @@ struct DetailedView: View {
                         Spacer()
                     }
                 }
-                
-                HStack {
-                    Spacer()
-                    CallButton()
-                    Spacer()
+                if requiredBy == RequiredBy.TaskViews{
+                    HStack {
+                        Spacer()
+                        CallButton(phoneNumber: shared.users[selectedTask.neederID]?.phoneNumber, date: selectedTask.date)
+                        Spacer()
+                    }
                 }
                 
             }.padding(.horizontal, 20)
         }.animation(.easeOut(duration: 0))
+    }
+}
+
+struct DetailedView_Previews: PreviewProvider {
+    static var previews: some View {
+        DetailedView(requiredBy: .RequestViews, selectedTask: Task(neederID: "mio", title: "Preview", date: Date()+20000, latitude: 40.1, longitude: 14.5, _id: "ciao"))
     }
 }
