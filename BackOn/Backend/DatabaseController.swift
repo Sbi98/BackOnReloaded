@@ -146,29 +146,30 @@ class DatabaseController {
         }
     }
     
-    static func updateLoggedUserInfo(name: String?, surname:String?, photoURL: String?, phoneNumber: String?){
+    static func updateLoggedUserInfo(name: String, surname:String?, photoURL: String, phoneNumber: String?){
         //NON DEVONO ESSERE TUTTI OPTIONAL!
         let loggedUser = CoreDataController.loggedUser!
-        loggedUser.name = name!
-        if(surname != nil){ //SE VIENE TOLTO IL COGNOME NON VIENE AGGIORNATO!
+        loggedUser.name = name
+        /*if(surname != nil){ //SE VIENE TOLTO IL COGNOME NON VIENE AGGIORNATO!
             loggedUser.surname = surname!
         }
         //SOLUZIONE
-        //loggedUser.surname = surname
-        if(photoURL != nil){
-            let url = URL(string: photoURL!)
+        */
+        loggedUser.surname = surname
+        let url = URL(string: photoURL)!
+        if(url != loggedUser.photoURL){
             DispatchQueue(label: "loadProfilePic", qos: .utility).async {
                 do {
-                    guard photoURL != nil, let uiimage = try UIImage(data: Data(contentsOf: url!)) else { return }
+                    guard let uiimage = try UIImage(data: Data(contentsOf: url)) else { return }
                     DispatchQueue.main.async { loggedUser.photo = uiimage }
                 } catch {}
             }
         }
-        if let phoneNumber = phoneNumber {loggedUser.phoneNumber = phoneNumber} //SE VIENE TOLTO IL NUMERO NON VIENE AGGIORNATO!
-        //loggedUser.phoneNumber = phoneNumber
+        //if let phoneNumber = phoneNumber {loggedUser.phoneNumber = phoneNumber} //SE VIENE TOLTO IL NUMERO NON VIENE AGGIORNATO!
+        loggedUser.phoneNumber = phoneNumber
     }
     
-    static func refreshSignIn(completion: @escaping (String?, String?, String?, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
+    static func refreshSignIn(completion: @escaping (String, String?, String, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
         //RIVEDI
         do {
             print("*** DB - \(#function) ***")
@@ -179,9 +180,9 @@ class DatabaseController {
                 guard let responseCode = (response as? HTTPURLResponse)?.statusCode else {print("Error in " + #function + ". The error is:\n" + error!.localizedDescription); return}
                 guard responseCode == 200 else {print("Invalid response code in \(#function): \(responseCode)"); return}
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return}
-                let name = jsonResponse["name"].string
+                let name = jsonResponse["name"].stringValue
                 let surname = jsonResponse["surname"].string
-                let photoURL = jsonResponse["photo"].string
+                let photoURL = jsonResponse["photo"].stringValue
                 let phoneNumber = jsonResponse["phoneNumber"].string
                 let caregiver = jsonResponse["caregiver"].doubleValue
                 let housewife = jsonResponse["housewife"].doubleValue
