@@ -106,7 +106,7 @@ struct ProfileView: View {
                 trailing: Button(action: {
                     self.underlyingVC.toggleEditMode()
                     //Se sono in edit mode e qualche parametro è cambiato...
-                    guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo) else {return}
+                    guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo || self.phoneNumber != CoreDataController.loggedUser!.phoneNumber) else {return}
                     guard self.name != "" else {return} //alert che il nome non può essere vuoto
                     self.name = self.name.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.surname = self.surname.trimmingCharacters(in: .whitespacesAndNewlines)
