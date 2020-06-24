@@ -113,8 +113,8 @@ struct ProfileView: View {
                     DatabaseController.updateProfile(
                         newName: self.name,
                         newSurname: self.surname,
-                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters),
-                        newPhoneNumber: self.phoneNumber
+                        newPhoneNumber: self.phoneNumber,
+                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters)
                     ){ responseCode, error in
                         guard error == nil else {self.showAlert = true; print("Error while updating profile"); return}
                         CoreDataController.loggedUser!.name = self.name
