@@ -217,7 +217,7 @@ class CoreDataController {
             if cachedUser.surname != user.surname {cachedUser.setValue(user.surname, forKey: "surname")}
             if cachedUser.photoData != user.photo?.jpegData(compressionQuality: 1) {cachedUser.setValue(user.photo?.jpegData(compressionQuality: 1), forKey: "photoData")}
             if cachedUser.photoURL != user.photoURL {cachedUser.setValue(user.photoURL, forKey: "photoURL")}
-            if let phoneNumber = cachedUser.phoneNumber, phoneNumber != user.phoneNumber {cachedUser.setValue(user.phoneNumber, forKey: "phoneNumber")}
+            if cachedUser.phoneNumber != user.phoneNumber {cachedUser.setValue(user.phoneNumber, forKey: "phoneNumber")}
             if save {
                 try saveContext()
             }

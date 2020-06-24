@@ -12,14 +12,20 @@ import SwiftyJSON
 
 class DatabaseController {
     static func loadFromServer() {
-        refreshSignIn(){ name, surname, photoURL, phoneNumber, caregiver, housewife, runner, smartAssistant, error in
-            guard error == nil else{print(error!); return}
-            updateLoggedUserInfo(name: name, surname: surname, photoURL: photoURL, phoneNumber: phoneNumber)
-            CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
-            for requestType in Array(Souls.weights.keys){
-                let weights = Souls.weights[requestType]!
-                Souls.setValue(category: requestType, newValue: caregiver! * weights.0 + housewife! * weights.1 + runner! * weights.2 + smartAssistant! * weights.3)
+        refreshSignIn(){ name, surname, photoURL, phoneNumber, error in
+            guard error == nil else {print(error!); return}
+            CoreDataController.loggedUser!.name = name
+            CoreDataController.loggedUser!.surname = surname
+            CoreDataController.loggedUser!.phoneNumber = phoneNumber
+            if let photoURL = photoURL, photoURL != CoreDataController.loggedUser!.photoURL {
+                DispatchQueue(label: "loadProfilePic", qos: .utility).async {
+                    do {
+                        guard let uiimage = try UIImage(data: Data(contentsOf: photoURL)) else { return }
+                        DispatchQueue.main.async { CoreDataController.loggedUser!.photo = uiimage }
+                    } catch {print("Error while downloading new user photo")}
+                }
             }
+            CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
         }
         discover(){ discTasks, discUsers, error in
             guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
@@ -146,30 +152,7 @@ class DatabaseController {
         }
     }
     
-    static func updateLoggedUserInfo(name: String, surname:String?, photoURL: String, phoneNumber: String?){
-        //NON DEVONO ESSERE TUTTI OPTIONAL!
-        let loggedUser = CoreDataController.loggedUser!
-        loggedUser.name = name
-        /*if(surname != nil){ //SE VIENE TOLTO IL COGNOME NON VIENE AGGIORNATO!
-            loggedUser.surname = surname!
-        }
-        //SOLUZIONE
-        */
-        loggedUser.surname = surname
-        let url = URL(string: photoURL)!
-        if(url != loggedUser.photoURL){
-            DispatchQueue(label: "loadProfilePic", qos: .utility).async {
-                do {
-                    guard let uiimage = try UIImage(data: Data(contentsOf: url)) else { return }
-                    DispatchQueue.main.async { loggedUser.photo = uiimage }
-                } catch {}
-            }
-        }
-        //if let phoneNumber = phoneNumber {loggedUser.phoneNumber = phoneNumber} //SE VIENE TOLTO IL NUMERO NON VIENE AGGIORNATO!
-        loggedUser.phoneNumber = phoneNumber
-    }
-    
-    static func refreshSignIn(completion: @escaping (String, String?, String, String?, CareGiverWeight?, HousewifeWeight?, RunnerWeight?, SmartAssistant?, ErrorString?)->Void){
+    static func refreshSignIn(completion: @escaping (String, String?, URL?, String?, ErrorString?)->Void){
         //RIVEDI
         do {
             print("*** DB - \(#function) ***")
@@ -182,13 +165,19 @@ class DatabaseController {
                 guard let data = data, let jsonResponse = try? JSON(data: data) else {return}
                 let name = jsonResponse["name"].stringValue
                 let surname = jsonResponse["surname"].string
-                let photoURL = jsonResponse["photo"].stringValue
+                let photoURLstr = jsonResponse["photo"].string
+                var photoURL: URL? = nil
+                if photoURLstr != nil {photoURL = URL(string: photoURLstr!)}
                 let phoneNumber = jsonResponse["phoneNumber"].string
                 let caregiver = jsonResponse["caregiver"].doubleValue
                 let housewife = jsonResponse["housewife"].doubleValue
                 let runner = jsonResponse["runner"].doubleValue
                 let smartAssistant = jsonResponse["smartassistant"].doubleValue
-                completion(name, surname, photoURL, phoneNumber, caregiver, housewife, runner, smartAssistant, nil)
+                for requestType in Array(Souls.weights.keys) {
+                    let weights = Souls.weights[requestType]!
+                    Souls.setValue(category: requestType, newValue: caregiver * weights.0 + housewife * weights.1 + runner * weights.2 + smartAssistant * weights.3)
+                }
+                completion(name, surname, photoURL, phoneNumber, nil)
             }.resume()
         } catch {print("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
     }
