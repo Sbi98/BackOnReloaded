@@ -143,6 +143,7 @@ struct AskAgainButton: View {
 
 
 struct ThankButton: View {
+    @Environment(\.presentationMode) var presentationMode
     let helperToReport: Bool
     let task: Task
     var body: some View {
@@ -150,6 +151,7 @@ struct ThankButton: View {
             isFilled: true,
             topText: helperToReport ? "Thank you" : "I feel better, thank you!"
         ) {
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             CoreDataController.deleteBond(self.task)
             DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
                 guard error == nil else {print(error!); return}
@@ -162,10 +164,12 @@ struct ThankButton: View {
 
 struct ReportButton: View {
     @State var showActionSheet: Bool = false
+    @Environment(\.presentationMode) var presentationMode
     let helperToReport: Bool
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
             .default(Text("The person didn't show up")) {
+                    DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
                 CoreDataController.deleteBond(self.task)
                 DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
