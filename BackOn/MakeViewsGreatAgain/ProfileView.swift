@@ -119,6 +119,7 @@ struct ProfileView: View {
                         guard error == nil else {self.showAlert = true; print("Error while updating profile"); return}
                         CoreDataController.loggedUser!.name = self.name
                         CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
+                        CoreDataController.loggedUser!.phoneNumber = self.phoneNumber 
                         if responseCode == 200 {CoreDataController.loggedUser!.photo = self.profilePic}
                         else {self.showAlert = true} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
                         CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
