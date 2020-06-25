@@ -141,20 +141,20 @@ struct ProfileView: View {
                         let result = regex.firstMatch(in: self.phoneNumber, options: [], range: NSRange(location: 0, length: self.phoneNumber.count))
                         guard self.name != "" else {self.alertEmptyName = true; print("Name field must not be empty"); return}
                         guard result != nil && self.phoneNumber.count <= 15 else {self.alertWrongPNFormat = true; print("Wrong format for phone number"); return}
+                        self.underlyingVC.toggleEditMode()
                         DatabaseController.updateProfile(
                             newName: self.name,
                             newSurname: self.surname,
                             newPhoneNumber: self.phoneNumber,
                             newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.25)?.base64EncodedString(options: .lineLength64Characters)
                         ){ responseCode, error in
-                            guard error == nil else {self.alertUpdateFailed = true; print("Error while updating profile"); return}
+                            guard error == nil else {self.alertUpdateFailed = true; print("Error while updating profile"); self.revertChanges(); return}
                             CoreDataController.loggedUser!.name = self.name
                             CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
                             CoreDataController.loggedUser!.phoneNumber = self.phoneNumber == "" ? nil : self.phoneNumber
                             if responseCode == 200 {CoreDataController.loggedUser!.photo = self.profilePic}
-                            else {self.alertPhotoUploadFailed = true} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
+                            else {self.alertPhotoUploadFailed = true; self.profilePic = CoreDataController.loggedUser!.photo} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
                             CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
-                            self.underlyingVC.toggleEditMode()
                             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.profileUpdated.toggle() }
                         }
                     }
