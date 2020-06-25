@@ -46,6 +46,7 @@ enum Palette {
     case yellow
     case orange
     case red
+    case green
     case gray
     case gray2
     case gray3
@@ -72,6 +73,8 @@ fileprivate func getColor(_ color: Palette) -> Color {
         return Color(UIColor.secondaryLabel.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)))
     case .yellow:
         return Color(.systemYellow)
+    case .green:
+        return Color(.systemGreen)
     case .orange:
         return Color(.systemOrange)
     case .red:
