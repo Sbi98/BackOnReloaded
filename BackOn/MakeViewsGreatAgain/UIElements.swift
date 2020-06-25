@@ -150,7 +150,7 @@ struct ThankButton: View {
     var body: some View {
         GenericButton(
             isFilled: true,
-            topText: helperToReport ? "Thank you" : "I feel better, thank you!"
+            topText: helperToReport ? "Thank you" : "I feel better 🙂"
         ) {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             CoreDataController.deleteBond(self.task)
