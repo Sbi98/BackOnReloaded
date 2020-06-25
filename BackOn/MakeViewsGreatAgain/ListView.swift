@@ -31,7 +31,9 @@ struct ListView: View {
                     .buttonStyle(PlainButtonStyle())
                 }
                 if (mode == .RequestViews && !shared.myExpiredRequests.isEmpty || mode == .TaskViews && !shared.myExpiredTasks.isEmpty) {
-                    Divider()
+                    if(!self.shared.arrayFromSet(mode: self.mode).isEmpty){
+                        Divider()
+                    }
                     ForEach(shared.arrayFromSet(mode: mode, expiredSet: true), id: \._id) { current in
                         Button(action: {
                             self.selectedTask = current
