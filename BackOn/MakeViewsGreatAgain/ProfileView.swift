@@ -67,6 +67,7 @@ struct ProfileView: View {
                                 .orange()
                             TextField("", text: $phoneNumber)
                                 .disabled(!underlyingVC.isEditing)
+                                .keyboardType(.numberPad)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
                         }
                         HStack {
@@ -111,11 +112,15 @@ struct ProfileView: View {
                     self.name = self.name.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.surname = self.surname.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.phoneNumber = self.phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+                    self.phoneNumber = self.phoneNumber.replacingOccurrences(of: "-", with: "")
+                    let regex = try! NSRegularExpression(pattern: "[+]?[0-9]")
+                    let result = regex.firstMatch(in: self.phoneNumber, options: [], range: NSRange(location: 0, length: self.phoneNumber.count))
+                    guard result != nil && self.phoneNumber.count <= 15 else {print("Numero di telefono errato!"); return}
                     DatabaseController.updateProfile(
                         newName: self.name,
                         newSurname: self.surname,
                         newPhoneNumber: self.phoneNumber,
-                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters)
+                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.25)?.base64EncodedString(options: .lineLength64Characters)
                     ){ responseCode, error in
                         guard error == nil else {self.showAlert = true; print("Error while updating profile"); return}
                         CoreDataController.loggedUser!.name = self.name
