@@ -146,6 +146,7 @@ struct ThankButton: View {
     @Environment(\.presentationMode) var presentationMode
     let helperToReport: Bool
     let task: Task
+    var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var body: some View {
         GenericButton(
             isFilled: true,
@@ -156,6 +157,7 @@ struct ThankButton: View {
             DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
+                    let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                 }
             }
         }
@@ -166,6 +168,7 @@ struct ReportButton: View {
     @State var showActionSheet: Bool = false
     @Environment(\.presentationMode) var presentationMode
     let helperToReport: Bool
+    var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
             .default(Text("The person didn't show up")) {
@@ -174,6 +177,7 @@ struct ReportButton: View {
                 DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
+                        let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                     }
                 }
             },
@@ -182,6 +186,7 @@ struct ReportButton: View {
                 DatabaseController.reportTask(task: self.task, report: "Bad manners", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
+                        let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                     }
                 }
             },
