@@ -74,4 +74,14 @@ class Shared: ObservableObject {
         })
     }
     
+    func deleteAll(){
+        myTasks = [:]
+        myExpiredTasks = [:]
+        myDiscoverables = [:]
+        myRequests = [:]
+        myExpiredRequests = [:]
+        users = [:]
+        discUsers = [:]
+        openingMaps = nil
+    }
 }

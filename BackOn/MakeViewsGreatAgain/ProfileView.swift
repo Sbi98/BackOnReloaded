@@ -111,8 +111,13 @@ struct ProfileView: View {
                         DatabaseController.logout(){ error in
                             guard error == nil else {print(error!); return}
                             GIDSignIn.sharedInstance()?.disconnect()
-                            CoreDataController.deleteAll()
-                            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.mainWindow = "LoginPageView" }
+                            DispatchQueue.main.async{
+                                let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                                CoreDataController.deleteAll()
+                                shared.mainWindow = "LoginPageView"
+                                shared.deleteAll()
+                                
+                            }
                         }
                         
                     }
