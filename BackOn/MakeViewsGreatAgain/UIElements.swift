@@ -289,8 +289,11 @@ struct CallButton: View {
     var phoneNumber: String?
     var date: Date
     var body: some View {
-        let eta = date.timeIntervalSinceNow
-        let disabledCondition = self.phoneNumber == nil || eta > 18000
+        let hoursLeft = (date.timeIntervalSinceNow - 18_000)/3_600
+        let daysLeft = Int(hoursLeft/24)
+        let dayString: String? = daysLeft > 0 ? "\(daysLeft) " + (daysLeft > 1 ? "days" : "day") : nil
+        let hourString: String? = hoursLeft > 1 ? "\(Int(hoursLeft)) " + (hoursLeft > 2 ? "hrs" : "hr") : nil
+        let disabledCondition = self.phoneNumber == nil || hoursLeft > 0
         return Button(action: {
             guard let phoneNumber = self.phoneNumber, let number = URL(string: "tel://" + phoneNumber) else { return }
             UIApplication.shared.open(number)
@@ -303,7 +306,7 @@ struct CallButton: View {
                         .font(.body)
                         .tint(.red)
                 } else {
-                    if eta < 18000 {
+                    if hoursLeft <= 0 {
                         Image(systemName: "phone.fill").tintIf(self.phoneNumber == nil, .red, .green)
                         Text("Call")
                             .fontWeight(.semibold)
@@ -311,11 +314,16 @@ struct CallButton: View {
                             .tint(.green)
                     } else {
                         Image(systemName: "phone.down.fill").tint(.red)
-                        if 18000 - eta > 3600 {
-                            Text("Available in about \(Int((18000 - eta)/3600)) hrs")
+                        if dayString != nil {
+                            Text("Available in " + dayString!)
                                 .fontWeight(.semibold)
                                 .font(.body)
                                 .tint(.red)
+                        } else if hourString != nil{
+                            Text("Available in about " + hourString!)
+                            .fontWeight(.semibold)
+                            .font(.body)
+                            .tint(.red)
                         } else {
                             Text("Available in less than 1 hr")
                                 .fontWeight(.semibold)
