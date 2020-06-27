@@ -117,10 +117,10 @@ struct DetailedView: View {
                         Spacer()
                     }
                 }
-                if !isExpired && (requiredBy == RequiredBy.TaskViews || requiredBy == RequiredBy.RequestViews && selectedTask.helperID != nil){
+                if !isExpired && (requiredBy == .TaskViews || requiredBy == .RequestViews && selectedTask.helperID != nil){
                     HStack {
                         Spacer()
-                        CallButton(phoneNumber: (requiredBy == RequiredBy.TaskViews ?  shared.users[selectedTask.neederID]?.phoneNumber: shared.users[selectedTask.helperID!]?.phoneNumber), date: selectedTask.date)
+                        CallButton(phoneNumber: (requiredBy == .TaskViews ?  shared.users[selectedTask.neederID]?.phoneNumber : shared.users[selectedTask.helperID!]?.phoneNumber), date: selectedTask.date)
                         Spacer()
                     }
                 }

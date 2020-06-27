@@ -143,17 +143,21 @@ struct AskAgainButton: View {
 
 
 struct ThankButton: View {
+    @Environment(\.presentationMode) var presentationMode
     let helperToReport: Bool
     let task: Task
+    var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var body: some View {
         GenericButton(
             isFilled: true,
-            topText: helperToReport ? "Thank you" : "I feel better, thank you!"
+            topText: helperToReport ? "Thank you" : "I feel better 🙂"
         ) {
+            DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             CoreDataController.deleteBond(self.task)
             DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
                 guard error == nil else {print(error!); return}
                 DispatchQueue.main.async {
+                    let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                 }
             }
         }
@@ -162,14 +166,18 @@ struct ThankButton: View {
 
 struct ReportButton: View {
     @State var showActionSheet: Bool = false
+    @Environment(\.presentationMode) var presentationMode
     let helperToReport: Bool
+    var shared = (UIApplication.shared.delegate as! AppDelegate).shared
     var actionSheet: ActionSheet {
         ActionSheet(title: Text("Report a problem"), message: Text("Choose Option"), buttons: [
             .default(Text("The person didn't show up")) {
+                    DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
                 CoreDataController.deleteBond(self.task)
                 DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
+                        let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                     }
                 }
             },
@@ -178,6 +186,7 @@ struct ReportButton: View {
                 DatabaseController.reportTask(task: self.task, report: "Bad manners", helperToReport: self.helperToReport){ error in
                     guard error == nil else {print(error!); return}
                     DispatchQueue.main.async {
+                        let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                     }
                 }
             },
@@ -280,21 +289,46 @@ struct CallButton: View {
     var phoneNumber: String?
     var date: Date
     var body: some View {
-        Button(action: {
+        let eta = date.timeIntervalSinceNow
+        let disabledCondition = self.phoneNumber == nil || eta > 18000
+        return Button(action: {
             guard let phoneNumber = self.phoneNumber, let number = URL(string: "tel://" + phoneNumber) else { return }
             UIApplication.shared.open(number)
         }) {
             HStack {
-                Image(systemName: "phone.fill")
-                Text("Call")
-                    .fontWeight(.semibold)
-                    .font(.body)
+                if self.phoneNumber == nil {
+                    Image(systemName: "phone.down.fill").tintIf(self.phoneNumber == nil, .red, .green)
+                    Text("Phone number not available")
+                        .fontWeight(.semibold)
+                        .font(.body)
+                        .tint(.red)
+                } else {
+                    if eta < 18000 {
+                        Image(systemName: "phone.fill").tintIf(self.phoneNumber == nil, .red, .green)
+                        Text("Call")
+                            .fontWeight(.semibold)
+                            .font(.body)
+                            .tint(.green)
+                    } else {
+                        Image(systemName: "phone.down.fill").tint(.red)
+                        if 18000 - eta > 3600 {
+                            Text("Available in about \(Int((18000 - eta)/3600)) hrs")
+                                .fontWeight(.semibold)
+                                .font(.body)
+                                .tint(.red)
+                        } else {
+                            Text("Available in less than 1 hr")
+                                .fontWeight(.semibold)
+                                .font(.body)
+                                .tint(.red)
+                        }
+                    }
+                }
             }
-            .foregroundColor(Color(.systemGreen))
             .frame(width: defaultButtonDimensions.width*2, height: defaultButtonDimensions.height)
             .background(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(.systemGreen), lineWidth: 1))
-        }.buttonStyle(PlainButtonStyle()).disabled(self.phoneNumber != nil && date.timeIntervalSinceNow > 18000)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(disabledCondition ? Color(.systemRed) : Color(.systemGreen), lineWidth: 1))
+        }.buttonStyle(PlainButtonStyle()).disabled(disabledCondition)
     }
 }
 

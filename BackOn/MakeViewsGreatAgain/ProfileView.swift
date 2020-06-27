@@ -9,14 +9,27 @@
 import SwiftUI
 import GoogleSignIn
 
+
+
 struct ProfileView: View {
     @EnvironmentObject var underlyingVC: ViewControllerHolder
     @State var name = CoreDataController.loggedUser!.name
     @State var surname = CoreDataController.loggedUser!.surname ?? ""
     @State var phoneNumber = CoreDataController.loggedUser!.phoneNumber ?? ""
-    @State var profilePic: UIImage? = CoreDataController.loggedUser!.photo
+    @State var profilePic = CoreDataController.loggedUser!.photo
     @State var nameNeeded = false
-    @State var showAlert = false
+    @State var alertUpdateFailed = false
+    @State var alertPhotoUploadFailed = false
+    @State var alertWrongPNFormat = false
+    @State var alertEmptyName = false
+    
+    //per ora mai usata. decidi
+    private func revertChanges() {
+        self.name = CoreDataController.loggedUser!.name
+        self.surname = CoreDataController.loggedUser!.surname ?? ""
+        self.phoneNumber = CoreDataController.loggedUser!.phoneNumber ?? ""
+        self.profilePic = CoreDataController.loggedUser!.photo
+    }
     
     var body: some View {
         let optionMenu = UIAlertController(title: nil, message: "Choose Option", preferredStyle: .actionSheet)
@@ -34,6 +47,7 @@ struct ProfileView: View {
         optionMenu.addAction(cancel)
         let editPhotoOverlay = Text("Edit").font(.subheadline).frame(width: 150, height: 30).tint(.white).background(Color.black.opacity(0.7))
         UITableView.appearance().backgroundColor = .systemGray6
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .systemOrange
         return NavigationView {
             VStack (spacing: 0){
                 HStack {
@@ -43,6 +57,9 @@ struct ProfileView: View {
                             .overlayIf(.constant(self.underlyingVC.isEditing), toOverlay: editPhotoOverlay, alignment: .bottom)
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                            .alert(isPresented: $alertPhotoUploadFailed) {
+                                Alert(title: Text("Error while uploading profile pic"), message: Text("Check your connection and try again later"), dismissButton: .default(Text("Got it!").orange()))
+                            }
                     }.buttonStyle(PlainButtonStyle()).padding()
                     Spacer()
                 }.background(Color(.systemGray6))
@@ -54,6 +71,9 @@ struct ProfileView: View {
                             TextField("Name field is requred!", text: $name)
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
+                                .alert(isPresented: $alertEmptyName) {
+                                    Alert(title: Text("The name field must not be empty"), message: Text("Insert a valid name"), dismissButton: .default(Text("Got it!").orange()))
+                                }
                         }
                         HStack {
                             Text("Surname: ")
@@ -65,9 +85,13 @@ struct ProfileView: View {
                         HStack {
                             Text("Phone: ")
                                 .orange()
-                            TextField("", text: $phoneNumber)
+                            TextField("Type the prefix followed by your phone number", text: $phoneNumber)
                                 .disabled(!underlyingVC.isEditing)
+                                .keyboardType(.numberPad)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
+                                .alert(isPresented: $alertWrongPNFormat) {
+                                    Alert(title: Text("Wrong format for the phone number"), message: Text("The phone number should have the prefix followed by the phone number itself (e.g. +39 0123456789)"), dismissButton: .default(Text("Got it!").orange()))
+                                }
                         }
                         HStack {
                             Text("Mail: ").orange()
@@ -97,34 +121,42 @@ struct ProfileView: View {
             }
             .onTapGesture {self.underlyingVC.value.view.endEditing(true)}
             .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Error while updating profile"), message: Text("Check your connection and try again later"), dismissButton: .default(Text("Got it!")))
+            .alert(isPresented: $alertUpdateFailed) {
+                Alert(title: Text("Error while updating profile"), message: Text("Check your connection and try again later"), dismissButton: .default(Text("Got it!").orange()))
             }
             .navigationBarItems(
                 leading: Button(action: {self.underlyingVC.dismissVC()})
                 {Text("Cancel").orange()},
                 trailing: Button(action: {
-                    self.underlyingVC.toggleEditMode()
-                    //Se sono in edit mode e qualche parametro è cambiato...
-                    guard !self.underlyingVC.isEditing && (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo || self.phoneNumber != CoreDataController.loggedUser!.phoneNumber) else {return}
-                    guard self.name != "" else {return} //alert che il nome non può essere vuoto
-                    self.name = self.name.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.surname = self.surname.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.phoneNumber = self.phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
-                    DatabaseController.updateProfile(
-                        newName: self.name,
-                        newSurname: self.surname,
-                        newPhoneNumber: self.phoneNumber,
-                        newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.20)?.base64EncodedString(options: .lineLength64Characters)
-                    ){ responseCode, error in
-                        guard error == nil else {self.showAlert = true; print("Error while updating profile"); return}
-                        CoreDataController.loggedUser!.name = self.name
-                        CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
-                        CoreDataController.loggedUser!.phoneNumber = self.phoneNumber == "" ? nil : self.phoneNumber
-                        if responseCode == 200 {CoreDataController.loggedUser!.photo = self.profilePic}
-                        else {self.showAlert = true} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
-                        CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
-                        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.profileUpdated.toggle() }
+                    if !self.underlyingVC.isEditing {
+                        self.underlyingVC.toggleEditMode()
+                    } else {
+                        //Se sono in edit mode e qualche parametro è cambiato...
+                        guard (self.name != CoreDataController.loggedUser!.name || self.surname != CoreDataController.loggedUser!.surname || self.profilePic != CoreDataController.loggedUser!.photo || self.phoneNumber != CoreDataController.loggedUser!.phoneNumber) else {self.underlyingVC.toggleEditMode(); return}
+                        self.name = self.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                        self.surname = self.surname.trimmingCharacters(in: .whitespacesAndNewlines)
+                        self.phoneNumber = self.phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+                        self.phoneNumber = self.phoneNumber.replacingOccurrences(of: "-", with: "")
+                        let regex = try! NSRegularExpression(pattern: "[+]?[0-9]")
+                        let result = regex.firstMatch(in: self.phoneNumber, options: [], range: NSRange(location: 0, length: self.phoneNumber.count))
+                        guard self.name != "" else {self.alertEmptyName = true; print("Name field must not be empty"); return}
+                        guard result != nil && self.phoneNumber.count <= 15 else {self.alertWrongPNFormat = true; print("Wrong format for phone number"); return}
+                        self.underlyingVC.toggleEditMode()
+                        DatabaseController.updateProfile(
+                            newName: self.name,
+                            newSurname: self.surname,
+                            newPhoneNumber: self.phoneNumber,
+                            newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.25)?.base64EncodedString(options: .lineLength64Characters)
+                        ){ responseCode, error in
+                            guard error == nil else {self.alertUpdateFailed = true; print("Error while updating profile"); self.revertChanges(); return}
+                            CoreDataController.loggedUser!.name = self.name
+                            CoreDataController.loggedUser!.surname = self.surname == "" ? nil : self.surname
+                            CoreDataController.loggedUser!.phoneNumber = self.phoneNumber == "" ? nil : self.phoneNumber
+                            if responseCode == 200 {CoreDataController.loggedUser!.photo = self.profilePic}
+                            else {self.alertPhotoUploadFailed = true; self.profilePic = CoreDataController.loggedUser!.photo} //401: Errore nel caricamento della nuova immagine, ma okay per nome/cognome
+                            CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
+                            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.profileUpdated.toggle() }
+                        }
                     }
                 })
                 {Text.ofEditButton(underlyingVC.isEditing)}
