@@ -206,11 +206,18 @@ struct searchLocation: View {
     var body: some View {
         Form {
             Section (header: SearchBar(text: $addressCompleter.completer.queryFragment)) {
+                if MapController.lastLocation != nil{
                 Text(userLocationAddress)
                     .onTapGesture {
                         self.selection = self.userLocationAddress
                         self.presentationMode.wrappedValue.dismiss()
                     }
+                }else{
+                    if addressCompleter.completer.results.isEmpty {
+                        Text("Insert the position of your need")
+                    }
+                }
+                
                 ForEach(addressCompleter.completer.results, id: \.hashValue) { currentItem in
                     Text("\(currentItem.title) (\(currentItem.subtitle))")
                         .onTapGesture {
