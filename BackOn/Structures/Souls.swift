@@ -10,7 +10,7 @@ import Foundation
 import CoreLocation
 
 typealias CareGiverWeight = Double
-typealias HousewifeWeight = Double
+typealias HouseKeeperWeight = Double
 typealias RunnerWeight = Double
 typealias SmartAssistant = Double
 /*enum RequestCategories: String{
@@ -30,7 +30,7 @@ typealias SmartAssistant = Double
 
 class Souls{
     static var soulsDict: [RequestCategory:Double] = [:]
-    static let weights: [RequestCategory:(CareGiverWeight, HousewifeWeight, RunnerWeight, SmartAssistant)] = [
+    static let weights: [RequestCategory:(CareGiverWeight, HouseKeeperWeight, RunnerWeight, SmartAssistant)] = [
         "Disabled Assistance" : (7.5, 2.5, 0, 0),
         "Elder Care" : (6.5, 3.5, 0, 0),
         "Generic Errands" : (3.5, 0, 6.5, 0),

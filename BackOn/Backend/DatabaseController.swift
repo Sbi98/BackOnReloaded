@@ -170,12 +170,12 @@ class DatabaseController {
                 if photoURLstr != nil {photoURL = URL(string: photoURLstr!)}
                 let phoneNumber = jsonResponse["phoneNumber"].string
                 let caregiver = jsonResponse["caregiver"].doubleValue
-                let housewife = jsonResponse["housewife"].doubleValue
+                let housekeeper = jsonResponse["housekeeper"].doubleValue
                 let runner = jsonResponse["runner"].doubleValue
                 let smartAssistant = jsonResponse["smartassistant"].doubleValue
                 for requestType in Array(Souls.weights.keys) {
                     let weights = Souls.weights[requestType]!
-                    Souls.setValue(category: requestType, newValue: caregiver * weights.0 + housewife * weights.1 + runner * weights.2 + smartAssistant * weights.3)
+                    Souls.setValue(category: requestType, newValue: caregiver * weights.0 + housekeeper * weights.1 + runner * weights.2 + smartAssistant * weights.3)
                 }
                 completion(name, surname, photoURL, phoneNumber, nil)
             }.resume()
