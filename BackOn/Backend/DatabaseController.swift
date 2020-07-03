@@ -27,31 +27,6 @@ class DatabaseController {
             }
             CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
         }
-        discover(){ discTasks, discUsers, error in
-            guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
-            var shouldRequestETA = false
-            let now = Date()
-            if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
-                shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < MapController.horizontalAccuracy ? true : false
-            }
-            for task in discTasks.values {
-                if task.date > now {
-                    if shouldRequestETA { task.requestETA() }
-                    task.locate()
-                    DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables[task._id] = task }
-                }
-            }
-            for user in discUsers.values {
-                DispatchQueue.main.async {
-                    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                    if shared.discUsers[user._id] == nil {
-                        shared.discUsers[user._id] = user
-                    }
-                }
-            }
-            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = true }
-            print("*** DB - discover finished ***")
-        }
         getMyBonds(){ tasks, requests, users, error in
             guard error == nil, let tasks = tasks, let requests = requests, let users = users else {print(error!); return} //FAI L'ALERT!
             var shouldRequestETA = false
@@ -149,6 +124,31 @@ class DatabaseController {
                 }
                 print("*** DB - getMyBonds finished ***")
             }
+            discover(){ discTasks, discUsers, error in
+                guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
+                var shouldRequestETA = false
+                let now = Date()
+                if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
+                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < MapController.horizontalAccuracy ? true : false
+                }
+                for task in discTasks.values {
+                    if task.date > now {
+                        if shouldRequestETA { task.requestETA() }
+                        task.locate()
+                        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables[task._id] = task }
+                    }
+                }
+                for user in discUsers.values {
+                    DispatchQueue.main.async {
+                        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                        if shared.discUsers[user._id] == nil {
+                            shared.discUsers[user._id] = user
+                        }
+                    }
+                }
+                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = true }
+                print("*** DB - discover finished ***")
+            }
         }
     }
     
@@ -235,10 +235,12 @@ class DatabaseController {
     }
     
     static func discover(completion: @escaping ([String:Task]?, [String:User]?, ErrorString?)-> Void) {
+        guard let lastLocation = MapController.lastLocation else {return completion(nil, nil, "LocationDisabled")}
         do {
             print("*** DB - \(#function) ***")
+            print(lastLocation.coordinate.latitude)
             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = false }
-            let parameters: [String: String] = ["_id": CoreDataController.loggedUser!._id]
+            let parameters: [String: Any?] = ["_id": CoreDataController.loggedUser!._id, "longitude": lastLocation.coordinate.longitude, "latitude": lastLocation.coordinate.latitude]
             let request = initJSONRequest(urlString: ServerRoutes.discover, body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -386,8 +388,8 @@ class DatabaseController {
             let title = current["title"].stringValue
             let descr = current["description"].string
             let date = serverDateFormatter(date: current["date"].stringValue)
-            let latitude =  current["latitude"].doubleValue
-            let longitude = current["longitude"].doubleValue
+            let latitude = current["location"]["coordinates"][1].doubleValue
+            let longitude = current["location"]["coordinates"][0].doubleValue
             let _id = current["_id"].stringValue
             taskDict[_id] = Task(neederID: neederID, helperID: helperID, title: title, descr: descr, date: date, latitude: latitude, longitude: longitude, _id: _id)
             let user = current["user"].arrayValue.first
