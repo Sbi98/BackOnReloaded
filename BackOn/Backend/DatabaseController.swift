@@ -329,7 +329,10 @@ class DatabaseController {
     static func updateProfile(newName: String, newSurname: String, newPhoneNumber: String,  newImageEncoded: String? = nil, completion: @escaping (Int, ErrorString?)-> Void){
         do {
             print("*** DB - \(#function) ***")
-            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id, "name" : newName, "surname" : newSurname, "phoneNumber": newPhoneNumber]
+            var parameters: [String: Any] = ["_id" : CoreDataController.loggedUser!._id]
+            if newName != CoreDataController.loggedUser!.name {parameters["name"] = newName}
+            if newSurname != CoreDataController.loggedUser!.surname {parameters["surname"] = newSurname}
+            if newPhoneNumber != CoreDataController.loggedUser!.phoneNumber {parameters["phoneNumber"] = newPhoneNumber}
             if (newImageEncoded != nil) {parameters["photo"] = newImageEncoded}
             let request = initJSONRequest(urlString: ServerRoutes.updateProfile, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
