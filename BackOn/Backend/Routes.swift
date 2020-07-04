@@ -4,12 +4,12 @@
 //
 //  Created by Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro on 28/03/2020.
 //  Copyright © 2020 Riccio Vincenzo, Sorrentino Giancarlo, Triuzzi Emanuele, Zanfardino Gennaro. All rights reserved.
-//
+//  http://192.168.1.123:3000/api
 
 import Foundation
 
 struct ServerRoutes {
-    private static let baseURL = "http://192.168.1.123:3000/api"
+    private static let baseURL = "https://serverlessbackon.now.sh/api"
     static let signUp = {baseURL+"/signin.js"}()
     static let getMyBonds = {baseURL+"/getMyBonds.js"}()
     static let removeTask = {baseURL+"/cancelTask.js"}()
