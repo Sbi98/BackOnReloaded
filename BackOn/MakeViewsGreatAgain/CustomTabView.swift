@@ -29,7 +29,7 @@ struct CustomTabView: View {
             }
             .tabItem {
                 Image(systemName: "rectangle.stack.fill.badge.person.crop").font(.title)
-                Text("Tasks").font(.largeTitle)
+                Text("About you").font(.largeTitle)
             }.tag(0)
             
             FullDiscoverView()
