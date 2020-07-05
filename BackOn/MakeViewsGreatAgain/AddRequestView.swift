@@ -14,7 +14,13 @@ struct AddRequestView: View {
     
     @State var locationNeeded = false
     @State var titleNeeded = false
+    @State var descriptionNeeded = false
     @State var dateNeeded = false
+    private var toAppendDescription: String{
+        get{
+        return titlePickerValue != -1 && Souls.categories[titlePickerValue] == "Other..." ? "(required)" : "(optional)"
+        }
+    }
     
     //    @State var toggleVerified = false
     //    @State var toggleRepeat = false
@@ -26,8 +32,10 @@ struct AddRequestView: View {
         Button(action: {
             self.locationNeeded = self.address == "Click to insert the location"
             self.titleNeeded = self.titlePickerValue == -1
+            self.descriptionNeeded = self.titlePickerValue != -1 && Souls.categories[self.titlePickerValue] == "Other..." && self.requestDescription == ""
+            print(self.descriptionNeeded)
             self.dateNeeded = self.selectedDate < Date()
-            if !(self.locationNeeded || self.titleNeeded || self.dateNeeded) {
+            if !(self.locationNeeded || self.titleNeeded || self.dateNeeded || self.descriptionNeeded) {
                 DispatchQueue.main.async { self.underlyingVC.dismissVC() }
                 MapController.addressToCoordinates(self.address) { result, error in
                     guard error == nil, let result = result else {print("Error while getting the coordinates. Can't add the need!");return}
@@ -72,6 +80,7 @@ struct AddRequestView: View {
         }
     }
     
+    
     var body: some View {
         UITableView.appearance().backgroundColor = .systemGray6
 //        let dateBinding: Binding<Date> = Binding(
@@ -91,7 +100,7 @@ struct AddRequestView: View {
                         Text(titlePickerValue == -1 ? "Click to select your need" : Souls.categories[titlePickerValue])
                             .tintIf(titleNeeded, .red, titlePickerValue == -1 ? .gray3 : .primary)
                             .onTapGesture {withAnimation{
-                                self.titlePickerValue = 0
+                                self.titlePickerValue = self.titlePickerValue == -1 ? 0 : self.titlePickerValue
                                 self.showTitlePicker.toggle()
                                 self.titleNeeded = false
                                 self.underlyingVC.setEditMode(true)
@@ -99,7 +108,9 @@ struct AddRequestView: View {
                     }
                     HStack {
                         Text("Description: ").orange()
-                        TextField("Insert a description (optional)", text: self.$requestDescription).multilineTextAlignment(.trailing).offset(y: 1)
+                        SuperTextField(
+                            placeholder: Text( "Insert a description " + toAppendDescription),
+                            text: self.$requestDescription, required: self.$descriptionNeeded)
                     }
                 }
                 Section(header: Text("Time")) {
@@ -161,3 +172,22 @@ struct AddRequestView: View {
  Toggle(isOn: $toggleVerified) { Text("Do you want only verified helpers?") }
  }
  */
+
+struct SuperTextField: View {
+    
+    var placeholder: Text
+    @Binding var text: String
+    @Binding var required: Bool
+    var editingChanged: (Bool)->() = { _ in }
+    var commit: ()->() = { }
+    
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            if text.isEmpty{ placeholder.tintIf(required, .red, .gray3) }
+            TextField("", text: $text, onEditingChanged: editingChanged, onCommit: commit).multilineTextAlignment(.trailing).offset(y: 1).onTapGesture {
+                self.required = false
+            }
+        }
+    }
+    
+}

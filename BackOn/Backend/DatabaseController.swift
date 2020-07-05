@@ -177,6 +177,7 @@ class DatabaseController {
                     let weights = Souls.weights[requestType]!
                     Souls.setValue(category: requestType, newValue: caregiver * weights.0 + housekeeper * weights.1 + runner * weights.2 + smartAssistant * weights.3)
                 }
+                Souls.setValue(category: "Other...", newValue: caregiver * 0.25 + housekeeper * 0.25 + runner * 0.25 + smartAssistant * 0.25)
                 completion(name, surname, photoURL, phoneNumber, nil)
             }.resume()
         } catch {print("Error in " + #function + ". The error is:\n" + error.localizedDescription)}
