@@ -177,16 +177,13 @@ struct SuperTextField: View {
     var placeholder: Text
     @Binding var text: String
     @Binding var required: Bool
-    var editingChanged: (Bool)->() = { _ in }
-    var commit: ()->() = { }
     
     var body: some View {
         ZStack(alignment: .trailing) {
             if text.isEmpty{ placeholder.tintIf(required, .red, .gray3) }
-            TextField("", text: $text, onEditingChanged: editingChanged, onCommit: commit).multilineTextAlignment(.trailing).offset(y: 1).onTapGesture {
+            TextField("", text: $text).multilineTextAlignment(.trailing).offset(y: 1).onTapGesture {
                 self.required = false
             }
         }
     }
-    
 }
