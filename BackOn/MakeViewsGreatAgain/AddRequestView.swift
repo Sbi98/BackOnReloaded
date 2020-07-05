@@ -33,7 +33,6 @@ struct AddRequestView: View {
             self.locationNeeded = self.address == "Click to insert the location"
             self.titleNeeded = self.titlePickerValue == -1
             self.descriptionNeeded = self.titlePickerValue != -1 && Souls.categories[self.titlePickerValue] == "Other..." && self.requestDescription == ""
-            print(self.descriptionNeeded)
             self.dateNeeded = self.selectedDate < Date()
             if !(self.locationNeeded || self.titleNeeded || self.dateNeeded || self.descriptionNeeded) {
                 DispatchQueue.main.async { self.underlyingVC.dismissVC() }
