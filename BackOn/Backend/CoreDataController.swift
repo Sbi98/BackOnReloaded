@@ -284,7 +284,7 @@ class CoreDataController {
             do {
                 try saveContext()
                 print("Saved in memory")
-            } catch {print("\nError while saving \(bond) in memory! The error is:\n\(error)\n");return}
+            } catch {print("\nError while saving \n\(bond)\nin memory! The error is:\n\(error)\n");return}
         }
     }
     

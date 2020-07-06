@@ -142,7 +142,9 @@ struct TaskRow: View {
                 }
                 .font(.body)
                 .tint(.gray)
-                SizedDivider(height: 83)
+                if !shared.myRequests.isEmpty {
+                    SizedDivider(height: 83)
+                }
             } else {
                 Button(action: {withAnimation{TasksListView.show()}}) {
                     HStack {

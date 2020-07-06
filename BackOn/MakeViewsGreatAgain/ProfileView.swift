@@ -64,7 +64,7 @@ struct ProfileView: View {
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
-                    Section(header: Text("Personal informations")) { //BISOGNA AGGIUNGERE L?ALERT COME NELLA ADD NEED SE IL NOME È VUOTO
+                    Section(header: Text("Personal informations")) {
                         HStack {
                             Text("Name: ")
                                 .orange()
@@ -72,7 +72,7 @@ struct ProfileView: View {
                                 .disabled(!underlyingVC.isEditing)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
                                 .alert(isPresented: $alertEmptyName) {
-                                    Alert(title: Text("The name field must not be empty"), message: Text("Insert a valid name"), dismissButton: .default(Text("Got it!").orange()))
+                                    Alert(title: Text("The name field must not be empty"), message: Text("Insert a valid name"), dismissButton: .default(Text("Got it!")))
                                 }
                         }
                         HStack {
@@ -87,10 +87,10 @@ struct ProfileView: View {
                                 .orange()
                             TextField("Type the prefix followed by your phone number", text: $phoneNumber)
                                 .disabled(!underlyingVC.isEditing)
-                                .keyboardType(.numberPad)
+                                .keyboardType(.phonePad)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
                                 .alert(isPresented: $alertWrongPNFormat) {
-                                    Alert(title: Text("Wrong format for the phone number"), message: Text("The phone number should have the prefix followed by the phone number itself (e.g. +39 0123456789)"), dismissButton: .default(Text("Got it!").orange()))
+                                    Alert(title: Text("Wrong format for the phone number"), message: Text("The phone number should have the prefix followed by the phone number itself (e.g. +39 0123456789)"), dismissButton: .default(Text("Got it!")))
                                 }
                         }
                         HStack {
@@ -116,7 +116,6 @@ struct ProfileView: View {
                                 CoreDataController.deleteAll()
                                 shared.mainWindow = "LoginPageView"
                                 shared.deleteAll()
-                                
                             }
                         }
                         
@@ -127,7 +126,7 @@ struct ProfileView: View {
             .onTapGesture {self.underlyingVC.value.view.endEditing(true)}
             .navigationBarTitle(Text("Your profile").orange(), displayMode: .inline)
             .alert(isPresented: $alertUpdateFailed) {
-                Alert(title: Text("Error while updating profile"), message: Text("Check your connection and try again later"), dismissButton: .default(Text("Got it!").orange()))
+                Alert(title: Text("Error while updating profile"), message: Text("Check your connection and try again later"), dismissButton: .default(Text("Got it!")))
             }
             .navigationBarItems(
                 leading: Button(action: {self.underlyingVC.dismissVC()})

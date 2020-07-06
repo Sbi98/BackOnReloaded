@@ -362,7 +362,7 @@ class DatabaseController {
         guard let receiverID = receiverID else {return}
         do{
             print("*** DB - \(#function) ***")
-            print ("Receiver ID: \(receiverID)")
+            //print ("Receiver ID: \(receiverID)")
             let parameters: [String: String] = ["receiverID": receiverID, "title": title, "body": body]
             let request = initJSONRequest(urlString: ServerRoutes.sendNotification, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
