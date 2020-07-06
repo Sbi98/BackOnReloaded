@@ -94,7 +94,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        guard error == nil else {print("Error with Google signup"); return}
+        guard error == nil else {
+            print("Error with Google signup")
+            let alert = UIAlertController(title: "Something wrong with signin", message: "It seems there is a problem with Google Signin.\nPlease try again.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+            UIViewController.main?.present( alert, animated: true)
+            return
+        }
         DispatchQueue.main.async { self.shared.mainWindow = "LoadingPageView" }
         // Perform any operations on signed in user here.
         //let userid = user.userid                  // For client-side use only!
