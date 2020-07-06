@@ -85,7 +85,7 @@ struct ProfileView: View {
                         HStack {
                             Text("Phone: ")
                                 .orange()
-                            TextField("Type the prefix followed by your phone number", text: $phoneNumber)
+                            TextField("Type your prefix and phone number", text: $phoneNumber)
                                 .disabled(!underlyingVC.isEditing)
                                 .keyboardType(.phonePad)
                                 .multilineTextAlignment(.trailing).offset(y: 1)
@@ -140,17 +140,18 @@ struct ProfileView: View {
                         self.name = self.name.trimmingCharacters(in: .whitespacesAndNewlines)
                         self.surname = self.surname.trimmingCharacters(in: .whitespacesAndNewlines)
                         self.phoneNumber = self.phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
-                        self.phoneNumber = self.phoneNumber.replacingOccurrences(of: "-", with: "")
-                        let regex = try! NSRegularExpression(pattern: "[+]?[0-9]")
-                        let result = regex.firstMatch(in: self.phoneNumber, options: [], range: NSRange(location: 0, length: self.phoneNumber.count))
                         guard self.name != "" else {self.alertEmptyName = true; print("Name field must not be empty"); return}
-                        guard result != nil && self.phoneNumber.count <= 15 else {self.alertWrongPNFormat = true; print("Wrong format for phone number"); return}
+                        if self.phoneNumber != "" {
+                            let regex = try! NSRegularExpression(pattern: "(\\+\\d{2}\\s*)?(\\s*(\\d{7,15}))")
+                            let result = regex.firstMatch(in: self.phoneNumber, options: [], range: NSRange(location: 0, length: self.phoneNumber.count))
+                            guard result != nil && self.phoneNumber.count <= 15 else {self.alertWrongPNFormat = true; print("Wrong format for phone number"); return}
+                        }
                         self.underlyingVC.toggleEditMode()
                         DatabaseController.updateProfile(
                             newName: self.name,
                             newSurname: self.surname,
                             newPhoneNumber: self.phoneNumber,
-                            newImageEncoded: self.profilePic?.jpegData(compressionQuality: 0.25)?.base64EncodedString(options: .lineLength64Characters)
+                            newImageEncoded: self.profilePic != CoreDataController.loggedUser!.photo ? self.profilePic?.jpegData(compressionQuality: 0.25)?.base64EncodedString(options: .lineLength64Characters) : nil
                         ){ responseCode, error in
                             guard error == nil else {self.alertUpdateFailed = true; print("Error while updating profile"); self.revertChanges(); return}
                             CoreDataController.loggedUser!.name = self.name

@@ -29,7 +29,7 @@ struct FullDiscoverView: View {
                 Text("List").tag(false)
                 Text("Map").tag(true)
             }.pickerStyle(SegmentedPickerStyle()).labelsHidden().padding(.horizontal).offset(y: -5)
-            if !shared.canLoadAroundYouMap || !discoverTabController.mapMode && shared.myDiscoverables.isEmpty {
+            if MapController.lastLocation == nil || !shared.canLoadAroundYouMap || !discoverTabController.mapMode && shared.myDiscoverables.isEmpty {
                 NoDiscoverablesAroundYou() //Pin barrato, nessuno da aiutare
             } else {
                 if discoverTabController.mapMode {

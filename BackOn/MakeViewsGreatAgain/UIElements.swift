@@ -150,7 +150,7 @@ struct ThankButton: View {
     var body: some View {
         GenericButton(
             isFilled: true,
-            topText: helperToReport ? "Thank you" : "I feel better 🙂"
+            topText: helperToReport ? "Thank you" : "I feel better"
         ) {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             CoreDataController.deleteBond(self.task)
@@ -380,7 +380,16 @@ struct NoDiscoverablesAroundYou: View {
                 .imageScale(.large)
                 .font(.largeTitle)
                 .foregroundColor(Color(.systemGray))
-                Text("It seems there's no one to help around you").font(.headline).foregroundColor(Color(.systemGray))
+            if MapController.lastLocation != nil{
+            Text("It seems there's no one to help around you")
+                .font(.headline).foregroundColor(Color(.systemGray))
+            }
+            else{
+                Text("Your location is currently unavailable")
+                    .font(.headline).foregroundColor(Color(.systemGray))
+                Text("Enable localization to use the discover section")
+                    .font(.headline).foregroundColor(Color(.systemGray))
+            }
             Spacer()
         }.offset(y: -30)
     }
