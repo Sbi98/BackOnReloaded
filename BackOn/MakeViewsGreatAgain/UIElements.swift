@@ -41,6 +41,9 @@ struct CloseButton: View {
 struct DoItButton: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var task: Task
+    @State var showAlert = false
+    
+    
     var body: some View {
         GenericButton(
             isFilled: true,
@@ -55,8 +58,17 @@ struct DoItButton: View {
                 if let annotation = discController.baseMKMap?.selectedAnnotations.first { discController.baseMKMap?.removeAnnotation(annotation) }
             }
             DatabaseController.addTask(toAccept: self.task){ error in
-                guard error == nil else {print(error!); return}
+                
                 DispatchQueue.main.async { self.task.waitingForServerResponse = false }
+                guard error == nil else {print(error!);
+                DispatchQueue.main.sync {
+                    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                    shared.myDiscoverables[self.task._id] = nil
+                    let alert = UIAlertController(title: "Oh no!", message: "It seems that this request was already accepted by another user.\nThank you anyway for your help and support, we really apreciate it.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                    UIViewController.main?.present( alert, animated: true)
+                    }
+                   return}
                 var user: User?
                 self.task.helperID = CoreDataController.loggedUser!._id
                 MapController.getSnapshot(location: self.task.position.coordinate, style: .dark){ snapshot, error in
@@ -479,5 +491,17 @@ struct SizedDivider: View {
     }
     var body: some View {
         Rectangle().frame(width: width, height: height).hidden()
+    }
+}
+
+struct AlertView: View{
+    @Binding var isPresented: Bool
+    
+    var body: some View{
+        VStack{
+            EmptyView()
+        }.alert(isPresented: $isPresented){
+            Alert(title: Text("Oh no!"), message: Text("It seems that this request was already accepted by another user.\nThank you anyway for your help and support, we really apreciate it."), dismissButton: .default(Text("Got it!")))
+        }
     }
 }
