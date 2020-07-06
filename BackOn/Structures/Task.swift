@@ -53,7 +53,7 @@ class Task: ObservableObject, CustomStringConvertible {
     }
     
     func requestETA(source: CLLocation? = MapController.lastLocation) {
-        guard let source = source else {print("Source can't be nil for requesting ETA");return}
+        guard let source = source else {print("Source can't be nil for requesting ETA"); return}
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: source.coordinate))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: position.coordinate))
@@ -61,7 +61,7 @@ class Task: ObservableObject, CustomStringConvertible {
         request.transportType = .walking
         let directions = MKDirections(request: request)
         directions.calculateETA { (res, error) in
-            guard error == nil, let res = res else {print("Error while getting ETA");return}
+            guard error == nil, let res = res else {print("Error while getting ETA"); self.etaText = "ETA unavailable"; return}
             let eta = res.expectedTravelTime
             let hour = eta>7200 ? "hrs" : "hr"
             if eta > 3600 {
