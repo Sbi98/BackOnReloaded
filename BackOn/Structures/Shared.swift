@@ -70,6 +70,12 @@ class Shared: ObservableObject {
             }
         }
         return toReturn.sorted(by: { (task1, task2) -> Bool in
+            if task1.date < Date() && task2.date >= Date(){
+                return false
+            }
+            if task2.date < Date() && task1.date >= Date(){
+                return true
+            }
             return task1.date<task2.date
         })
     }
