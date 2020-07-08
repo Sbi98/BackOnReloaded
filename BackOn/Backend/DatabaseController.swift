@@ -22,7 +22,13 @@ class DatabaseController {
                     do {
                         guard let uiimage = try UIImage(data: Data(contentsOf: photoURL)) else { return }
                         DispatchQueue.main.async { CoreDataController.loggedUser!.photo = uiimage }
-                    } catch {print("Error while downloading new user photo")}
+                    } catch {
+                        print("Error while downloading new user photo")
+                        let alert = UIAlertController(title: "Something wrong with signin", message: "It seems there is a problem loading your profile picture.\nPlease try again later.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                        UIViewController.main?.present( alert, animated: true)
+                        return
+                    }
                 }
             }
             CoreDataController.updateLoggedUser(user: CoreDataController.loggedUser!)
@@ -127,36 +133,35 @@ class DatabaseController {
                 }
                 print("*** DB - getMyBonds finished ***")
             }
-            discover(){ discTasks, discUsers, error in
-                guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
-                var shouldRequestETA = false
-                let now = Date()
-                if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
-                    shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < MapController.horizontalAccuracy ? true : false
-                }
-                for task in discTasks.values {
-                    if task.date > now {
-                        if shouldRequestETA { task.requestETA() }
-                        task.locate()
-                        DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables[task._id] = task }
-                    }
-                }
-                for user in discUsers.values {
-                    DispatchQueue.main.async {
-                        let shared = (UIApplication.shared.delegate as! AppDelegate).shared
-                        if shared.discUsers[user._id] == nil {
-                            shared.discUsers[user._id] = user
-                        }
-                    }
-                }
-                DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = true }
-                print("*** DB - discover finished ***")
+        }
+        discover(){ discTasks, discUsers, error in
+            guard error == nil, let discTasks = discTasks, let discUsers = discUsers else {print(error!);return} //FAI L'ALERT!
+            var shouldRequestETA = false
+            let now = Date()
+            if MapController.lastLocation != nil { // serve solo se per qualche motivo la posizione precisa è disponibile prima di avere i set popolati
+                shouldRequestETA = MapController.lastLocation!.horizontalAccuracy < MapController.horizontalAccuracy ? true : false
             }
+            for task in discTasks.values {
+                if task.date > now {
+                    if shouldRequestETA { task.requestETA() }
+                    task.locate()
+                    DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myDiscoverables[task._id] = task }
+                }
+            }
+            for user in discUsers.values {
+                DispatchQueue.main.async {
+                    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                    if shared.discUsers[user._id] == nil {
+                        shared.discUsers[user._id] = user
+                    }
+                }
+            }
+            DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = true }
+            print("*** DB - discover finished ***")
         }
     }
     
     static func refreshSignIn(completion: @escaping (String, String?, URL?, String?, ErrorString?)->Void){
-        //RIVEDI
         do {
             print("*** DB - \(#function) ***")
             let parameters: [String: String?] = ["deviceToken": CoreDataController.deviceToken, "_id": CoreDataController.loggedUser!._id]
@@ -189,7 +194,7 @@ class DatabaseController {
     static func signUp(name: String, surname: String?, email: String, photoURL: URL, completion: @escaping (User?, ErrorString?)-> Void) {
         do {
             print("*** DB - \(#function) ***")
-            let parameters: [String: Any?] = ["name": name, "surname": surname, "email" : email, "photo": "\(photoURL)", "deviceToken": CoreDataController.deviceToken]
+            let parameters: [String: Any?] = ["name": name, "surname": surname, "email" : email, "photo": "\(photoURL)"]
             let request = initJSONRequest(urlString: ServerRoutes.signUp, body: try JSONSerialization.data(withJSONObject: parameters))
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard error == nil else {return completion(nil, "Error in " + #function + ". The error is:\n\(error!.localizedDescription)")}
@@ -200,7 +205,7 @@ class DatabaseController {
                 completion(User(_id: _id, name: name, surname: surname, email: email, photoURL: photoURL), nil)
             }.resume()
         } catch let error {completion(nil, "Error in " + #function + ". The error is:\n" + error.localizedDescription)}
-    }  ///FINITA, GESTIONE DELL'ERRORE DA FARE
+    }
     
     static func logout(completion: @escaping (ErrorString?)-> Void){
         do {

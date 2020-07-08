@@ -94,11 +94,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
     
     //Metodo di accesso
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        let alert = UIAlertController(title: "Something wrong with signin", message: "It seems there is a problem with Google Signin.\nPlease try again.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Got it!", style: .default))
         guard error == nil else {
             print("Error with Google signup")
-            let alert = UIAlertController(title: "Something wrong with signin", message: "It seems there is a problem with Google Signin.\nPlease try again.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Got it!", style: .default))
-            UIViewController.main?.present( alert, animated: true)
+            UIViewController.main?.present(alert, animated: true)
             return
         }
         DispatchQueue.main.async { self.shared.mainWindow = "LoadingPageView" }
@@ -112,7 +112,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, UNUser
             email: user.profile.email!,
             photoURL: user.profile.imageURL(withDimension: 200)!
         ){ loggedUser, error in
-            guard error == nil, let loggedUser = loggedUser else {print("Error with Google signup on the DB");return} //FAI L'ALERT!
+            guard error == nil, let loggedUser = loggedUser else {
+                print("Error with Google signup on the DB")
+                UIViewController.main?.present(alert, animated: true)
+                return
+            }
             CoreDataController.signUp(user: loggedUser)
             DispatchQueue.main.async { self.shared.mainWindow = "CustomTabView" }
             DatabaseController.loadFromServer()
