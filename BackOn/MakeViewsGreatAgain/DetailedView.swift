@@ -18,7 +18,8 @@ struct DetailedView: View {
     
     var body: some View {
         let isExpired = selectedTask.isExpired()
-        return VStack(alignment: .leading, spacing: 0){
+        let isBusy = CalendarController.isBusy(when: selectedTask.date)
+        return VStack(alignment: .leading, spacing: 0) {
             HStack (spacing: 0) {
                 if requiredBy == .RequestViews {
                     Avatar(selectedTask.helperID == nil ? nil : shared.users[selectedTask.helperID!])
@@ -109,7 +110,7 @@ struct DetailedView: View {
                         } else {
                             Text("\(self.selectedTask.date, formatter: customDateFormat)")
                         }
-                        if (requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap) && CalendarController.isBusy(when: selectedTask.date) {
+                        if (requiredBy == .DiscoverableViews || requiredBy == .AroundYouMap) && isBusy {
                             if !showBusyDetail {
                                 Image(systemName: "exclamationmark.triangle").tint(.yellow).onTapGesture{self.showBusyDetail.toggle()}
                             }
@@ -117,7 +118,7 @@ struct DetailedView: View {
                         Spacer()
                     }
                 }
-                if !isExpired && (requiredBy == .TaskViews || requiredBy == .RequestViews && selectedTask.helperID != nil){
+                if !isExpired && (requiredBy == .TaskViews || requiredBy == .RequestViews && selectedTask.helperID != nil) {
                     HStack {
                         Spacer()
                         CallButton(phoneNumber: (requiredBy == .TaskViews ?  shared.users[selectedTask.neederID]?.phoneNumber : shared.users[selectedTask.helperID!]?.phoneNumber), date: selectedTask.date)
@@ -126,7 +127,9 @@ struct DetailedView: View {
                 }
                 
             }.padding(.horizontal, 20)
-        }.animation(.easeOut(duration: 0))
+        }
+        .animation(.easeOut(duration: 0))
+        .background(.systemBG)
     }
 }
 

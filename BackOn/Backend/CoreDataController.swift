@@ -355,21 +355,25 @@ class CoreDataController {
         deleteAllData(entity: "PLoggedUser")
         deleteAllData(entity: "PTasks")
         deleteAllData(entity: "PUsers")
-        print("Everything deleted from CD")
+        do {
+            try saveContext()
+            print("Everything deleted from CD\n")
+        } catch {print("Error while saving context: \(error)")}
     }
     
-    private static func deleteAllData(entity: String) {
+    private static func deleteAllData(entity: String, save: Bool = false) {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
         fetchRequest.returnsObjectsAsFaults = false
-        do{
-            let results = try context!.fetch(fetchRequest)
-            for managedObject in results {
-                let managedObjectData:NSManagedObject = managedObject as! NSManagedObject
-                context!.delete(managedObjectData)
+        do {
+            let array = try context!.fetch(fetchRequest)
+            for elem in array {
+                context!.delete(elem as! NSManagedObject)
             }
-            try saveContext()
+            if save {
+                try saveContext()
+                print("Everything of \(entity) deleted from memory\n")
+            }
         } catch {print("Error while deleting all data in \(entity): \(error)")}
     }
 
-    
 }

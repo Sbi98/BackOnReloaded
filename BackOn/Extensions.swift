@@ -54,10 +54,11 @@ enum Palette {
     case white
     case primary
     case secondary
+    case systemBG
     case test
 }
 
-fileprivate func getColor(_ color: Palette) -> Color {
+func getColor(_ color: Palette) -> Color {
     switch color {
     case .task:
         return Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1))
@@ -85,6 +86,8 @@ fileprivate func getColor(_ color: Palette) -> Color {
         return Color(.systemGray3)
     case .white:
         return Color.white
+    case .systemBG:
+        return Color(.systemBackground)
     case .test: //SOLO DI TEST
         return UIScreen.main.traitCollection.userInterfaceStyle == .dark ? Color(.green) : Color(.red)
     case .secondary:
