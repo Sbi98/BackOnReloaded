@@ -22,6 +22,34 @@ struct AddRequestView: View {
         }
     }
     
+    private func addRequest(request: Request){
+        DatabaseController.addRequest(request: request) { id, error in
+           if error == nil, let id = id {
+               DispatchQueue.main.sync {
+                request._id = id
+                request.waitingForServerResponse = false
+                self.shared.myRequests["waitingForServerResponse"] = nil
+                self.shared.myRequests[id] = request
+               }
+               CoreDataController.addBond(request)
+               let _ = CalendarController.addRequest(request: request)
+           } else {
+               DispatchQueue.main.async {
+                   let alert = UIAlertController(title: "Oh no!", message: "It seems we had a problem adding your request.\nDo you want to try again?", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: { _ in
+                    request.waitingForServerResponse = false
+                    self.shared.myRequests["waitingForServerResponse"] = nil
+                }))
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
+                    self.addRequest(request: request)
+                }))
+                   UIViewController.main?.present( alert, animated: true)
+                   
+               }
+           }
+       }
+    }
+    
     //    @State var toggleVerified = false
     //    @State var toggleRepeat = false
     
@@ -45,20 +73,7 @@ struct AddRequestView: View {
                     if city == nil { city = "Incorrect city" }
                     let request = Request(neederID: CoreDataController.loggedUser!._id, title: Souls.categories[self.titlePickerValue], descr: self.requestDescription == "" ? nil : self.requestDescription, date: self.selectedDate, latitude: result.latitude, longitude: result.longitude, _id: "waitingForServerResponse", address: self.address, city: city)
                     DispatchQueue.main.async { request.waitingForServerResponse = true; self.shared.myRequests[request._id] = request }
-                    DatabaseController.addRequest(request: request) { id, error in
-                        if error == nil, let id = id {
-                            DispatchQueue.main.sync {
-                                request._id = id
-                                self.shared.myRequests["waitingForServerResponse"] = nil
-                                request.waitingForServerResponse = false
-                                self.shared.myRequests[id] = request
-                            }
-                            CoreDataController.addBond(request)
-                            let _ = CalendarController.addRequest(request: request)
-                        } else {
-                            DispatchQueue.main.async { request.waitingForServerResponse = false; self.shared.myRequests["waitingForServerResponse"] = nil }
-                        }
-                    }
+                    self.addRequest(request: request)
                     /*DatabaseController.addRequest (
                      title: self.shared.requestCategories[self.titlePickerValue],
                      description: self.requestDescription == "" ? nil : self.requestDescription,

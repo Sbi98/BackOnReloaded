@@ -11,7 +11,6 @@ import CoreLocation
 
 struct CustomTabView: View {
     @ObservedObject var shared = (UIApplication.shared.delegate as! AppDelegate).shared //serve per notificare il cambiamento della activeView alla View
-    
     var body: some View {
         TabView {
             Group {

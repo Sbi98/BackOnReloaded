@@ -41,6 +41,9 @@ struct CloseButton: View {
 struct DoItButton: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var task: Task
+    @State var showAlert = false
+    
+    
     var body: some View {
         GenericButton(
             isFilled: true,
@@ -55,8 +58,17 @@ struct DoItButton: View {
                 if let annotation = discController.baseMKMap?.selectedAnnotations.first { discController.baseMKMap?.removeAnnotation(annotation) }
             }
             DatabaseController.addTask(toAccept: self.task){ error in
-                guard error == nil else {print(error!); return}
+                
                 DispatchQueue.main.async { self.task.waitingForServerResponse = false }
+                guard error == nil else {print(error!);
+                DispatchQueue.main.sync {
+                    let shared = (UIApplication.shared.delegate as! AppDelegate).shared
+                    shared.myDiscoverables[self.task._id] = nil
+                    let alert = UIAlertController(title: "Oh no!", message: "It seems that this request was already accepted by another user.\nThank you anyway for your help and support, we really apreciate it.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                    UIViewController.main?.present( alert, animated: true)
+                    }
+                   return}
                 var user: User?
                 self.task.helperID = CoreDataController.loggedUser!._id
                 MapController.getSnapshot(location: self.task.position.coordinate, style: .dark){ snapshot, error in
@@ -98,7 +110,11 @@ struct CantDoItButton: View {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss(); self.task.waitingForServerResponse = true }
             DatabaseController.removeTask(toRemove: self.task){ error in
                 DispatchQueue.main.async { self.task.waitingForServerResponse = false}
-                guard error == nil else {print(error!); return}
+                guard error == nil else {print(error!)
+                    let alert = UIAlertController(title: "Something wrong with your task", message: "It seems there is a problem with your task.\nPlease try again.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                    UIViewController.main?.present( alert, animated: true)
+                    return}
                 DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myTasks[self.task._id] = nil }
                 CoreDataController.deleteBond(self.task)
             }
@@ -118,7 +134,12 @@ struct DontNeedAnymoreButton: View {
         ) {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss(); self.request.waitingForServerResponse = true  }
             DatabaseController.removeRequest(toRemove: self.request){ error in
-                guard error == nil else {print(error!); return}
+                guard error == nil else {print(error!)
+                    let alert = UIAlertController(title: "Something wrong with your request", message: "It seems there is a problem with your request.\nPlease try again.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                    UIViewController.main?.present( alert, animated: true)
+                    return
+                }
                 DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.myRequests[self.request._id] = nil }
                 CoreDataController.deleteBond(self.request)
                 let _ = CalendarController.remove(self.request)
@@ -155,7 +176,13 @@ struct ThankButton: View {
             DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
             CoreDataController.deleteBond(self.task)
             DatabaseController.reportTask(task: self.task, report: "Thank you!", helperToReport: self.helperToReport){ error in
-                guard error == nil else {print(error!); return}
+                guard error == nil else {
+                    print(error!)
+                    let alert = UIAlertController(title: "Something wrong with your " + (self.helperToReport ? "request":"task"), message: "It seems there is a problem with your " + (self.helperToReport ? "request":"task") + ".\nPlease try again.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                UIViewController.main?.present( alert, animated: true)
+                return
+                }
                 DispatchQueue.main.async {
                     let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                 }
@@ -175,7 +202,13 @@ struct ReportButton: View {
                     DispatchQueue.main.async { self.presentationMode.wrappedValue.dismiss() }
                 CoreDataController.deleteBond(self.task)
                 DatabaseController.reportTask(task: self.task, report:  "Didn't show up", helperToReport: self.helperToReport){ error in
-                    guard error == nil else {print(error!); return}
+                    guard error == nil else {
+                            print(error!)
+                            let alert = UIAlertController(title: "Something wrong with your " + (self.helperToReport ? "request":"task"), message: "It seems there is a problem with your " + (self.helperToReport ? "request":"task") + ".\nPlease try again.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "Got it!", style: .default))
+                        UIViewController.main?.present( alert, animated: true)
+                        return
+                        }
                     DispatchQueue.main.async {
                         let _ = CoreDataController.loggedUser!._id == self.task.neederID ? self.shared.myExpiredRequests.removeValue(forKey: self.task._id) : self.shared.myExpiredTasks.removeValue(forKey: self.task._id)
                     }
@@ -485,6 +518,17 @@ struct SizedDivider: View {
     }
 }
 
+struct AlertView: View{
+    @Binding var isPresented: Bool
+    
+    var body: some View{
+        VStack{
+            EmptyView()
+        }.alert(isPresented: $isPresented){
+            Alert(title: Text("Oh no!"), message: Text("It seems that this request was already accepted by another user.\nThank you anyway for your help and support, we really apreciate it."), dismissButton: .default(Text("Got it!")))
+        }
+    }
+}
 /*
  struct DirectionsButtonOLD: View { //VECCHI COLORI
      let isFilled: Bool = false

@@ -58,7 +58,9 @@ class DatabaseController {
                     if task.date < now && task.neederReport == nil && shared.myExpiredTasks[task._id] == nil { // se è un task scaduto e non esisteva lo aggiunge
                         task.locate()
                         CoreDataController.addBond(task, save: false)
+                        shared.myTasks[task._id] = nil
                         shared.myExpiredTasks[task._id] = task
+                        
                     }
                     if task.date > now && shared.myTasks[task._id] == nil { // se è un task attivo e non esisteva lo aggiunge
                         if shouldRequestETA { task.requestETA() }
@@ -81,6 +83,7 @@ class DatabaseController {
                         if shared.myExpiredRequests[request._id] == nil && request.helperReport == nil {
                             request.locate()
                             CoreDataController.addBond(request, save: false)
+                            shared.myRequests[request._id] = nil
                             shared.myExpiredRequests[request._id] = request
                         }
                     } else {
