@@ -79,7 +79,7 @@ struct SheetView<Content: View>: View {
         GeometryReader { geometry in
             self.content
                 .frame(width: geometry.size.width, height: self.maxHeight, alignment: .top)
-                .background(Color(.secondarySystemBackground))
+                .background(.systemBG)
                 .cornerRadius(self.radius)
                 .frame(height: geometry.size.height, alignment: .bottom)
                 .offset(y: max(self.offset + self.translation, 0))

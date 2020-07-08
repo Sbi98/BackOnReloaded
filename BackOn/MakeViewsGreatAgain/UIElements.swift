@@ -304,16 +304,17 @@ struct DirectionsButton: View {
                 Text("Directions")
                     .fontWeight(.semibold)
                     .font(.body)
-                    .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                    .tintIf(isFilled, .white, .detailedTaskHeaderBG)
                 if selectedTask.etaText != "Calculating..." {
                     Text("\(selectedTask.etaText)")
                         .font(.subheadline)
-                        .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                        .tintIf(isFilled, .white, .detailedTaskHeaderBG)
                 }
             }
             .frame(width: defaultButtonDimensions.width, height: defaultButtonDimensions.height)
-            .background(isFilled ? Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
+            .backgroundIf(isFilled, .detailedTaskHeaderBG, .systemBG)
+            .cornerRadius(10)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? getColor(.detailedTaskHeaderBG) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
         }.buttonStyle(PlainButtonStyle())
     }
 }
@@ -333,14 +334,14 @@ struct CallButton: View {
         }) {
             HStack {
                 if self.phoneNumber == nil {
-                    Image(systemName: "phone.down.fill").tintIf(self.phoneNumber == nil, .red, .green)
+                    Image(systemName: "phone.down.fill").tint(.red)
                     Text("Phone number not available")
                         .fontWeight(.semibold)
                         .font(.body)
                         .tint(.red)
                 } else {
                     if hoursLeft <= 0 {
-                        Image(systemName: "phone.fill").tintIf(self.phoneNumber == nil, .red, .green)
+                        Image(systemName: "phone.fill").tint(.green)
                         Text("Call")
                             .fontWeight(.semibold)
                             .font(.body)
@@ -352,7 +353,7 @@ struct CallButton: View {
                                 .fontWeight(.semibold)
                                 .font(.body)
                                 .tint(.red)
-                        } else if hourString != nil{
+                        } else if hourString != nil {
                             Text("Available in about " + hourString!)
                             .fontWeight(.semibold)
                             .font(.body)
@@ -369,7 +370,9 @@ struct CallButton: View {
             .frame(width: defaultButtonDimensions.width*2, height: defaultButtonDimensions.height)
             .background(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(disabledCondition ? Color(.systemRed) : Color(.systemGreen), lineWidth: 1))
-        }.buttonStyle(PlainButtonStyle()).disabled(disabledCondition)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(disabledCondition)
     }
 }
 
@@ -378,7 +381,7 @@ struct GenericButton: View {
     var dimensions: (width: CGFloat, height: CGFloat) = defaultButtonDimensions
     var isFilled: Bool
     var isLarge: Bool = false
-    var color: Color = Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9)
+    var color: Color = getColor(.detailedTaskHeaderBG)//Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9)
     var topText: String
     var bottomText: String? = nil
     var action: () -> Void
@@ -526,3 +529,28 @@ struct AlertView: View{
         }
     }
 }
+/*
+ struct DirectionsButtonOLD: View { //VECCHI COLORI
+     let isFilled: Bool = false
+     @ObservedObject var selectedTask: Task
+     
+     var body: some View {
+         Button(action: {MapController.openInMaps(commitment: self.selectedTask)}){
+             VStack {
+                 Text("Directions")
+                     .fontWeight(.semibold)
+                     .font(.body)
+                     .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                 if selectedTask.etaText != "Calculating..." {
+                     Text("\(selectedTask.etaText)")
+                         .font(.subheadline)
+                         .foregroundColor(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)))
+                 }
+             }
+             .frame(width: defaultButtonDimensions.width, height: defaultButtonDimensions.height)
+             .background(isFilled ? Color(#colorLiteral(red: 0.9910104871, green: 0.6643157601, blue: 0.3115140796, alpha: 1)).opacity(0.9) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0))).cornerRadius(10)
+             .overlay(RoundedRectangle(cornerRadius: 10).stroke(!isFilled ? Color(#colorLiteral(red: 0.9058823529, green: 0.7019607843, blue: 0.4156862745, alpha: 1)) : Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)), lineWidth: 1))
+         }.buttonStyle(PlainButtonStyle())
+     }
+ }
+ */

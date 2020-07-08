@@ -247,7 +247,6 @@ class DatabaseController {
         guard let lastLocation = MapController.lastLocation else {return completion(nil, nil, "LocationDisabled")}
         do {
             print("*** DB - \(#function) ***")
-            print(lastLocation.coordinate.latitude)
             DispatchQueue.main.async { (UIApplication.shared.delegate as! AppDelegate).shared.canLoadAroundYouMap = false }
             let parameters: [String: Any?] = ["_id": CoreDataController.loggedUser!._id, "longitude": lastLocation.coordinate.longitude, "latitude": lastLocation.coordinate.latitude]
             let request = initJSONRequest(urlString: ServerRoutes.discover, body: try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted))
