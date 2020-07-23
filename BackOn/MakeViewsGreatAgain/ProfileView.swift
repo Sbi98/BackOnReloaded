@@ -64,7 +64,7 @@ struct ProfileView: View {
                     Spacer()
                 }.background(Color(.systemGray6))
                 Form {
-                    Section(header: Text("Personal informations")) {
+                    Section(header: Text("Personal information")) {
                         HStack {
                             Text("Name: ")
                                 .orange()

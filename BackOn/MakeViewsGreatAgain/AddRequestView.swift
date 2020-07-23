@@ -107,7 +107,7 @@ struct AddRequestView: View {
 //        )
         return NavigationView {
             Form {
-                Section(header: Text("Need informations")) {
+                Section(header: Text("Need information")) {
                     HStack {
                         Text("Title: ").orange()
                         Spacer()
